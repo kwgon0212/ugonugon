@@ -58,14 +58,36 @@ enum PayType {
 }
 enum HiringType {
   Day = 0,
-  short,
-  long,
+  Short,
+  Long,
 }
+
+enum PostStatus {
+  Appling = 0,
+  Working,
+  Done,
+}
+
+enum UserStatus {
+  Before = 0,
+  Working,
+  Done,
+  Paid,
+  Escape,
+}
+
+type SocialInsurance = {
+  compensation: boolean;
+  employment: boolean;
+  national: boolean;
+  health: boolean;
+};
 
 type Post = {
   _id: string;
   redisted: Date; // datetime
-  userId: string; // Users._id
+  userId: Users;
+  status: PostStatus; // 공고 상태
   title: string;
   endDate: Date;
   // 근무조건
@@ -73,6 +95,7 @@ type Post = {
     type: PayType;
     amount: number;
   };
+  paymentDay: Date;
   workingLength: {
     start: Date;
     end: Date;
@@ -83,9 +106,11 @@ type Post = {
     start: Date; // time
     end: Date; // time
   };
+  holiday?: [string];
   workType: string;
   hiringType: HiringType;
   welfare?: [string]; // 복리후생
+  socialInsurance: SocialInsurance;
   // 모집 조건
   // endDate: Date; // 위에 있음
   hiringNums: number;
@@ -105,16 +130,35 @@ type Post = {
   employerLocationDetail: string;
   employerStars: number;
   reviewNumber: number;
-  reviews?: [{ userId: string }]; // Users._id
-  applications?: [string]; // Users._id
+  reviews?: [
+    {
+      userId: Users;
+      content: string;
+    }
+  ];
+  // 지원자
+  applications?: [Users];
+  // 채용됨
+  employee?: [
+    {
+      userId: Users;
+      userStatus: UserStatus;
+    }
+  ];
+  agreement?: [
+    {
+      userId: Users;
+      document: Agreement;
+    }
+  ];
 };
 
 type Chatting = {
   _id: string;
-  member: [string, string]; // Users._id, Users._id
+  member: [Users, Users];
   messages: {
-    send: string; // Users._id
-    to: string; // Users._id
+    send: Users;
+    to: Users;
     content: string;
   };
 };
@@ -139,4 +183,48 @@ type Resume = {
   };
   introduce: string;
   default: boolean; // 기본 이력서
+};
+
+type Agreement = {
+  _id: string;
+  post: Post;
+  date: Date;
+  employer: {
+    userId: Users;
+    name: string;
+    company: string;
+    phone: string;
+    location: string;
+    email: string;
+    sign: string;
+  };
+  employee: {
+    userId: Users;
+    name: string;
+    phone: string;
+    birth: number;
+    location: string;
+    email: string;
+    sign: string;
+  };
+  workDatetime:
+    | {
+        days: [Date];
+        startTime: Date; // time
+        endTime: Date; // time
+      }
+    | [
+        {
+          day: Date;
+          startTime: Date; // time
+          endTime: Date; // time
+        }
+      ];
+  holiday: [string];
+  pay: {
+    type: PayType;
+    amount: number;
+  };
+  paymentDay: Date | string;
+  socialInsurance: SocialInsurance;
 };
