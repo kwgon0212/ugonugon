@@ -6,11 +6,15 @@ import Main from "../components/Main";
 const RootPage = () => {
   return (
     <>
-      <Header>header</Header>
-      <Main hasHeader={true} hasBottomNav={true}>
-        main
+      <Header>
+        <span>header</span>
+      </Header>
+      <Main hasBottomNav={true}>
+        <p className="w-full h-[5000px]">main</p>
       </Main>
-      <BottomNav>bottom nav</BottomNav>
+      <BottomNav>
+        <span>bottom nav</span>
+      </BottomNav>
     </>
   );
 };
