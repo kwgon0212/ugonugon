@@ -6,8 +6,8 @@ type Props = {
 const Main = ({ children, hasBottomNav }: Props) => {
   return (
     <main
-      className={`absolute bg-white top-16 ${
-        hasBottomNav ? "bottom-16" : "bottom-0"
+      className={`absolute bg-main-bg top-16 ${
+        hasBottomNav ? "bottom-[80px]" : "bottom-0"
       } w-full overflow-y-auto overflow-x-hidden`}
     >
       {children}
