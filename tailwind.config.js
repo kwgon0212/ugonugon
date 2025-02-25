@@ -18,6 +18,9 @@ module.exports = {
           text: "#1D7887",
         },
       },
+      spacing: {
+        layout: "20px",
+      },
     },
   },
   plugins: [daisyui],
