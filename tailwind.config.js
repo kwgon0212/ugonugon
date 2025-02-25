@@ -4,7 +4,21 @@ import daisyui from "daisyui";
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        main: {
+          color: "#0B798B",
+          bg: "#F7F7F9",
+          gray: "#D9D9D9",
+          darkGray: "#717171",
+        },
+        warn: "#FF0000",
+        selected: {
+          box: "#D7F6F6",
+          text: "#1D7887",
+        },
+      },
+    },
   },
   plugins: [daisyui],
   daisyui: {
