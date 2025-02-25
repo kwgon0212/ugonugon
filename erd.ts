@@ -155,11 +155,12 @@ type Post = {
 
 type Chatting = {
   _id: string;
+  lastUseTiem: Date; // datetime
   member: [Users, Users];
   messages: {
     send: Users;
-    to: Users;
     content: string;
+    time: Date; // datetime
   };
 };
 
