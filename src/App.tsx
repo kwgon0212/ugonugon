@@ -3,6 +3,8 @@ import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 
+import R_Sign from "./pages/register/sign";
+
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-50">
@@ -12,6 +14,7 @@ function App() {
         <div className="relative max-w-[560px] w-full h-screen shadow-lg mx-auto lg:mx-0">
           <Routes>
             <Route path="/" element={<RootPage />} />
+            <Route path="/regist/sign" element={<R_Sign />} />
           </Routes>
         </div>
       </div>
