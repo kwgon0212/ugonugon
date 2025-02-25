@@ -13,20 +13,23 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   height: 100%;
   background-color: #f5f5f5;
 `;
 
 const Head = styled.div`
   display: flex;
-  font-size: 24px;
+  align-self: start;
+  font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
+  margin-top: 20px;
+  padding-left: 15px;
   color: #333;
 `;
 
 const ClearButton = styled.button`
+  display: flex;
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #4a90e2;
@@ -41,7 +44,7 @@ const ClearButton = styled.button`
   }
 `;
 
-const Button = styled.button`
+const NextButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -66,19 +69,21 @@ export const Sign = () => {
       <Header></Header>
       <Main>
         <Container>
-          <Head>사인 페이지</Head>
+          <Head>서명 등록</Head>
           <SignatureCanvas
             ref={signaturePadRef}
             penColor="black"
             backgroundColor="white"
             canvasProps={{
-              width: 500,
+              display: "flex",
+              width: 480,
               height: 250,
               className: "signature-canvas",
             }}
           />
           <ClearButton onClick={clearSignature}>서명 지우기</ClearButton>
-          <Button>다음</Button>
+
+          <NextButton>다음</NextButton>
         </Container>
       </Main>
       <BottomNav></BottomNav>
