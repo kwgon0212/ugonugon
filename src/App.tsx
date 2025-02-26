@@ -8,6 +8,8 @@ import RegisterSign from "./pages/register/sign/page";
 import RegisterAddress from "./pages/register/address/page";
 import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
+import RegisterInfoPage from "./pages/register/Info/page";
+import RegisterBusinessPage from "./pages/register/business-num/page";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
               <Route path="email/cert" element={<RegisterEmailCertPage />} />
               <Route path="bank-account" element={<RegisterBankAccount />} />
               <Route path="user-account" element={<RegisterUserAccount />} />
+              <Route path="info" element={<RegisterInfoPage />} />
+              <Route path="business-num" element={<RegisterBusinessPage />} />
             </Route>
           </Routes>
         </div>
