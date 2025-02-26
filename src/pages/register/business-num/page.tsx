@@ -1,10 +1,9 @@
-import { useState } from "react";
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import BottomNav from "../../../components/BottomNav";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
 
 function RegisterBusinessPage() {
   const [businessNumbers, setBusinessNumbers] = useState([""]);
@@ -15,20 +14,21 @@ function RegisterBusinessPage() {
   };
 
   // 사업자 번호 삭제
-  const removeBusinessNumber = (index) => {
+  const removeBusinessNumber = (index: number) => {
     setBusinessNumbers(businessNumbers.filter((_, i) => i !== index));
   };
 
   // 입력 값 변경
-  const handleChange = (index, value) => {
+  const handleChange = (index: number, value: string) => {
     const updatedNumbers = [...businessNumbers];
     updatedNumbers[index] = value;
     setBusinessNumbers(updatedNumbers);
   };
-  const handleNumericInput = (index) => (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거
-    handleChange(index, value); // 업데이트된 숫자를 설정
-  };
+  const handleNumericInput =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거
+      handleChange(index, value); // 업데이트된 숫자를 설정
+    };
 
   return (
     <>
@@ -58,7 +58,7 @@ function RegisterBusinessPage() {
                   placeholder="'-'를 제외하고 입력해주세요"
                   className="border border-white rounded-[10px] px-3 py-2 w-full focus:border-[#0B798B] focus:border-2 focus:outline-none"
                   value={number}
-                  onChange={handleNumericInput(index)}
+                  onChange={() => handleNumericInput(index)}
                   maxLength={10}
                 />
 

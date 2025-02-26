@@ -1,8 +1,8 @@
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
 import React, { useState } from "react";
-import Header from "../../../components/Header";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
-import Main from "../../../components/Main";
 
 const RegisterBankAccount = () => {
   const [password, setPassword] = useState("");

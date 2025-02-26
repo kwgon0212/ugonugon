@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
 import styled, { keyframes } from "styled-components";
 import banks from "./banks";
-import ArrowDownIcon from "../../../components/icons/ArrowDown";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import ArrowDownIcon from "@/components/icons/ArrowDown";
 
 const RegisterBankAccount = () => {
   const [account, setAccount] = useState("");

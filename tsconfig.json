@@ -5,8 +5,9 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -19,5 +20,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src", "craco.config.ts"]
 }

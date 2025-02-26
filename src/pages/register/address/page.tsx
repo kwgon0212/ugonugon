@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
-
 // 카카오 우편번호 검색 api
 import DaumPostcode from "react-daum-postcode";
+
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
 
 // 우편번호 데이터 타입 정의
 interface PostcodeData {
