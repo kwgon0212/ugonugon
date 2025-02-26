@@ -2,12 +2,12 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
-import RegisterBankAccount from "./pages/RegisterBankAccount";
 import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
-
 import RegisterSign from "./pages/register/sign/page";
 import RegisterAddress from "./pages/register/address/page";
+import RegisterBankAccount from "./pages/bank-account/page";
+import RegisterUserAccount from "./pages/user-account/page";
 
 function App() {
   return (
@@ -21,14 +21,18 @@ function App() {
             <Route path="/register/sign" element={<RegisterSign />} />
             <Route path="/register/address" element={<RegisterAddress />} />
 
-            <Route
-              path="/register/bank-account"
-              element={<RegisterBankAccount />}
-            />
             <Route path="/register/email" element={<RegisterEmailPage />} />
             <Route
               path="/register/email/cert"
               element={<RegisterEmailCertPage />}
+            />
+            <Route
+              path="/register/bank-account"
+              element={<RegisterBankAccount />}
+            />
+            <Route
+              path="/register/user-account"
+              element={<RegisterUserAccount />}
             />
           </Routes>
         </div>
