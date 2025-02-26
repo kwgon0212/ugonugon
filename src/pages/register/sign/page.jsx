@@ -69,12 +69,12 @@ export const RegisterSignPage = () => {
   const signaturePadRef = useRef(null);
 
   // 서명 초기화
-  const clearSignature = () => {
+  const handleClearSignature = () => {
     signaturePadRef.current.clear();
   };
 
   // 서명 저장 후 다운로드
-  const saveSignature = () => {
+  const handleSaveSignature = () => {
     const dataURL = signaturePadRef.current.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataURL;
@@ -112,13 +112,15 @@ export const RegisterSignPage = () => {
                 className: "signature-canvas",
               }}
             />
-            <ClearButton onClick={clearSignature}>서명 지우기</ClearButton>
+            <ClearButton onClick={handleClearSignature}>
+              서명 지우기
+            </ClearButton>
           </div>
 
           <Link to="/register/bank-account" className=" w-full pl-3">
             <NextButton
               className="absolute bottom-[20px] bg-main-color"
-              onClick={saveSignature}
+              onClick={handleSaveSignature}
             >
               다음
             </NextButton>

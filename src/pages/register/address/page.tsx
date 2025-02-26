@@ -58,7 +58,7 @@ export function RegisterAddressPage() {
   const [isPostcodeOpen, setPostcodeOpen] = useState(false); // 팝업 열림 상태
 
   // 주소 검색 버튼 클릭 시 우편번호 팝업 열기
-  const openPostcodePopup = () => {
+  const handleOpenPostcodePopup = () => {
     setPostcodeOpen(true);
   };
 
@@ -97,7 +97,7 @@ export function RegisterAddressPage() {
             ></input>
             <FindBtn
               type="button"
-              onClick={openPostcodePopup}
+              onClick={handleOpenPostcodePopup}
               className="bg-main-color"
             >
               주소검색
