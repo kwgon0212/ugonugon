@@ -16,6 +16,28 @@ enum Bank {
   Sc,
 }
 
+type Resume = {
+  _id: string;
+  name: string;
+  title: string;
+  sex: boolean;
+  birth: Date; // Year
+  phone: string;
+  email: string;
+  location: string;
+  education: string;
+  educationType: string;
+  workLocation?: [string];
+  workType?: [string];
+  // 희망 근무 기간
+  workLength?: {
+    start: Date;
+    end: Date;
+  };
+  introduce: string;
+  default: boolean; // 기본 이력서
+};
+
 type Users = {
   _id: string;
   memberId: string;
@@ -137,7 +159,13 @@ type Post = {
     }
   ];
   // 지원자
-  applications?: [Users];
+  applications?: [
+    {
+      userId: Users;
+      resume: Resume;
+      simpleIntroduce: string;
+    }
+  ];
   // 채용됨
   employee?: [
     {
@@ -162,28 +190,6 @@ type Chatting = {
     content: string;
     time: Date; // datetime
   };
-};
-
-type Resume = {
-  _id: string;
-  name: string;
-  title: string;
-  sex: boolean;
-  birth: Date; // Year
-  phone: string;
-  email: string;
-  location: string;
-  education: string;
-  educationType: string;
-  workLocation?: [string];
-  workType?: [string];
-  // 희망 근무 기간
-  workLength?: {
-    start: Date;
-    end: Date;
-  };
-  introduce: string;
-  default: boolean; // 기본 이력서
 };
 
 type Agreement = {
