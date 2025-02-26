@@ -3,6 +3,8 @@ import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
+import RegisterEmailPage from "./pages/register/email/page";
+import RegisterEmailCertPage from "./pages/register/email/cert/page";
 
 function App() {
   return (
@@ -16,6 +18,11 @@ function App() {
             <Route
               path="/register/bank-account"
               element={<RegisterBankAccount />}
+            />
+            <Route path="/register/email" element={<RegisterEmailPage />} />
+            <Route
+              path="/register/email/cert"
+              element={<RegisterEmailCertPage />}
             />
           </Routes>
         </div>
