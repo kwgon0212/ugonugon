@@ -2,11 +2,11 @@ import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
 // 헤더 아이콘
-import CancelIcon from "../../../components/icons/Cancel";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
 // 전자 서명판
 import SignatureCanvas from "react-signature-canvas";
 
@@ -66,15 +66,17 @@ const NextButton = styled.button`
 `;
 
 export const RegisterSignPage = () => {
-  const signaturePadRef = useRef(null);
+  const signaturePadRef = useRef<SignatureCanvas | null>(null);
 
   // 서명 초기화
   const handleClearSignature = () => {
+    if (!signaturePadRef.current) return;
     signaturePadRef.current.clear();
   };
 
   // 서명 저장 후 다운로드
   const handleSaveSignature = () => {
+    if (!signaturePadRef.current) return;
     const dataURL = signaturePadRef.current.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataURL;
@@ -98,34 +100,35 @@ export const RegisterSignPage = () => {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <Head>서명 등록</Head>
-        <Container>
-          <div className="flex flex-col justify-items-center items-center w-full h-full mb-11">
-            <SignatureCanvas
-              className="flex"
-              ref={signaturePadRef}
-              penColor="black"
-              backgroundColor="white"
-              canvasProps={{
-                width: 362,
-                height: 220,
-                className: "signature-canvas",
-              }}
-            />
-            <ClearButton onClick={handleClearSignature}>
-              서명 지우기
-            </ClearButton>
-          </div>
+        <>
+          <Head>서명 등록</Head>
+          <Container>
+            <div className="flex flex-col justify-items-center items-center w-full h-full mb-11">
+              <SignatureCanvas
+                ref={signaturePadRef}
+                penColor="black"
+                backgroundColor="white"
+                canvasProps={{
+                  width: 362,
+                  height: 220,
+                  className: "signature-canvas flex",
+                }}
+              />
+              <ClearButton onClick={handleClearSignature}>
+                서명 지우기
+              </ClearButton>
+            </div>
 
-          <Link to="/register/bank-account" className=" w-full pl-3">
-            <NextButton
-              className="absolute bottom-[20px] bg-main-color"
-              onClick={handleSaveSignature}
-            >
-              다음
-            </NextButton>
-          </Link>
-        </Container>
+            <Link to="/register/bank-account" className=" w-full pl-3">
+              <NextButton
+                className="absolute bottom-[20px] bg-main-color"
+                onClick={handleSaveSignature}
+              >
+                다음
+              </NextButton>
+            </Link>
+          </Container>
+        </>
       </Main>
     </>
   );

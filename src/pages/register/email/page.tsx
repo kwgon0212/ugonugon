@@ -1,10 +1,10 @@
+import BottomNav from "@/components/BottomNav";
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
 import React from "react";
 import styled from "styled-components";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import BottomNav from "../../../components/BottomNav";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
 
 const InsertTextInput = styled.input`
   width: 100%;

@@ -1,12 +1,11 @@
-import { useState } from "react";
-import BottomNav from "../../../components/BottomNav";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
+import React, { useState } from "react";
 import styled from "styled-components";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
 import { Link } from "react-router-dom";
-import CancelIcon from "../../../components/icons/Cancel";
-import CheckIcon from "../../../components/icons/Check";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import CheckIcon from "@/components/icons/Check";
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -62,7 +61,7 @@ const GenderContainer = styled.div`
 `;
 
 // 성별 선택 버튼
-const GenderButton = styled.button`
+const GenderButton = styled.button<{ selected: boolean }>`
   flex: 1;
   height: 50px;
   padding: 10px;
@@ -115,10 +114,12 @@ function RegisterInfoPage() {
   const [residentBack, setResidentBack] = useState("");
 
   // 숫자만 입력되도록 처리하는 함수
-  const handleNumericInput = (setter) => (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거
-    setter(value);
-  };
+  const handleNumericInput =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거
+      setter(value);
+    };
 
   // 서버로 데이터 전송 함수
   const handleSubmit = () => {
@@ -145,7 +146,7 @@ function RegisterInfoPage() {
 
   return (
     <>
-      <Header BottomNav={false}>
+      <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
           <div className="flex flex-row justify-between pl-5 pr-5">
             <Link to="/register/business-num">
@@ -158,96 +159,98 @@ function RegisterInfoPage() {
           <div className="absolute bottom-0 bg-main-color h-[3px] w-[72.4px]" />
         </div>
       </Header>
-      <Main>
-        <MainContainer>
-          <FormContainer>
-            {/* 이름 입력 */}
-            <div className="overflow-hidden ">
-              <FieldContainer>
-                <Label>이름</Label>
-                <StyledInput
-                  type="text"
-                  placeholder="이름을 입력해주세요"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </FieldContainer>
-
-              {/* 성별 선택 */}
-              <FieldContainer>
-                <Label>성별</Label>
-                <GenderContainer>
-                  <GenderButton
-                    selected={gender === "남성"}
-                    onClick={() => setGender("남성")}
-                  >
-                    {" "}
-                    <div style={{ marginRight: "5px" }}>
-                      <CheckIcon
-                        color={gender === "남성" ? "#0B798B" : "#A5A5A5"}
-                      />
-                    </div>
-                    남성
-                  </GenderButton>
-                  <GenderButton
-                    selected={gender === "여성"}
-                    onClick={() => setGender("여성")}
-                  >
-                    <div style={{ marginRight: "5px" }}>
-                      <CheckIcon
-                        color={gender === "여성" ? "#0B798B" : "#A5A5A5"}
-                      />
-                    </div>
-                    여성
-                  </GenderButton>
-                </GenderContainer>
-              </FieldContainer>
-
-              {/* 주민번호 입력 */}
-              <FieldContainer>
-                <Label>주민번호</Label>
-                <ResidentNumberContainer>
-                  <ResidentInput
+      <Main hasBottomNav={false}>
+        <>
+          <MainContainer>
+            <FormContainer>
+              {/* 이름 입력 */}
+              <div className="overflow-hidden ">
+                <FieldContainer>
+                  <Label>이름</Label>
+                  <StyledInput
                     type="text"
-                    maxLength="6"
-                    placeholder="앞 6자리"
-                    value={residentFront}
-                    onChange={handleNumericInput(setResidentFront)}
+                    placeholder="이름을 입력해주세요"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
-                  <span>-</span>
-                  <ResidentInput
-                    type="password"
-                    maxLength="7"
-                    placeholder="뒤 7자리"
-                    value={residentBack}
-                    onChange={handleNumericInput(setResidentBack)}
-                  />
-                </ResidentNumberContainer>
-              </FieldContainer>
+                </FieldContainer>
 
-              {/* 휴대폰 번호 입력 */}
-              <FieldContainer className="mb-[30%]">
-                <Label>휴대폰 번호</Label>
-                <StyledInput
-                  type="text"
-                  placeholder="- 를 제외한 전화번호를 입력해주세요"
-                  value={number}
-                  maxLength="11"
-                  onChange={handleNumericInput(setNumber)}
-                />
-              </FieldContainer>
-            </div>
-          </FormContainer>
-        </MainContainer>
-        {/* 제출 버튼 */}
-        <Link to="/register/address" className="pl-3">
-          <SubmitButton
-            onClick={handleSubmit}
-            className="sticky bottom-[10px] "
-          >
-            다음
-          </SubmitButton>
-        </Link>
+                {/* 성별 선택 */}
+                <FieldContainer>
+                  <Label>성별</Label>
+                  <GenderContainer>
+                    <GenderButton
+                      selected={gender === "남성"}
+                      onClick={() => setGender("남성")}
+                    >
+                      {" "}
+                      <div style={{ marginRight: "5px" }}>
+                        <CheckIcon
+                          color={gender === "남성" ? "#0B798B" : "#A5A5A5"}
+                        />
+                      </div>
+                      남성
+                    </GenderButton>
+                    <GenderButton
+                      selected={gender === "여성"}
+                      onClick={() => setGender("여성")}
+                    >
+                      <div style={{ marginRight: "5px" }}>
+                        <CheckIcon
+                          color={gender === "여성" ? "#0B798B" : "#A5A5A5"}
+                        />
+                      </div>
+                      여성
+                    </GenderButton>
+                  </GenderContainer>
+                </FieldContainer>
+
+                {/* 주민번호 입력 */}
+                <FieldContainer>
+                  <Label>주민번호</Label>
+                  <ResidentNumberContainer>
+                    <ResidentInput
+                      type="text"
+                      maxLength={6}
+                      placeholder="앞 6자리"
+                      value={residentFront}
+                      onChange={handleNumericInput(setResidentFront)}
+                    />
+                    <span>-</span>
+                    <ResidentInput
+                      type="password"
+                      maxLength={7}
+                      placeholder="뒤 7자리"
+                      value={residentBack}
+                      onChange={handleNumericInput(setResidentBack)}
+                    />
+                  </ResidentNumberContainer>
+                </FieldContainer>
+
+                {/* 휴대폰 번호 입력 */}
+                <FieldContainer className="mb-[30%]">
+                  <Label>휴대폰 번호</Label>
+                  <StyledInput
+                    type="text"
+                    placeholder="- 를 제외한 전화번호를 입력해주세요"
+                    value={number}
+                    maxLength={11}
+                    onChange={handleNumericInput(setNumber)}
+                  />
+                </FieldContainer>
+              </div>
+            </FormContainer>
+          </MainContainer>
+          {/* 제출 버튼 */}
+          <Link to="/register/address" className="pl-3">
+            <SubmitButton
+              onClick={handleSubmit}
+              className="sticky bottom-[10px] "
+            >
+              다음
+            </SubmitButton>
+          </Link>
+        </>
       </Main>
     </>
   );
