@@ -1,11 +1,10 @@
-import React, { useState, useRef } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useRef } from "react";
+import styled from "styled-components";
 
 import Header from "../../components/Header";
 import Main from "../../components/Main";
 import BottomNav from "../../components/BottomNav";
 
-import styled from "styled-components";
 import SignatureCanvas from "react-signature-canvas";
 
 // 스타일 정의
@@ -30,6 +29,8 @@ const Head = styled.div`
 
 const ClearButton = styled.button`
   display: flex;
+  justify-content: center;
+  text-align: center;
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #4a90e2;
@@ -38,6 +39,7 @@ const ClearButton = styled.button`
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  width: 30%;
 
   &:hover {
     background-color: #357abd;
@@ -52,7 +54,6 @@ const NextButton = styled.button`
   height: 50px;
   margin-top: 10px;
   border-radius: 5px;
-  background-color: #0b798b;
   color: white;
 `;
 
@@ -68,22 +69,24 @@ export const Sign = () => {
     <>
       <Header></Header>
       <Main>
+        <Head>서명 등록</Head>
         <Container>
-          <Head>서명 등록</Head>
-          <SignatureCanvas
-            ref={signaturePadRef}
-            penColor="black"
-            backgroundColor="white"
-            canvasProps={{
-              display: "flex",
-              width: 480,
-              height: 250,
-              className: "signature-canvas",
-            }}
-          />
-          <ClearButton onClick={clearSignature}>서명 지우기</ClearButton>
+          <div className="flex flex-col justify-items-center items-center w-full mb-11">
+            <SignatureCanvas
+              className="flex w-[90%]"
+              ref={signaturePadRef}
+              penColor="black"
+              backgroundColor="white"
+              canvasProps={{
+                width: 480,
+                height: 250,
+                className: "signature-canvas",
+              }}
+            />
+            <ClearButton onClick={clearSignature}>서명 지우기</ClearButton>
+          </div>
 
-          <NextButton>다음</NextButton>
+          <NextButton className=" bg-main-color">다음</NextButton>
         </Container>
       </Main>
       <BottomNav></BottomNav>

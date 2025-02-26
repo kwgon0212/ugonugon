@@ -4,7 +4,7 @@ import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
 
-import R_Sign from "./pages/register/sign";
+import RegistSign from "./pages/register/sign";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
           <Routes>
             <Route path="/" element={<RootPage />} />
-            <Route path="/regist/sign" element={<R_Sign />} />
+            <Route path="/regist/sign" element={<RegistSign />} />
             <Route
               path="/register/bank-account"
               element={<RegisterBankAccount />}
