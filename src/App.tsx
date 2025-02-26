@@ -4,6 +4,9 @@ import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
 
+import RegisterSign from "./pages/register/sign/page";
+import RegisterAddress from "./pages/register/address/page";
+
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -13,6 +16,9 @@ function App() {
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
           <Routes>
             <Route path="/" element={<RootPage />} />
+            <Route path="/register/sign" element={<RegisterSign />} />
+            <Route path="/register/address" element={<RegisterAddress />} />
+
             <Route
               path="/register/bank-account"
               element={<RegisterBankAccount />}
