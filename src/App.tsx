@@ -2,7 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
-import RegisterBankAccount from "./pages/RegisterBankAccount";
+import RegisterBankAccount from "./pages/bank-account/page";
+import RegisterUserAccount from "./pages/user-account/page";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
             <Route
               path="/register/bank-account"
               element={<RegisterBankAccount />}
+            />
+            <Route
+              path="/register/user-account"
+              element={<RegisterUserAccount />}
             />
           </Routes>
         </div>
