@@ -18,22 +18,14 @@ function App() {
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
           <Routes>
             <Route path="/" element={<RootPage />} />
-            <Route path="/register/sign" element={<RegisterSign />} />
-            <Route path="/register/address" element={<RegisterAddress />} />
-
-            <Route path="/register/email" element={<RegisterEmailPage />} />
-            <Route
-              path="/register/email/cert"
-              element={<RegisterEmailCertPage />}
-            />
-            <Route
-              path="/register/bank-account"
-              element={<RegisterBankAccount />}
-            />
-            <Route
-              path="/register/user-account"
-              element={<RegisterUserAccount />}
-            />
+            <Route path="/register">
+              <Route path="sign" element={<RegisterSign />} />
+              <Route path="address" element={<RegisterAddress />} />
+              <Route path="email" element={<RegisterEmailPage />} />
+              <Route path="email/cert" element={<RegisterEmailCertPage />} />
+              <Route path="bank-account" element={<RegisterBankAccount />} />
+              <Route path="user-account" element={<RegisterUserAccount />} />
+            </Route>
           </Routes>
         </div>
       </div>
