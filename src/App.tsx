@@ -3,7 +3,8 @@ import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
-
+import RegisterInfoPage from "./pages/register/Info/page";
+import RegisterBusinessPage from "./pages/register/business-num/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -16,6 +17,12 @@ function App() {
             <Route
               path="/register/bank-account"
               element={<RegisterBankAccount />}
+            />
+            {/* 이 페이지의 경로를 정해주는 코드이다. */}
+            <Route path="/register/info" element={<RegisterInfoPage />} />
+            <Route
+              path="/register/business-num"
+              element={<RegisterBusinessPage />}
             />
           </Routes>
         </div>
