@@ -6,8 +6,8 @@ import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
 import RegisterSign from "./pages/register/sign/page";
 import RegisterAddress from "./pages/register/address/page";
-import RegisterBankAccount from "./pages/bank-account/page";
-import RegisterUserAccount from "./pages/user-account/page";
+import RegisterBankAccount from "./pages/register/bank-account/page";
+import RegisterUserAccount from "./pages/register/user-account/page";
 
 function App() {
   return (
