@@ -11,11 +11,62 @@ import EmployIcon from "../../../components/icons/bottomNav/Employ";
 import HomeIcon from "../../../components/icons/bottomNav/Home";
 import UserIcon from "../../../components/icons/bottomNav/User";
 import WorkIcon from "../../../components/icons/bottomNav/Work";
+import EditIcon from "../../../components/icons/Edit";
 
 const Body = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
+`;
+
+const Head = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  background-color: white;
+  padding: 12px;
+`;
+
+const CetegoryContiner = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  height: fit-content;
+  background-color: white;
+`;
+
+const CategoryItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  height: 30px;
+  border-radius: 50px;
+  font-size: 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+`;
+
+const ListWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: max-content;
+`;
+const ListContainer = styled.div``;
+const Numbernav = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 20px;
+  bottom: 0;
 `;
 
 const NavBtn = styled.div`
@@ -26,6 +77,8 @@ const NavBtn = styled.div`
   gap: 4px;
   color: #717171;
 `;
+
+const category = "서울 용산구";
 
 export function NoticeListPage() {
   const location = useLocation();
@@ -42,7 +95,19 @@ export function NoticeListPage() {
         </Link>
       </Header>
       <Main hasBottomNav={true}>
-        <Body></Body>
+        <Body>
+          <Head>
+            <div className="font-bold text-[20px] mb-2">검색 결과</div>
+            <CetegoryContiner>
+              <CategoryItem className="bg-selected-box">
+                <div className="flex w-fit text-main-color">{category}</div>
+                <div className="flex w-fit h-fit ml-2">
+                  <EditIcon color="#0B798B" />
+                </div>
+              </CategoryItem>
+            </CetegoryContiner>
+          </Head>
+        </Body>
       </Main>
       <BottomNav>
         <div className="flex flex-row justify-around items-center w-full h-full">
