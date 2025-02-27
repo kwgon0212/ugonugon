@@ -39,8 +39,12 @@ function App() {
             </Route>
             <Route path="/notice">
               <Route path=":id" element={<NoticeDetailPage />} />
+              <Route path="list" element={<NoticeListPage />} />
             </Route>
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/notice/list" element={<NoticeListPage />} />
+            <Route path="/work/" element={<WorkPage />} />
           </Routes>
         </div>
       </div>
