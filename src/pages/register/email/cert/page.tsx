@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "../../../../components/Header";
 import Main from "../../../../components/Main";
-import BottomNav from "../../../../components/BottomNav";
 import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
 import CancelIcon from "../../../../components/icons/Cancel";
 
@@ -40,6 +39,30 @@ const BottomButton = styled.button`
 function RegisterEmailCertPage() {
   const [nums, setNums] = useState(["", "", "", ""]);
 
+  const handleNums = (event: any, index: number) => {
+    const newNums = [...nums];
+    newNums[index] = event.target.value;
+    setNums(newNums);
+
+    if (event.target.value.length === 1 && index < 3) {
+      document.getElementsByTagName("input")[index + 1].focus();
+    }
+  };
+
+  // const handleKeyDown = (event: any, index: number) => {
+  //   console.log([...nums]);
+  //   if (event.key === "Backspace" || event.key === "Delete")
+  //     if (index !== 0 && Number(nums[index]) < 10) {
+  //       document.getElementsByTagName("input")[index - 1].focus();
+
+  //       const newNums = [...nums];
+  //       newNums[index] = "";
+
+  //       event.target.value = "";
+  //       setNums(newNums.slice(0, 4));
+  //     }
+  // };
+
   return (
     <>
       <Header>
@@ -60,6 +83,8 @@ function RegisterEmailCertPage() {
                 maxLength={1}
                 pattern="\d"
                 required
+                onChange={(event) => handleNums(event, index)}
+                // onKeyDown={(event) => handleKeyDown(event, index)}
               />
             ))}
           </div>
