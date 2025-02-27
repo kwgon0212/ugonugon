@@ -10,6 +10,7 @@ import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
+import NoticeDetailPage from "./pages/notice/[id]/page";
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
               <Route path="user-account" element={<RegisterUserAccount />} />
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
+            </Route>
+            <Route path="/notice">
+              <Route path=":id" element={<NoticeDetailPage />} />
             </Route>
           </Routes>
         </div>
