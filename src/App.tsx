@@ -10,6 +10,8 @@ import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
+import ReCruitPage from "./pages/recruit/page";
+import MapPage from "./pages/map/page";
 import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
 import WorkPage from "./pages/work/page";
@@ -33,9 +35,6 @@ function App() {
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
             </Route>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/notice/list" element={<NoticeListPage />} />
-            <Route path="/work/" element={<WorkPage />} />
           </Routes>
         </div>
       </div>
