@@ -8,7 +8,6 @@ import RegisterSign from "./pages/register/sign/page";
 import RegisterAddress from "./pages/register/address/page";
 import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
-import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
 import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
@@ -17,6 +16,7 @@ import NoticeDetailPage from "./pages/notice/[id]/page";
 import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
+import RegisterInfoPage from "./pages/register/Info/page.jsx";
 
 function App() {
   return (

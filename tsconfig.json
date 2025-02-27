@@ -19,7 +19,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["kakao.maps.d.ts"]
+    "types": ["kakao.maps.d.ts", "node"]
   },
   "include": ["src", "craco.config.ts"]
 }
