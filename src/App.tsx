@@ -10,6 +10,10 @@ import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
+import LoginPage from "./pages/login/page";
+import NoticeListPage from "./pages/notice/list/page";
+import WorkPage from "./pages/work/page";
+
 import NoticeDetailPage from "./pages/notice/[id]/page";
 import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
@@ -39,6 +43,9 @@ function App() {
               <Route path=":id" element={<NoticeDetailPage />} />
             </Route>
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/notice/list" element={<NoticeListPage />} />
+            <Route path="/work/" element={<WorkPage />} />
           </Routes>
         </div>
       </div>

@@ -46,8 +46,12 @@ const NextButton = styled.button`
   align-items: center;
   width: 362px;
   height: 50px;
-  border-radius: 5px;
+  border-radius: 10px;
   color: white;
+
+  &:hover {
+    background-color: #196b78;
+  }
 `;
 
 export function RegisterAddressPage() {
