@@ -6,20 +6,6 @@ import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
 import CancelIcon from "../../../components/icons/Cancel";
 import SuccessIcon from "../../../components/icons/SuccessIcon";
 
-const InsertTextInput = styled.input`
-  width: 100%;
-  height: 50px;
-  background: white;
-  border-radius: 10px;
-  padding: 0 20px;
-
-  ::placeholder {
-    padding: 0 20px;
-    color: #d9d9d9;
-    font-size: 14px;
-  }
-`;
-
 const BottomButton = styled.button`
   position: absolute;
   bottom: 60px;
