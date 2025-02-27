@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "../../../../components/Header";
 import Main from "../../../../components/Main";
@@ -25,7 +25,11 @@ const CertificationInput = styled.input`
 `;
 
 const BottomButton = styled.button`
-  width: 100%;
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
   height: 50px;
   border-radius: 10px;
   font-size: 14px;
@@ -34,6 +38,8 @@ const BottomButton = styled.button`
 `;
 
 function RegisterEmailCertPage() {
+  const [nums, setNums] = useState(["", "", "", ""]);
+
   return (
     <>
       <Header>
@@ -43,28 +49,30 @@ function RegisterEmailCertPage() {
           {/* <hr /> */}
         </div>
       </Header>
-      <Main hasBottomNav={true}>
-        <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+      <Main hasBottomNav={false}>
+        <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
           <p className="font-semibold text-xl text-center">인증번호 확인</p>
-          <form className="flex justify-center">
-            <CertificationInput autoFocus type="text" value="1" />
-            <CertificationInput type="text" />
-            <CertificationInput type="text" />
-            <CertificationInput type="text" />
-          </form>
+          <div className="flex justify-center">
+            {nums.map((v, index) => (
+              <CertificationInput
+                key={index}
+                type="text"
+                maxLength={1}
+                pattern="\d"
+                required
+              />
+            ))}
+          </div>
           <p className="font-semibold text-sm text-center">
             아직 인증 번호를 받지 못하셨나요?
           </p>
           <a className="text-main-color text-xs text-center" href="#">
             인증번호 재전송
           </a>
-        </div>
+          <BottomButton>인증번호 전송</BottomButton>
+          {/* <BottomButton>인증번호 전송</BottomButton> */}
+        </form>
       </Main>
-      <BottomNav>
-        <div className="pb-15 px-5">
-          <BottomButton>다음</BottomButton>
-        </div>
-      </BottomNav>
     </>
   );
 }
