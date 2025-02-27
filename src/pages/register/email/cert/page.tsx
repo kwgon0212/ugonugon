@@ -44,7 +44,7 @@ function RegisterEmailCertPage() {
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <div className="w-full p-layout p-5 flex flex-col gap-layout divide-[#0b798b]">
+        <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
           <p className="font-semibold text-xl text-center">인증번호 확인</p>
           <form className="flex justify-center">
             <CertificationInput autoFocus type="text" value="1" />
