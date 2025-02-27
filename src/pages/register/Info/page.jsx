@@ -120,29 +120,6 @@ function RegisterInfoPage() {
     setter(value);
   };
 
-  // 서버로 데이터 전송 함수
-  const handleSubmit = () => {
-    const residentNumber = `${residentFront}-${residentBack}`;
-    const userData = {
-      name,
-      gender,
-      phoneNumber: number,
-      residentNumber,
-    };
-
-    fetch("http://localhost:5000/api/user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert("데이터 전송 성공!");
-        console.log("서버 응답:", data);
-      })
-      .catch((err) => console.error("데이터 전송 오류:", err));
-  };
-
   return (
     <>
       <Header BottomNav={false}>
@@ -241,12 +218,7 @@ function RegisterInfoPage() {
         </MainContainer>
         {/* 제출 버튼 */}
         <Link to="/register/address" className="pl-3">
-          <SubmitButton
-            onClick={handleSubmit}
-            className="sticky bottom-[10px] "
-          >
-            다음
-          </SubmitButton>
+          <SubmitButton className="sticky bottom-[10px] ">다음</SubmitButton>
         </Link>
       </Main>
     </>
