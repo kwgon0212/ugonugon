@@ -10,6 +10,8 @@ import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
+import NoticeDetailPage from "./pages/notice/[id]/page";
+import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
 function App() {
@@ -33,6 +35,10 @@ function App() {
             </Route>
             <Route path="/recruit" element={<ReCruitPage />} />
             <Route path="/map" element={<MapPage />} />
+            <Route path="/notice">
+              <Route path=":id" element={<NoticeDetailPage />} />
+            </Route>
+            <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </div>
       </div>
