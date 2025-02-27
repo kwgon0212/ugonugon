@@ -3,6 +3,7 @@ import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
+import NoticeSearch from "./pages/notice/search/page";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               path="/register/bank-account"
               element={<RegisterBankAccount />}
             />
+            <Route path="/notice/search" element={<NoticeSearch />} />
           </Routes>
         </div>
       </div>
