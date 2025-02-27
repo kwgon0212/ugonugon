@@ -1,5 +1,4 @@
 import { useState } from "react";
-import BottomNav from "../../../components/BottomNav";
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import styled from "styled-components";
