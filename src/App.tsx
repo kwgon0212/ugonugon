@@ -11,6 +11,7 @@ import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
 import NoticeDetailPage from "./pages/notice/[id]/page";
+import MyPage from "./pages/mypage/page";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/notice">
               <Route path=":id" element={<NoticeDetailPage />} />
             </Route>
+            <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </div>
       </div>
