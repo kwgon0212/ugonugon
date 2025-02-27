@@ -13,11 +13,11 @@ import RegisterBusinessPage from "./pages/register/business-num/page";
 import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
 import WorkPage from "./pages/work/page";
-
 import NoticeDetailPage from "./pages/notice/[id]/page";
 import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
+
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -41,11 +41,11 @@ function App() {
             <Route path="/map" element={<MapPage />} />
             <Route path="/notice">
               <Route path=":id" element={<NoticeDetailPage />} />
+              <Route path="list" element={<NoticeListPage />} />
             </Route>
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/notice/list" element={<NoticeListPage />} />
-            <Route path="/work/" element={<WorkPage />} />
+            <Route path="/work" element={<WorkPage />} />
           </Routes>
         </div>
       </div>
