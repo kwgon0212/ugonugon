@@ -40,7 +40,7 @@ function RegisterEmailPage() {
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <div className="w-full p-layout p-5 flex flex-col gap-layout divide-[#0b798b]">
+        <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
           <p className="font-semibold text-xl">이메일 인증</p>
           <p className="text-main-darkGray">
             원활한 서비스 이용을 위한

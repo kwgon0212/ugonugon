@@ -5,6 +5,7 @@ import RootPage from "./pages/page";
 import RegisterBankAccount from "./pages/RegisterBankAccount";
 import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
+import RegisterSuccess from "./pages/register/success/page";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               path="/register/email/cert"
               element={<RegisterEmailCertPage />}
             />
+            <Route path="/register/success" element={<RegisterSuccess />} />
           </Routes>
         </div>
       </div>
