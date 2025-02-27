@@ -15,6 +15,7 @@ import MapPage from "./pages/map/page";
 import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
 import WorkPage from "./pages/work/page";
+import NoticeDetailPage from "./pages/notice/[id]/page";
 
 function App() {
   return (
@@ -34,6 +35,9 @@ function App() {
               <Route path="user-account" element={<RegisterUserAccount />} />
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
+            </Route>
+            <Route path="/notice">
+              <Route path=":id" element={<NoticeDetailPage />} />
             </Route>
           </Routes>
         </div>

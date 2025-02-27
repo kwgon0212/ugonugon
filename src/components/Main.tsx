@@ -8,7 +8,7 @@ const Main = ({ children, hasBottomNav }: Props) => {
     <main
       className={`absolute bg-main-bg top-16 ${
         hasBottomNav ? "bottom-[80px]" : "bottom-0"
-      } w-full overflow-y-auto overflow-x-hidden`}
+      } w-full overflow-y-auto overflow-x-hidden scrollbar-hidden`}
     >
       {children}
     </main>
