@@ -10,7 +10,8 @@ import RegisterBankAccount from "./pages/register/bank-account/page";
 import RegisterUserAccount from "./pages/register/user-account/page";
 import RegisterInfoPage from "./pages/register/Info/page";
 import RegisterBusinessPage from "./pages/register/business-num/page";
-
+import ReCruitPage from "./pages/recruit/page";
+import MapPage from "./pages/map/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -30,6 +31,8 @@ function App() {
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
             </Route>
+            <Route path="/recruit" element={<ReCruitPage />} />
+            <Route path="/map" element={<MapPage />} />
           </Routes>
         </div>
       </div>
