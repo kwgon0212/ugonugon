@@ -16,6 +16,7 @@ import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
 import WorkPage from "./pages/work/page";
 import NoticeDetailPage from "./pages/notice/[id]/page";
+import MyPage from "./pages/mypage/page";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/notice">
               <Route path=":id" element={<NoticeDetailPage />} />
             </Route>
+            <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </div>
       </div>
