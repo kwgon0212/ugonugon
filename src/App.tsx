@@ -6,6 +6,7 @@ import RegisterBankAccount from "./pages/RegisterBankAccount";
 import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
 import RegisterSuccess from "./pages/register/success/page";
+import MypageResumeCreate from "./pages/mypage/resume/create/page";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               element={<RegisterEmailCertPage />}
             />
             <Route path="/register/success" element={<RegisterSuccess />} />
+            <Route path="/mypage/resume/create" element={<RegisterSuccess />} />
           </Routes>
         </div>
       </div>
