@@ -24,7 +24,7 @@ const CertificationInput = styled.input`
 
 const BottomButton = styled.button`
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -71,7 +71,7 @@ function RegisterEmailCertPage() {
           {/* <hr /> */}
         </div>
       </Header>
-      <Main hasBottomNav={true}>
+      <Main hasBottomNav={false}>
         <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
           <p className="font-semibold text-xl text-center">인증번호 확인</p>
           <div className="flex justify-center">
