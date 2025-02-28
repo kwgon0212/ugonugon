@@ -96,28 +96,38 @@ export function WorkPage() {
       <BottomNav>
         <div className="flex flex-row justify-around items-center w-full h-full">
           <NavBtn>
-            <ChatIcon color="#717171" />
-            채팅
+            <Link to="#" className="flex flex-col items-center gap-1">
+              <ChatIcon color="#717171" />
+              채팅
+            </Link>
           </NavBtn>
           <NavBtn>
-            <EmployIcon color="#717171" />
-            검색
+            <Link to="#" className="flex flex-col items-center gap-1">
+              <EmployIcon color="#717171" />
+              검색
+            </Link>
           </NavBtn>
           <NavBtn>
-            <HomeIcon color="#717171" />홈
+            <Link to="#" className="flex flex-col items-center gap-1">
+              <HomeIcon color="#717171" />홈
+            </Link>
           </NavBtn>
           <NavBtn
             style={{
               color: location.pathname === "/work" ? "#0B798B" : "#717171",
             }}
           >
-            <WorkIcon
-              color={location.pathname === "/work" ? "#0B798B" : "#717171"}
-            />
-            근무 현황
+            <Link to="#" className="flex flex-col items-center gap-1">
+              <WorkIcon
+                color={location.pathname === "/work" ? "#0B798B" : "#717171"}
+              />
+              근무 현황
+            </Link>
           </NavBtn>
           <NavBtn>
-            <UserIcon color="#717171" />내 정보
+            <Link to="#" className="flex flex-col items-center gap-1">
+              <UserIcon color="#717171" />내 정보
+            </Link>
           </NavBtn>
         </div>
       </BottomNav>

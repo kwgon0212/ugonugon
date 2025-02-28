@@ -10,7 +10,7 @@ const ItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 362px;
+  width: 95%;
   height: fit-content;
   border-radius: 10px;
   background-color: white;
@@ -20,13 +20,14 @@ const Btn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 332px;
+  width: 70%;
   height: 40px;
   color: white;
   font-weight: bold;
   font-size: 14px;
   border-radius: 10px;
   margin-bottom: 14px;
+  margin-top: 14px;
 `;
 
 const MenuContainer = styled.div`
@@ -34,7 +35,7 @@ const MenuContainer = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  width: 362px;
+  width: 95%;
   height: 120px;
   background-color: white;
   border-radius: 10px;

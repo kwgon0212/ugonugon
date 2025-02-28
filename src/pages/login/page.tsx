@@ -23,13 +23,14 @@ const InputContainer = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
-  width: 100%;
+  width: 60%;
+  min-width: 330px;
   margin-bottom: 20px;
 `;
 
 const IconInputMail = styled.input`
   padding-left: 50px;
-  width: 330px;
+  width: 100%;
   height: 50px;
   font-size: 14px;
   border: 1px solid #bababa;
@@ -38,7 +39,7 @@ const IconInputMail = styled.input`
 
 const IconInputPw = styled.input`
   padding-left: 50px;
-  width: 330px;
+  width: 100%;
   height: 50px;
   font-size: 14px;
   border: 1px solid #bababa;
@@ -50,20 +51,17 @@ const FindPw = styled.div`
   flex-direction: row;
   justify-content: end;
   align-items: center;
-  width: 100%;
+  width: 70%;
+  min-width: 330px;
   margin-bottom: 20px;
-  /* gap: 15px;
-  &:after {
-    content: ">";
-    font-weight: bold;
-  } */
 `;
 
 const LoginButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 330px;
+  width: 60%;
+  min-width: 330px;
   height: 50px;
   border-radius: 10px;
   color: white;
@@ -89,7 +87,7 @@ export function LoginPage() {
               alt="로고 이미지"
             />
           </div>
-          <form className="mt-7">
+          <form className="flex flex-col justify-center items-center mt-7 w-full">
             <InputContainer>
               <div className="absolute left-5 top-4">
                 <MailIcon color="#BABABA" />
@@ -108,12 +106,12 @@ export function LoginPage() {
             </InputContainer>
 
             <FindPw className="pr-[15px] text-main-darkGray">
-              <Link to="login">
+              <Link to="login" className="flex">
                 <div>비밀번호 찾기</div>
               </Link>
               <ArrowRightIcon color="#BABABA" />
             </FindPw>
-            <Link to="/">
+            <Link to="/" className="flex w-full justify-center">
               {/* 로그인하는 함수 만들어야 됨 */}
               {/* 나중에 타입 변경 */}
               <LoginButton type="button" className="bg-main-color">
