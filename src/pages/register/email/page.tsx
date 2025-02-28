@@ -21,7 +21,11 @@ const InsertTextInput = styled.input`
 `;
 
 const BottomButton = styled.button`
-  width: 100%;
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
   height: 50px;
   border-radius: 10px;
   font-size: 14px;
@@ -40,25 +44,24 @@ function RegisterEmailPage() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <>
-          <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
-            <p className="font-semibold text-xl">이메일 인증</p>
-            <p className="text-main-darkGray">
-              원활한 서비스 이용을 위한
-              <br />
-              계정에 사용할 이메일 계정을 입력해주세요.
-            </p>
-            <InsertTextInput
-              type="text"
-              placeholder="이메일 계정"
-              className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
-            />
-          </div>
-
+        <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+          <p className="font-semibold text-xl">이메일 인증</p>
+          <p className="text-main-darkGray">
+            원활한 서비스 이용을 위한
+            <br />
+            계정에 사용할 이메일 계정을 입력해주세요.
+          </p>
+          <InsertTextInput
+            type="email"
+            placeholder="이메일 계정"
+            className="w-full h-[50px] bg-white rounded-[10%]"
+            pattern="[\w]+@+[\w]+\.[\w]+"
+            required
+          />
           <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
             <BottomButton>인증번호 전송</BottomButton>
           </div>
-        </>
+        </form>
       </Main>
     </>
   );
