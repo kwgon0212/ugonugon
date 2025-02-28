@@ -17,6 +17,7 @@ import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
 import RegisterInfoPage from "./pages/register/Info/page.jsx";
+import ChatPage from "./pages/chat/page";
 import { AnimatePresence } from "framer-motion";
 import RegisterSuccess from "./pages/register/success/page";
 
@@ -43,6 +44,7 @@ function App() {
               </Route>
               <Route path="/recruit" element={<ReCruitPage />} />
               <Route path="/map" element={<MapPage />} />
+              <Route path="/chat" element={<ChatPage />} />
               <Route path="/notice">
                 <Route path=":id" element={<NoticeDetailPage />} />
                 <Route path="list" element={<NoticeListPage />} />

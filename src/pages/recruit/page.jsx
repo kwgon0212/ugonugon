@@ -7,7 +7,7 @@ import WalletIcon from "../../components/icons/Wallet";
 import { useState } from "react";
 import ReCruitPageFail from "./ReCruitPageFail";
 function ReCruitPage() {
-  const [hasWorkItem, setWorkItem] = useState(false);
+  const [hasWorkItem, setWorkItem] = useState(true);
   const [userId, setUserId] = useState("의문의 계정");
 
   return (
