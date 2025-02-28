@@ -4,7 +4,11 @@
   "settings": {
     "width": 3000,
     "height": 3000,
+<<<<<<< HEAD
     "scrollTop": 0,
+=======
+    "scrollTop": -1109.309,
+>>>>>>> origin/YJ
     "scrollLeft": -161,
     "zoomLevel": 0.8,
     "show": 422,
