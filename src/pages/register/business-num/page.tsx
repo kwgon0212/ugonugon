@@ -80,11 +80,14 @@ function RegisterBusinessPage() {
               </div>
             ))}
           </div>
-          <Link to="/register/info" className="w-full flex justify-center">
-            <button className="bg-[#0B798B]  text-white w-[362px] p-[12px] absolute bottom-[20px] rounded-[10px] text-[16px]  hover:bg-[#0e6977]">
-              다음
-            </button>
-          </Link>
+
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+            <Link to="/register/info" className="w-full flex justify-center">
+              <button className="bg-main-color text-white w-full p-[12px] rounded-[10px] text-[16px] hover:bg-[#0e6977]">
+                다음
+              </button>
+            </Link>
+          </div>
         </div>
       </Main>
     </>

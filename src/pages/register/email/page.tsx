@@ -39,25 +39,27 @@ function RegisterEmailPage() {
           {/* <hr /> */}
         </div>
       </Header>
-      <Main hasBottomNav={true}>
-        <div className="w-full p-layout p-5 flex flex-col gap-layout divide-[#0b798b]">
-          <p className="font-semibold text-xl">이메일 인증</p>
-          <p className="text-main-darkGray">
-            원활한 서비스 이용을 위한
-            <br />
-            계정에 사용할 이메일 계정을 입력해주세요.
-          </p>
-          <InsertTextInput
-            type="text"
-            placeholder="이메일 계정"
-            className="w-full h-[50px] bg-white rounded-[10%]"
-          />
-        </div>
+      <Main hasBottomNav={false}>
+        <>
+          <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+            <p className="font-semibold text-xl">이메일 인증</p>
+            <p className="text-main-darkGray">
+              원활한 서비스 이용을 위한
+              <br />
+              계정에 사용할 이메일 계정을 입력해주세요.
+            </p>
+            <InsertTextInput
+              type="text"
+              placeholder="이메일 계정"
+              className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
+            />
+          </div>
+
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+            <BottomButton>인증번호 전송</BottomButton>
+          </div>
+        </>
       </Main>
-      <BottomNav />
-      {/* <div className="pb-15 px-5">
-          <BottomButton>인증번호 전송</BottomButton>
-        </div> */}
     </>
   );
 }

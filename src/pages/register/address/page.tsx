@@ -44,7 +44,7 @@ const NextButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 362px;
+  width: 100%;
   height: 50px;
   border-radius: 10px;
   color: white;
@@ -91,43 +91,47 @@ export function RegisterAddressPage() {
         <div className="flex flex-col items-center w-full h-full">
           <Head>주소지 등록</Head>
           {/* 우편번호 + 주소검색 버튼 */}
-          <div className="flex flex-row w-full justify-around mb-[20px]">
+          <div className="w-full px-[20px]">
+            <div className="flex flex-row gap-[20px] w-full mb-[20px]">
+              <input
+                type="text"
+                placeholder="우편번호"
+                value={postcode}
+                className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray outline-main-color"
+              ></input>
+              <FindBtn
+                type="button"
+                onClick={handleOpenPostcodePopup}
+                className="bg-main-color"
+              >
+                주소검색
+              </FindBtn>
+            </div>
+            {/* 주소 + 상세주소 */}
             <input
               type="text"
-              placeholder="우편번호"
-              value={postcode}
-              className="flex W-[202px] h-[50px] pl-3 rounded-[10px] border-main-bg focus:border-main-color"
+              placeholder="주소"
+              value={address}
+              readOnly
+              className="flex w-full h-[50px] mb-[20px] pl-3 rounded-[10px] border border-main-gray outline-main-color"
             ></input>
-            <FindBtn
-              type="button"
-              onClick={handleOpenPostcodePopup}
-              className="bg-main-color"
-            >
-              주소검색
-            </FindBtn>
+            <input
+              type="text"
+              placeholder="상세주소"
+              value={detailAddress}
+              onChange={(e) => setDetailAddress(e.target.value)}
+              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray outline-main-color"
+            ></input>
           </div>
-          {/* 주소 + 상세주소 */}
-          <input
-            type="text"
-            placeholder="주소"
-            value={address}
-            readOnly
-            className="flex w-[362px] h-[50px] mb-[20px] pl-3 rounded-[10px]"
-          ></input>
-          <input
-            type="text"
-            placeholder="상세주소"
-            value={detailAddress}
-            onChange={(e) => setDetailAddress(e.target.value)}
-            className="flex w-[362px] h-[50px] pl-3 rounded-[10px]"
-          ></input>
 
-          <Link
-            to="/register/sign"
-            className="absolute bottom-[20px] rounded-[10px] bg-main-color"
-          >
-            <NextButton type="button">다음</NextButton>
-          </Link>
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+            <Link
+              to="/register/sign"
+              className="w-full rounded-[10px] bg-main-color"
+            >
+              <NextButton type="button">다음</NextButton>
+            </Link>
+          </div>
 
           {/* 주소 검색 팝업 */}
           {isPostcodeOpen && (

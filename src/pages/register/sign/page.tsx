@@ -50,12 +50,10 @@ const ClearButton = styled.button`
 `;
 
 const NextButton = styled.button`
-  position: absolute;
   display: flex;
-  bottom: 20px;
   justify-content: center;
   align-items: center;
-  width: 362px;
+  width: 100%;
   height: 50px;
   border-radius: 10px;
   color: white;
@@ -103,15 +101,14 @@ export const RegisterSignPage = () => {
         <>
           <Head>서명 등록</Head>
           <Container>
-            <div className="flex flex-col justify-items-center items-center w-full h-full mb-11">
+            <div className="flex flex-col justify-items-center items-center w-full h-full px-[20px] mb-11">
               <SignatureCanvas
                 ref={signaturePadRef}
                 penColor="black"
                 backgroundColor="white"
                 canvasProps={{
-                  width: 362,
-                  height: 220,
                   className: "signature-canvas flex",
+                  style: { width: "100%", height: "250px" },
                 }}
               />
               <ClearButton onClick={handleClearSignature}>
@@ -119,14 +116,16 @@ export const RegisterSignPage = () => {
               </ClearButton>
             </div>
 
-            <Link to="/register/bank-account" className=" w-full pl-3">
-              <NextButton
-                className="absolute bottom-[20px] bg-main-color"
-                onClick={handleSaveSignature}
-              >
-                다음
-              </NextButton>
-            </Link>
+            <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+              <Link to="/register/bank-account" className="w-full">
+                <NextButton
+                  className="bg-main-color"
+                  onClick={handleSaveSignature}
+                >
+                  다음
+                </NextButton>
+              </Link>
+            </div>
           </Container>
         </>
       </Main>

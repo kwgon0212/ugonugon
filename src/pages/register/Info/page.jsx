@@ -40,7 +40,7 @@ const Label = styled.p`
 `;
 // 입력 필드 스타일
 const StyledInput = styled.input`
-  width: 362px;
+  width: 100%;
   height: 50px;
   padding: 12px;
   border-radius: 10px;
@@ -83,7 +83,7 @@ const ResidentInput = styled(StyledInput)`
 `;
 // 제출 버튼 스타일
 const SubmitButton = styled.button`
-  width: 362px;
+  width: 100%;
   padding: 12px;
   font-size: 16px;
   border: none;
@@ -207,9 +207,13 @@ function RegisterInfoPage() {
             </FormContainer>
           </MainContainer>
           {/* 제출 버튼 */}
-          <Link to="/register/address" className="pl-3">
-            <SubmitButton className="sticky bottom-[10px] ">다음</SubmitButton>
-          </Link>
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+            <Link to="/register/address">
+              <SubmitButton className="sticky bottom-[10px] ">
+                다음
+              </SubmitButton>
+            </Link>
+          </div>
         </>
       </Main>
     </>

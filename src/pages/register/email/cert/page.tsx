@@ -43,27 +43,29 @@ function RegisterEmailCertPage() {
           {/* <hr /> */}
         </div>
       </Header>
-      <Main hasBottomNav={true}>
-        <div className="w-full p-layout p-5 flex flex-col gap-layout divide-[#0b798b]">
-          <p className="font-semibold text-xl text-center">인증번호 확인</p>
-          <form className="flex justify-center">
-            <CertificationInput autoFocus type="text" value="1" />
-            <CertificationInput type="text" />
-            <CertificationInput type="text" />
-            <CertificationInput type="text" />
-          </form>
-          <p className="font-semibold text-sm text-center">
-            아직 인증 번호를 받지 못하셨나요?
-          </p>
-          <a className="text-main-color text-xs text-center" href="#">
-            인증번호 재전송
-          </a>
-        </div>
+      <Main hasBottomNav={false}>
+        <>
+          <div className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+            <p className="font-semibold text-xl text-center">인증번호 확인</p>
+            <form className="flex justify-center">
+              <CertificationInput autoFocus type="text" value="1" />
+              <CertificationInput type="text" />
+              <CertificationInput type="text" />
+              <CertificationInput type="text" />
+            </form>
+            <p className="font-semibold text-sm text-center">
+              아직 인증 번호를 받지 못하셨나요?
+            </p>
+            <a className="text-main-color text-xs text-center" href="#">
+              인증번호 재전송
+            </a>
+          </div>
+
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+            <BottomButton>인증번호 전송</BottomButton>
+          </div>
+        </>
       </Main>
-      <BottomNav />
-      {/* <div className="pb-15 px-5">
-          <BottomButton>다음</BottomButton>
-        </div> */}
     </>
   );
 }

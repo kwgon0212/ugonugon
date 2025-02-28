@@ -82,7 +82,7 @@ const RegisterBankAccount = () => {
 
           {isOpenBottomSheet && (
             <Overlay
-              className={isOpenBottomSheet ? "active" : ""}
+              className={`${isOpenBottomSheet ? "active" : ""}`}
               onClick={() => setIsOpenBottomSheet(false)}
             >
               <Sheet
@@ -136,10 +136,10 @@ const slideUp = keyframes`
 `;
 
 const Overlay = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
