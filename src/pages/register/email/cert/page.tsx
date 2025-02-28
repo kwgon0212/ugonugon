@@ -15,7 +15,6 @@ const CertificationInput = styled.input`
   color: #1f2024;
   /* form의 padding으로 해결 못하여 input에 margin 설정 */
   margin: 0 4px;
-  caret-color: #0b798b;
 
   &:focus {
     border: 1px solid #0b798b;
