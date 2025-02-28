@@ -22,7 +22,7 @@ const InsertTextInput = styled.input`
 
 const BottomButton = styled.button`
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -54,13 +54,11 @@ function RegisterEmailPage() {
           <InsertTextInput
             type="email"
             placeholder="이메일 계정"
-            className="w-full h-[50px] bg-white rounded-[10%]"
+            className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
             pattern="[\w]+@+[\w]+\.[\w]+"
             required
           />
-          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
-            <BottomButton>인증번호 전송</BottomButton>
-          </div>
+          <BottomButton>인증번호 전송</BottomButton>
         </form>
       </Main>
     </>
