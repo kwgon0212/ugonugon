@@ -18,6 +18,7 @@ import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
 import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import { AnimatePresence } from "framer-motion";
+import RegisterSuccess from "./pages/register/success/page";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Route path="user-account" element={<RegisterUserAccount />} />
                 <Route path="info" element={<RegisterInfoPage />} />
                 <Route path="business-num" element={<RegisterBusinessPage />} />
+                <Route path="success" element={<RegisterSuccess />} />
               </Route>
               <Route path="/recruit" element={<ReCruitPage />} />
               <Route path="/map" element={<MapPage />} />
