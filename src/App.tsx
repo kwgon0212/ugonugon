@@ -20,7 +20,7 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import { AnimatePresence } from "framer-motion";
 import RegisterSuccess from "./pages/register/success/page";
-
+import ReCruitManagePage from "./pages/recruit/manage/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -42,7 +42,10 @@ function App() {
                 <Route path="business-num" element={<RegisterBusinessPage />} />
                 <Route path="success" element={<RegisterSuccess />} />
               </Route>
+
               <Route path="/recruit" element={<ReCruitPage />} />
+              <Route path="/recruit/manage" element={<ReCruitManagePage />} />
+
               <Route path="/map" element={<MapPage />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/notice">
