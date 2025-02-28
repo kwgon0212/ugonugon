@@ -17,7 +17,7 @@ import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
 import RegisterInfoPage from "./pages/register/Info/page.jsx";
-
+import ChatPage from "./pages/chat/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -39,6 +39,8 @@ function App() {
             </Route>
             <Route path="/recruit" element={<ReCruitPage />} />
             <Route path="/map" element={<MapPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+
             <Route path="/notice">
               <Route path=":id" element={<NoticeDetailPage />} />
               <Route path="list" element={<NoticeListPage />} />
