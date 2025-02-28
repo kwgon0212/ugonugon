@@ -5,12 +5,6 @@ import styled from "styled-components";
 import Header from "../../components/Header";
 import Main from "../../components/Main";
 import BottomNav from "../../components/BottomNav";
-
-import ChatIcon from "../../components/icons/bottomNav/Chat";
-import EmployIcon from "../../components/icons/bottomNav/Employ";
-import HomeIcon from "../../components/icons/bottomNav/Home";
-import UserIcon from "../../components/icons/bottomNav/User";
-import WorkIcon from "../../components/icons/bottomNav/Work";
 import Check from "../../components/icons/Check";
 
 import ListItem from "../work/ListItem";
@@ -46,7 +40,6 @@ const NavBtn = styled.div`
 `;
 
 export function WorkPage() {
-  const location = useLocation();
   const [hasWorkItem, setWorkItem] = useState(true);
 
   const [userId, setUserId] = useState("의문의 계정");
