@@ -58,7 +58,7 @@ function RegisterBusinessPage() {
                   placeholder="'-'를 제외하고 입력해주세요"
                   className="border border-white rounded-[10px] px-3 py-2 w-full focus:border-[#0B798B] focus:border-2 focus:outline-none"
                   value={number}
-                  onChange={() => handleNumericInput(index)}
+                  onChange={handleNumericInput(index)}
                   maxLength={10}
                 />
 
