@@ -96,9 +96,7 @@ const MyPage = () => {
           </div>
         </div>
       </Main>
-      <BottomNav>
-        <></>
-      </BottomNav>
+      <BottomNav />
     </>
   );
 };

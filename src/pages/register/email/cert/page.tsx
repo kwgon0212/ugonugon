@@ -60,11 +60,10 @@ function RegisterEmailCertPage() {
           </a>
         </div>
       </Main>
-      <BottomNav>
-        <div className="pb-15 px-5">
+      <BottomNav />
+      {/* <div className="pb-15 px-5">
           <BottomButton>다음</BottomButton>
-        </div>
-      </BottomNav>
+        </div> */}
     </>
   );
 }

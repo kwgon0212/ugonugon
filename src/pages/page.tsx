@@ -193,9 +193,7 @@ const RootPage = () => {
           </div>
         </div>
       </Main>
-      <BottomNav>
-        <></>
-      </BottomNav>
+      <BottomNav />
     </>
   );
 };

@@ -54,11 +54,10 @@ function RegisterEmailPage() {
           />
         </div>
       </Main>
-      <BottomNav>
-        <div className="pb-15 px-5">
+      <BottomNav />
+      {/* <div className="pb-15 px-5">
           <BottomButton>인증번호 전송</BottomButton>
-        </div>
-      </BottomNav>
+        </div> */}
     </>
   );
 }

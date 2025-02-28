@@ -44,37 +44,7 @@ export function NoticeListPage() {
       <Main hasBottomNav={true}>
         <Body></Body>
       </Main>
-      <BottomNav>
-        <div className="flex flex-row justify-around items-center w-full h-full">
-          <NavBtn>
-            <ChatIcon color="#717171" />
-            채팅
-          </NavBtn>
-          <NavBtn
-            style={{
-              color:
-                location.pathname === "/notice/list" ? "#0B798B" : "#717171", // 경로가 검색 페이지일 때만 색상 변경
-            }}
-          >
-            <EmployIcon
-              color={
-                location.pathname === "/notice/list" ? "#0B798B" : "#717171"
-              }
-            />
-            검색
-          </NavBtn>
-          <NavBtn>
-            <HomeIcon color="#717171" />홈
-          </NavBtn>
-          <NavBtn>
-            <WorkIcon color="#717171" />
-            근무 현황
-          </NavBtn>
-          <NavBtn>
-            <UserIcon color="#717171" />내 정보
-          </NavBtn>
-        </div>
-      </BottomNav>
+      <BottomNav />
     </>
   );
 }
