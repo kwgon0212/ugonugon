@@ -1,17 +1,23 @@
-import React from "react";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import SearchIcon from "../../../components/icons/Search";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
+import BottomNav from "@/components/BottomNav";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import SearchIcon from "@/components/icons/Search";
+import PinLocationIcon from "@/components/icons/PinLocation";
+import ArrowDownIcon from "@/components/icons/ArrowDown";
 
 interface InputProps {
   padding?: string;
 }
+interface ButtonProps {
+  bottom?: string;
+}
 
-const BottomButton = styled.button`
+const BottomButton = styled.button<ButtonProps>`
   position: absolute;
-  bottom: 60px;
+  bottom: ${(props) => props.bottom || "60px"};
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -23,8 +29,8 @@ const BottomButton = styled.button`
 `;
 
 const InsertTextInput = styled.input<InputProps>`
-  width: ${(props) => props.height || "100%"};
-  height: ${(props) => props.width || "40px"};
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "40px"};
   background: white;
   border-radius: 10px;
   padding: ${(props) => props.padding || "0 20px"};
@@ -40,6 +46,27 @@ const InsertTextInput = styled.input<InputProps>`
   }
 `;
 
+const SelectBox = styled.select`
+  border: 1px solid #d9d9d9;
+  border-left: 0;
+  border-radius: 0 10px 10px 0;
+  padding-left: 20px;
+  width: 50%;
+  height: 40px;
+  font-size: 14px;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  outline: none;
+  color: #333;
+
+  &:focus {
+    border-color: #555;
+  }
+`;
+
 const Title = styled.p`
   position: absolute;
   left: 50%;
@@ -48,43 +75,428 @@ const Title = styled.p`
   font-size: 16px;
 `;
 
+const SubTitle = styled.label`
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: -10px;
+`;
+
+type Location = {
+  [key: string]: string[];
+};
+
 function NoticeSearch() {
+  const [search, setSearch] = useState<string>("");
+  const [sido, setSido] = useState<string>("전체");
+  const [sigungu, setSigungu] = useState<string>("전체");
+  const [jobType, setJobType] = useState<string>("");
+  const [payType, setPayType] = useState<string>("");
+
+  const locations: Location = {
+    전체: ["지역 전체"],
+    서울: [
+      "서울 전체",
+      "종로구",
+      "중구",
+      "용산구",
+      "성동구",
+      "광진구",
+      "동대문구",
+      "중랑구",
+      "성북구",
+      "강북구",
+      "도봉구",
+      "노원구",
+      "은평구",
+      "서대문구",
+      "마포구",
+      "양천구",
+      "강서구",
+      "구로구",
+      "금천구",
+    ],
+    부산: [
+      "부산 전체",
+      "중구",
+      "서구",
+      "서구",
+      "동구",
+      "동구",
+      "영도구",
+      "영도구",
+      "부산진구",
+      "부산진구",
+      "동래구",
+      "동래구",
+      "남구",
+      "남구",
+      "북구",
+      "북구",
+      "해운대구",
+      "해운대구",
+      "사하구",
+      "사하구",
+      "금정구",
+      "금정구",
+      "강서구",
+      "강서구",
+      "연제구",
+      "시청 연제구",
+      "수영구",
+      "수영구",
+      "사상구",
+      "사상구",
+      "자치군",
+      "기장군",
+      "기장군",
+    ],
+    대구: [
+      "대구 전체",
+      "중구",
+      "동구",
+      "서구",
+      "남구",
+      "북구",
+      "수성구",
+      "달서구",
+      "달성군",
+      "군위군",
+    ],
+    인천: [
+      "인천 전체",
+      "강화군",
+      "옹진군",
+      "중구",
+      "동구",
+      "미추홀구",
+      "연수구",
+      "남동구",
+      "부평구",
+      "계양구",
+      "서구",
+    ],
+    광주: ["광주 전체", "동구", "서구", "남구", "북구", "광산구"],
+    대전: ["대전 전체", "동구", "중구", "서구", "유성구", "대덕구"],
+    울산: ["울산 전체", "중구", "남구", "동구", "북구", "울주군"],
+    세종: ["세종 전체"],
+    경기: [
+      "경기 전체",
+      "수원시",
+      "고양시",
+      "용인시",
+      "성남시",
+      "부천시",
+      "화성시",
+      "안산시",
+      "남양주시",
+      "안양시",
+      "평택시",
+      "시흥시",
+      "파주시",
+      "의정부시",
+      "김포시",
+      "광주시",
+      "광명시",
+      "군포시",
+      "하남시",
+      "오산시",
+      "양주시",
+      "이천시",
+      "구리시",
+      "안성시",
+      "포천시",
+      "의왕시",
+      "양평군",
+      "여주시",
+      "동두천시",
+      "과천시",
+      "가평군",
+      "연천군",
+    ],
+    강원: [
+      "강원 전체",
+      "춘천시",
+      "원주시",
+      "강릉시",
+      "동해시",
+      "태백시",
+      "속초시",
+      "삼척시",
+      "홍천군",
+      "횡성군",
+      "영월군",
+      "평창군",
+      "정선군",
+      "철원군",
+      "화천군",
+      "양구군",
+      "인제군",
+      "고성군",
+      "양양군",
+    ],
+    충북: [
+      "충북 전체",
+      "청주시",
+      "충주시",
+      "제천시",
+      "보은군",
+      "옥천군",
+      "영동군",
+      "증평군",
+      "진천군",
+      "괴산군",
+      "음성군",
+      "단양군",
+    ],
+    충남: [
+      "충남 전체",
+      "천안시",
+      "공주시",
+      "보령시",
+      "아산시",
+      "서산시",
+      "논산시",
+      "계룡시",
+      "당진시",
+      "금산군",
+      "부여군",
+      "서천군",
+      "청양군",
+      "홍성군",
+      "예산군",
+      "태안군",
+    ],
+    전북: [
+      "전북 전체",
+      "전주시",
+      "군산시",
+      "익산시",
+      "정읍시",
+      "남원시",
+      "김제시",
+      "완주군",
+      "진안군",
+      "무주군",
+      "장수군",
+      "임실군",
+      "순창군",
+      "고창군",
+      "부안군",
+    ],
+    전남: [
+      "전남 전체",
+      "목포시",
+      "여수시",
+      "순천시",
+      "나주시",
+      "광양시",
+      "담양군",
+      "곡성군",
+      "구례군",
+      "고흥군",
+      "보성군",
+      "화순군",
+      "장흥군",
+      "강진군",
+      "해남군",
+      "영암군",
+      "무안군",
+      "함평군",
+      "영광군",
+      "장성군",
+      "완도군",
+      "진도군",
+      "신안군",
+    ],
+    경북: [
+      "경북 전체",
+      "포항시",
+      "경주시",
+      "김천시",
+      "안동시",
+      "구미시",
+      "영주시",
+      "영천시",
+      "상주시",
+      "문경시",
+      "경산시",
+      "의성군",
+      "청송군",
+      "영양군",
+      "영덕군",
+      "청도군",
+      "고령군",
+      "성주군",
+      "칠곡군",
+      "예천군",
+      "봉화군",
+      "울진군",
+      "울릉군",
+    ],
+    경남: [
+      "경남 전체",
+      "창원시",
+      "진주시",
+      "통영시",
+      "사천시",
+      "김해시",
+      "밀양시",
+      "거제시",
+      "양산시",
+      "의령군",
+      "함안군",
+      "창녕군",
+      "고성군",
+      "남해군",
+      "하동군",
+      "산청군",
+      "함양군",
+      "거창군",
+      "합천군",
+    ],
+    제주: ["제주 전체", "제주시", "서귀포시"],
+  };
+  const jobTypes = [
+    "직종 전체",
+    "관리자",
+    "전문가 및 관련 종사자",
+    "사무 종사자",
+    "서비스 종사자",
+    "판매 종사자",
+    "농림어업 숙련 종사자",
+    "기능원 및 관련 기능 종사자",
+    "장치ㆍ기계 조작 및 조립 종사자",
+    "단순 노무 종사자",
+    "군인",
+  ];
+  const payTypes = ["시급", "일급", "주급", "월급", "총 급여"];
+
   return (
     <>
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} color="black" />
+          <ArrowLeftIcon width={24} height={24} />
           <Title>공고 검색</Title>
         </div>
       </Header>
-      <Main hasBottomNav={false}>
+      <Main hasBottomNav={true}>
         <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
-          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden h-10">
-            <button className="px-[15px] bg-white h-full">
+          <div className="relative">
+            <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
               <SearchIcon />
-            </button>
+            </p>
             <InsertTextInput
-              type="email"
-              placeholder="이메일 계정"
-              //   padding="0 50px"
-              pattern="[\w]+@+[\w]+\.[\w]+"
+              type="text"
+              placeholder="원하는 정보를 검색해주세요"
+              padding="0 50px"
+              onChange={(e) => setSearch(e.target.value)}
               required
             />
           </div>
-          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <input
-              type="text"
-              placeholder="검색..."
-              className="w-full px-4 py-2 focus:outline-none"
-            />
-            <button className="px-3 bg-gray-100 hover:bg-gray-200">
-              <SearchIcon />
-            </button>
+          <hr />
+          <SubTitle>지역 / 동네</SubTitle>
+          <div className="flex w-full relative">
+            <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
+              <PinLocationIcon />
+            </p>
+            <select
+              id="dropdown"
+              onChange={(e) => setSido(e.target.value)}
+              className="rounded-l-[10px] pl-[45px] w-1/2 h-10 text-sm border border-main-gray appearance-none"
+              style={{
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 10px center",
+                backgroundSize: "20px",
+              }}
+            >
+              {Object.keys(locations).map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <select
+              id="dropdown"
+              onChange={(e) => setSigungu(e.target.value)}
+              className="rounded-r-[10px] pl-5 w-1/2 h-10 text-sm border border-main-gray border-l-0  appearance-none relative"
+              style={{
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 10px center",
+                backgroundSize: "20px",
+              }}
+            >
+              <option
+                className="text-main-gray"
+                style={{ color: "#d9d9d9" }}
+                key={locations[sido].length + 1}
+                value=""
+                disabled
+                selected
+              >
+                지역 선택
+              </option>
+              {locations[sido].map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
           </div>
-
-          <BottomButton>이력서 등록</BottomButton>
+          <SubTitle>직종</SubTitle>
+          <div className="flex w-full relative">
+            <select
+              id="dropdown"
+              onChange={(e) => setJobType(e.target.value)}
+              className="rounded-[10px] px-5 w-full h-10 text-sm border border-main-gray appearance-none"
+              style={{
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 10px center",
+                backgroundSize: "20px",
+              }}
+            >
+              {jobTypes.map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
+          <SubTitle>급여</SubTitle>
+          <div className="flex w-full relative">
+            <select
+              id="dropdown"
+              onChange={(e) => setPayType(e.target.value)}
+              className="rounded-[10px] px-5 mr-[10px] w-[30%] h-10 text-sm border border-main-gray appearance-none"
+              style={{
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 10px center",
+                backgroundSize: "20px",
+              }}
+            >
+              {payTypes.map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <InsertTextInput
+              type="text"
+              width="70%"
+              value={10030}
+              onChange={(e) => setSearch(e.target.value)}
+              required
+            />
+          </div>
+          <BottomButton bottom="31px">검색 결과 보기</BottomButton>
         </form>
       </Main>
+      <BottomNav>
+        <></>
+      </BottomNav>
     </>
   );
 }
