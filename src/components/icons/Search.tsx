@@ -3,7 +3,7 @@ import IconOptions from "../../types/IconOptions";
 const SearchIcon = ({
   width = 20,
   height = 20,
-  color = "#0B798B",
+  color = "#717171",
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

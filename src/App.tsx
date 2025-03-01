@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
+import NoticeSearch from "./pages/notice/search/page";
 import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
 import RegisterSign from "./pages/register/sign/page";
@@ -28,32 +29,29 @@ function App() {
         <Aside />
         {/* 모바일 레이아웃 */}
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
-          <AnimatePresence>
-            <Routes>
-              <Route path="/" element={<RootPage />} />
-              <Route path="/register">
-                <Route path="sign" element={<RegisterSign />} />
-                <Route path="address" element={<RegisterAddress />} />
-                <Route path="email" element={<RegisterEmailPage />} />
-                <Route path="email/cert" element={<RegisterEmailCertPage />} />
-                <Route path="bank-account" element={<RegisterBankAccount />} />
-                <Route path="user-account" element={<RegisterUserAccount />} />
-                <Route path="info" element={<RegisterInfoPage />} />
-                <Route path="business-num" element={<RegisterBusinessPage />} />
-                <Route path="success" element={<RegisterSuccess />} />
-              </Route>
-              <Route path="/recruit" element={<ReCruitPage />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/notice">
-                <Route path=":id" element={<NoticeDetailPage />} />
-                <Route path="list" element={<NoticeListPage />} />
-              </Route>
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/work" element={<WorkPage />} />
-            </Routes>
-          </AnimatePresence>
+          <Routes>
+            <Route path="/" element={<RootPage />} />
+            <Route path="/register">
+              <Route path="sign" element={<RegisterSign />} />
+              <Route path="address" element={<RegisterAddress />} />
+              <Route path="email" element={<RegisterEmailPage />} />
+              <Route path="email/cert" element={<RegisterEmailCertPage />} />
+              <Route path="bank-account" element={<RegisterBankAccount />} />
+              <Route path="user-account" element={<RegisterUserAccount />} />
+              <Route path="info" element={<RegisterInfoPage />} />
+              <Route path="business-num" element={<RegisterBusinessPage />} />
+            </Route>
+            <Route path="/recruit" element={<ReCruitPage />} />
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/notice">
+              <Route path="search" element={<NoticeSearch />} />
+              <Route path=":id" element={<NoticeDetailPage />} />
+              <Route path="list" element={<NoticeListPage />} />
+            </Route>
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/work" element={<WorkPage />} />
+          </Routes>
         </div>
       </div>
     </div>
