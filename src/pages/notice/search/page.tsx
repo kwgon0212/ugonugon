@@ -8,7 +8,9 @@ import SearchIcon from "@/components/icons/Search";
 import PinLocationIcon from "@/components/icons/PinLocation";
 import CalendarIcon from "@/components/icons/Calendar";
 import DatePicker from "react-datepicker";
+import { ko } from "date-fns/locale/ko";
 import "react-datepicker/dist/react-datepicker.css";
+import "./datePicker.css";
 
 interface Props {
   width?: string;
@@ -16,8 +18,6 @@ interface Props {
   padding?: string;
   bottom?: string;
   radius?: string;
-  bgSize?: string;
-  bWidth?: string;
 }
 
 type ObjType = {
@@ -56,13 +56,10 @@ const InsertTextInput = styled.input<Props>`
   }
 `;
 
-const SelectBox = styled.select.withConfig({
-  shouldForwardProp: (prop) => prop !== "bWidth", // bWidth는 DOM으로 전달되지 않도록 필터링
-})<Props>`
+const SelectBox = styled.select<Props>`
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "40px"};
-  border: solid #d9d9d9;
-  border-width: ${(props) => props.bWidth || "1px"};
+  border: 1px solid #d9d9d9;
   border-radius: ${(props) => props.radius || "10px"};
   padding: ${(props) => props.padding || "0 20px"};
   font-size: 14px;
@@ -70,11 +67,12 @@ const SelectBox = styled.select.withConfig({
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
   background-repeat: no-repeat;
   background-position: right 10px center;
-  background-size: ${(props) => props.bgSize || "20px"};
+  background-size: 20px;
   outline: none;
 
   &:focus {
     border: 1px solid #0b798b;
+    z-index: 1;
   }
 `;
 
@@ -426,7 +424,7 @@ function NoticeSearchPage() {
               <PinLocationIcon />
             </p>
             <SelectBox
-              id="dropdown"
+              className="mr-[-0.5px]"
               onChange={(e) => setSido(e.target.value)}
               width="50%"
               padding="0 0 0 45px"
@@ -439,11 +437,10 @@ function NoticeSearchPage() {
               ))}
             </SelectBox>
             <SelectBox
-              id="dropdown"
+              className="ml-[-0.5px]"
               onChange={(e) => setSigungu(e.target.value)}
               width="50%"
               radius="0 10px 10px 0"
-              bWidth="1px 1px 1px 0"
             >
               {locations[sido].map((value, index) => (
                 <option key={index} value={value}>
@@ -506,46 +503,112 @@ function NoticeSearchPage() {
             ))}
           </ul>
           <SubTitle>근무 기간</SubTitle>
-          <div className="w-full h-10 flex">
-            {/* <CalendarIcon /> */}
-            {/* <DatePicker
-              showIcon
-              toggleCalendarOnIconClick
-              icon={<CalendarIcon />}
-              placeholderText="시작 날짜"
-              className="h-full"
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              dateFormat="yyyy-MM-dd"
-            /> */}
-
+          <div className="w-full h-10 flex relative">
             <DatePicker
-              className="w-full p-0"
+              locale={ko}
               showIcon
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="20px"
+                  height="20px"
+                  color="#d9d9d9"
+                  fill="none"
+                  style={{
+                    padding: "10px 0 10px 15px",
+                    width: "20px",
+                    height: "20px",
+                  }}
+                >
+                  <path
+                    d="M18 2V4M6 2V4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  <path
+                    d="M3 8H21"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
               toggleCalendarOnIconClick
               dateFormat="yyyy-MM-dd"
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
               startDate={startDate}
               endDate={endDate}
+              popperPlacement="bottom-start"
+              fixedHeight
+              selectsStart
+              className="left-wrapper"
               minDate={new Date()}
-              // disabledKeyboardNavigation
-              showDisabledMonthNavigation
-              placeholderText="시작 날짜"
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
             />
             <DatePicker
-              className="w-full border-main-color"
+              locale={ko}
               showIcon
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="20px"
+                  height="20px"
+                  color="#d9d9d9"
+                  fill="none"
+                  style={{
+                    padding: "10px 0 10px 15px",
+                    width: "20px",
+                    height: "20px",
+                  }}
+                >
+                  <path
+                    d="M18 2V4M6 2V4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  <path
+                    d="M3 8H21"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              }
               toggleCalendarOnIconClick
               dateFormat="yyyy-MM-dd"
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
               startDate={startDate}
               endDate={endDate}
+              popperPlacement="bottom-start"
+              fixedHeight
+              selectsEnd
+              className="right-wrapper"
               minDate={startDate ?? undefined}
-              showDisabledMonthNavigation
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
             />
           </div>
           <BottomButton bottom="31px">검색 결과 보기</BottomButton>
