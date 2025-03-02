@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --main-color: #0b798b;
+  --main-bg: #f7f7f9;
+  --main-gray: #d9d9d9;
+  --main-darkGray: #717171;
+  --warn: #ff0000;
+  --selected-box: #d7f6f6;
+  --selected-text: #1d7887;
+  --spacing-layout: 20px;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* 크롬, 사파리, 엣지 */
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}

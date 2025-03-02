@@ -1,8 +1,8 @@
 import IconOptions from "../../types/IconOptions";
 
 const ArrowLeftIcon = ({
-  width = 20,
-  height = 20,
+  width = 24,
+  height = 24,
   color = "#0B798B",
 }: IconOptions) => (
   <svg

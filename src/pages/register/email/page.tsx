@@ -1,9 +1,10 @@
+import BottomNav from "@/components/BottomNav";
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
 import React from "react";
 import styled from "styled-components";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
 
 const InsertTextInput = styled.input`
   width: 100%;
@@ -21,7 +22,7 @@ const InsertTextInput = styled.input`
 
 const BottomButton = styled.button`
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -53,7 +54,7 @@ function RegisterEmailPage() {
           <InsertTextInput
             type="email"
             placeholder="이메일 계정"
-            className="w-full h-[50px] bg-white rounded-[10%]"
+            className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
             pattern="[\w]+@+[\w]+\.[\w]+"
             required
           />

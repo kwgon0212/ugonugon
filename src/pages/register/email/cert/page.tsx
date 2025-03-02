@@ -1,9 +1,9 @@
+import Header from "@/components/Header";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import CancelIcon from "@/components/icons/Cancel";
+import Main from "@/components/Main";
 import React, { useState } from "react";
 import styled from "styled-components";
-import Header from "../../../../components/Header";
-import Main from "../../../../components/Main";
-import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../../components/icons/Cancel";
 
 const CertificationInput = styled.input`
   width: 48px;
@@ -15,7 +15,6 @@ const CertificationInput = styled.input`
   color: #1f2024;
   /* form의 padding으로 해결 못하여 input에 margin 설정 */
   margin: 0 4px;
-  caret-color: #0b798b;
 
   &:focus {
     border: 1px solid #0b798b;
@@ -25,7 +24,7 @@ const CertificationInput = styled.input`
 
 const BottomButton = styled.button`
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -49,19 +48,22 @@ function RegisterEmailCertPage() {
     }
   };
 
-  // const handleKeyDown = (event: any, index: number) => {
-  //   console.log([...nums]);
-  //   if (event.key === "Backspace" || event.key === "Delete")
-  //     if (index !== 0 && Number(nums[index]) < 10) {
-  //       document.getElementsByTagName("input")[index - 1].focus();
+  const handleKeyUp = (event: any, index: number) => {
+    if (event.key === "Backspace" || event.key === "Delete")
+      if (index !== 0 && nums[index] === "") {
+        const newNums = [...nums];
+        newNums[index] = "";
+        event.target.value = "";
+        document.getElementsByTagName("input")[index - 1].focus();
+      }
+  };
 
-  //       const newNums = [...nums];
-  //       newNums[index] = "";
-
-  //       event.target.value = "";
-  //       setNums(newNums.slice(0, 4));
-  //     }
-  // };
+  const handleKeyDown = (event: any, index: number) => {
+    if (!["Backspace", "Delete", "Tab", "Shift"].includes(event.key))
+      if (index !== 3 && nums[index] !== "") {
+        document.getElementsByTagName("input")[index + 1].focus();
+      }
+  };
 
   return (
     <>
@@ -84,7 +86,8 @@ function RegisterEmailCertPage() {
                 pattern="\d"
                 required
                 onChange={(event) => handleNums(event, index)}
-                // onKeyDown={(event) => handleKeyDown(event, index)}
+                onKeyUp={(event) => handleKeyUp(event, index)}
+                onKeyDown={(event) => handleKeyDown(event, index)}
               />
             ))}
           </div>
@@ -95,7 +98,6 @@ function RegisterEmailCertPage() {
             인증번호 재전송
           </a>
           <BottomButton>인증번호 전송</BottomButton>
-          {/* <BottomButton>인증번호 전송</BottomButton> */}
         </form>
       </Main>
     </>
