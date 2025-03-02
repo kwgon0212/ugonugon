@@ -29,29 +29,6 @@ function App() {
         <Aside />
         {/* 모바일 레이아웃 */}
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
-          <Routes>
-            <Route path="/" element={<RootPage />} />
-            <Route path="/register">
-              <Route path="sign" element={<RegisterSign />} />
-              <Route path="address" element={<RegisterAddress />} />
-              <Route path="email" element={<RegisterEmailPage />} />
-              <Route path="email/cert" element={<RegisterEmailCertPage />} />
-              <Route path="bank-account" element={<RegisterBankAccount />} />
-              <Route path="user-account" element={<RegisterUserAccount />} />
-              <Route path="info" element={<RegisterInfoPage />} />
-              <Route path="business-num" element={<RegisterBusinessPage />} />
-            </Route>
-            <Route path="/recruit" element={<ReCruitPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/notice">
-              <Route path="search" element={<NoticeSearch />} />
-              <Route path=":id" element={<NoticeDetailPage />} />
-              <Route path="list" element={<NoticeListPage />} />
-            </Route>
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/work" element={<WorkPage />} />
-          </Routes>
           <AnimatePresence>
             <Routes>
               <Route path="/" element={<RootPage />} />
@@ -70,6 +47,7 @@ function App() {
               <Route path="/map" element={<MapPage />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/notice">
+                <Route path="search" element={<NoticeSearch />} />
                 <Route path=":id" element={<NoticeDetailPage />} />
                 <Route path="list" element={<NoticeListPage />} />
               </Route>
