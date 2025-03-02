@@ -41,9 +41,11 @@ function App() {
               <Route path="user-account" element={<RegisterUserAccount />} />
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
+              <Route path="business-num" element={<RegisterSuccess />} />
             </Route>
             <Route path="/recruit" element={<ReCruitPage />} />
             <Route path="/map" element={<MapPage />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/notice">
               <Route index element={<NotFound />} />
               <Route path="search" element={<NoticeSearch />} />
