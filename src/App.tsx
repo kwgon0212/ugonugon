@@ -19,8 +19,8 @@ import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
 import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
-import { AnimatePresence } from "framer-motion";
 import RegisterSuccess from "./pages/register/success/page";
+import NotFound from "./NotFound";
 
 function App() {
   return (
@@ -29,33 +29,32 @@ function App() {
         <Aside />
         {/* 모바일 레이아웃 */}
         <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
-          <AnimatePresence>
-            <Routes>
-              <Route path="/" element={<RootPage />} />
-              <Route path="/register">
-                <Route path="sign" element={<RegisterSign />} />
-                <Route path="address" element={<RegisterAddress />} />
-                <Route path="email" element={<RegisterEmailPage />} />
-                <Route path="email/cert" element={<RegisterEmailCertPage />} />
-                <Route path="bank-account" element={<RegisterBankAccount />} />
-                <Route path="user-account" element={<RegisterUserAccount />} />
-                <Route path="info" element={<RegisterInfoPage />} />
-                <Route path="business-num" element={<RegisterBusinessPage />} />
-                <Route path="success" element={<RegisterSuccess />} />
-              </Route>
-              <Route path="/recruit" element={<ReCruitPage />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/notice">
-                <Route path="search" element={<NoticeSearch />} />
-                <Route path=":id" element={<NoticeDetailPage />} />
-                <Route path="list" element={<NoticeListPage />} />
-              </Route>
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/work" element={<WorkPage />} />
-            </Routes>
-          </AnimatePresence>
+          <Routes>
+            <Route path="/" element={<RootPage />} />
+            <Route path="/register">
+              <Route index element={<NotFound />} />
+              <Route path="sign" element={<RegisterSign />} />
+              <Route path="address" element={<RegisterAddress />} />
+              <Route path="email" element={<RegisterEmailPage />} />
+              <Route path="email/cert" element={<RegisterEmailCertPage />} />
+              <Route path="bank-account" element={<RegisterBankAccount />} />
+              <Route path="user-account" element={<RegisterUserAccount />} />
+              <Route path="info" element={<RegisterInfoPage />} />
+              <Route path="business-num" element={<RegisterBusinessPage />} />
+            </Route>
+            <Route path="/recruit" element={<ReCruitPage />} />
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/notice">
+              <Route index element={<NotFound />} />
+              <Route path="search" element={<NoticeSearch />} />
+              <Route path=":id" element={<NoticeDetailPage />} />
+              <Route path="list" element={<NoticeListPage />} />
+            </Route>
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/work" element={<WorkPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </div>
       </div>
     </div>
