@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "@/components/Header";
 import Main from "@/components/Main";
@@ -6,7 +6,9 @@ import BottomNav from "@/components/BottomNav";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import SearchIcon from "@/components/icons/Search";
 import PinLocationIcon from "@/components/icons/PinLocation";
-import ArrowDownIcon from "@/components/icons/ArrowDown";
+import CalendarIcon from "@/components/icons/Calendar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Props {
   width?: string;
@@ -18,7 +20,9 @@ interface Props {
   bWidth?: string;
 }
 
-interface ButtonProps {}
+type ObjType = {
+  [key: string]: string | boolean;
+};
 
 const BottomButton = styled.button<Props>`
   position: absolute;
@@ -36,6 +40,7 @@ const BottomButton = styled.button<Props>`
 const InsertTextInput = styled.input<Props>`
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "40px"};
+  border: 1px solid #d9d9d9;
   background: white;
   border-radius: 10px;
   padding: ${(props) => props.padding || "0 20px"};
@@ -51,7 +56,9 @@ const InsertTextInput = styled.input<Props>`
   }
 `;
 
-const SelectBox = styled.select<Props>`
+const SelectBox = styled.select.withConfig({
+  shouldForwardProp: (prop) => prop !== "bWidth", // bWidth는 DOM으로 전달되지 않도록 필터링
+})<Props>`
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "40px"};
   border: solid #d9d9d9;
@@ -89,13 +96,27 @@ type Location = {
   [key: string]: string[];
 };
 
-function NoticeSearch() {
+function NoticeSearchPage() {
   const [search, setSearch] = useState<string>("");
   const [sido, setSido] = useState<string>("전체");
   const [sigungu, setSigungu] = useState<string>("전체");
   const [jobType, setJobType] = useState<string>("");
   const [payType, setPayType] = useState<string>("");
-  const [pay, setPay] = useState<number>(10030);
+  const [pay, setPay] = useState<number>(0);
+  const hireType: ObjType = { 일일: false, 단기: false, 장기: false };
+  const [startDate, setStartDate] = useState<Date | null>(new Date()); // 오늘 날짜
+  const [endDate, setEndDate] = useState<Date | null>(
+    new Date(new Date().setMonth(new Date().getMonth() + 1))
+  ); // 1개월 뒤 날짜
+
+  function handleClick(e: React.MouseEvent<HTMLLIElement>) {
+    "border-main-gray bg-white text-main-darkGray border-main-color bg-main-color text-white"
+      .split(" ")
+      .forEach((v) => {
+        e.currentTarget.classList.toggle(v);
+      });
+    hireType[e.currentTarget.innerText] = !hireType[e.currentTarget.innerText];
+  }
 
   const locations: Location = {
     전체: ["지역 전체"],
@@ -424,16 +445,6 @@ function NoticeSearch() {
               radius="0 10px 10px 0"
               bWidth="1px 1px 1px 0"
             >
-              <option
-                className="text-main-gray"
-                style={{ color: "#d9d9d9" }}
-                key={locations[sido].length + 1}
-                value=""
-                disabled
-                selected
-              >
-                선택
-              </option>
               {locations[sido].map((value, index) => (
                 <option key={index} value={value}>
                   {value}
@@ -442,18 +453,13 @@ function NoticeSearch() {
             </SelectBox>
           </div>
           <SubTitle>직종</SubTitle>
-          <div className="flex w-full relative">
-            <SelectBox
-              id="dropdown"
-              onChange={(e) => setJobType(e.target.value)}
-            >
-              {jobTypes.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </SelectBox>
-          </div>
+          <SelectBox onChange={(e) => setJobType(e.target.value)}>
+            {jobTypes.map((value, index) => (
+              <option key={index} value={value}>
+                {value}
+              </option>
+            ))}
+          </SelectBox>
           <SubTitle>급여</SubTitle>
           <div className="flex w-full relative">
             <SelectBox
@@ -468,13 +474,78 @@ function NoticeSearch() {
                 </option>
               ))}
             </SelectBox>
-            <InsertTextInput
-              type="number"
-              width="70%"
-              value={pay}
-              onChange={(e) => setPay(Number(e.target.value))}
-              min={10030}
-              required
+            <span className="w-[70%] relative">
+              <InsertTextInput
+                type="text"
+                padding="0 69px 0 20px"
+                value={pay}
+                onChange={(e) =>
+                  setPay(Number(e.target.value.replace(/[^\d]/g, "")))
+                }
+                onFocus={(e) => {
+                  e.target.value = pay === 0 ? "" : pay.toString();
+                }}
+                onBlur={(e) => (e.target.value = pay.toLocaleString())}
+                required
+              />
+              <span className="absolute right-[15px] text-main-darkGray top-1/2 -translate-y-1/2">
+                원 이상
+              </span>
+            </span>
+          </div>
+          <SubTitle>고용 형태</SubTitle>
+          <ul className="flex w-full gap-x-[5px] mb-[10px] h-10 list-none relative">
+            {Object.keys(hireType).map((value, index) => (
+              <li
+                key={index}
+                className="btn w-1/3 h-full text-sm border-main-gray bg-white rounded-[10px] text-main-darkGray"
+                onClick={handleClick}
+              >
+                {value}
+              </li>
+            ))}
+          </ul>
+          <SubTitle>근무 기간</SubTitle>
+          <div className="w-full h-10 flex">
+            {/* <CalendarIcon /> */}
+            {/* <DatePicker
+              showIcon
+              toggleCalendarOnIconClick
+              icon={<CalendarIcon />}
+              placeholderText="시작 날짜"
+              className="h-full"
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              dateFormat="yyyy-MM-dd"
+            /> */}
+
+            <DatePicker
+              className="w-full p-0"
+              showIcon
+              toggleCalendarOnIconClick
+              dateFormat="yyyy-MM-dd"
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              minDate={new Date()}
+              // disabledKeyboardNavigation
+              showDisabledMonthNavigation
+              placeholderText="시작 날짜"
+            />
+            <DatePicker
+              className="w-full border-main-color"
+              showIcon
+              toggleCalendarOnIconClick
+              dateFormat="yyyy-MM-dd"
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate ?? undefined}
+              showDisabledMonthNavigation
             />
           </div>
           <BottomButton bottom="31px">검색 결과 보기</BottomButton>
@@ -485,4 +556,4 @@ function NoticeSearch() {
   );
 }
 
-export default NoticeSearch;
+export default NoticeSearchPage;
