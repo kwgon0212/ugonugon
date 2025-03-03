@@ -4,7 +4,7 @@ import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
 import CancelIcon from "../../../components/icons/Cancel";
-import SuccessIcon from "../../../components/icons/SuccessIcon";
+import SuccessIcon from "../../../components/icons/Success";
 
 const BottomButton = styled.button`
   position: absolute;
