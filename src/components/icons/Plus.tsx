@@ -1,6 +1,6 @@
 import IconOptions from "../../types/IconOptions";
 
-const AddIcon = ({
+const PlusIcon = ({
   width = 20,
   height = 20,
   color = "#0B798B",
@@ -30,4 +30,4 @@ const AddIcon = ({
   </svg>
 );
 
-export default AddIcon;
+export default PlusIcon;
