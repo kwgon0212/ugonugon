@@ -8,7 +8,6 @@ import ChatIcon from "./icons/bottomNav/Chat";
 
 const BottomNav = () => {
   const startPathname = useLocation().pathname.split("/").splice(1);
-  console.log(startPathname);
 
   const mainColor = "#0B798B";
   const darkGrayColor = "#717171";
