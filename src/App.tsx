@@ -21,7 +21,8 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
-
+import MypageScrabPage from "./pages/mypage/scrab/page.jsx";
+import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -51,6 +52,9 @@ function App() {
               <Route path="list" element={<NoticeListPage />} />
             </Route>
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/scrab" element={<MypageScrabPage />} />
+            <Route path="/mypage/edit/info" element={<MyPageEditInfoPage />} />
+
             <Route path="/login" element={<LoginPage />} />
             <Route path="/work" element={<WorkPage />} />
             <Route path="*" element={<NotFound />} />
