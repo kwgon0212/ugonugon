@@ -21,7 +21,7 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
-import MypageResumeCreate from "./pages/mypage/resume/create/page";
+import MypageResumeAdd from "./pages/mypage/resume/add/page";
 
 function App() {
   return (
@@ -42,6 +42,7 @@ function App() {
               <Route path="user-account" element={<RegisterUserAccount />} />
               <Route path="info" element={<RegisterInfoPage />} />
               <Route path="business-num" element={<RegisterBusinessPage />} />
+              <Route path="success" element={<RegisterSuccess />} />
             </Route>
             <Route path="/recruit" element={<ReCruitPage />} />
             <Route path="/map" element={<MapPage />} />
@@ -51,21 +52,14 @@ function App() {
               <Route path=":id" element={<NoticeDetailPage />} />
               <Route path="list" element={<NoticeListPage />} />
             </Route>
-            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage">
+              <Route index element={<MyPage />} />
+              <Route path="resume/add" element={<MypageResumeAdd />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/work" element={<WorkPage />} />
             <Route path="*" element={<NotFound />} />
-            <Route
-              path="/register/bank-account"
-              element={<RegisterBankAccount />}
-            />
-            <Route path="/register/email" element={<RegisterEmailPage />} />
-            <Route
-              path="/register/email/cert"
-              element={<RegisterEmailCertPage />}
-            />
-            <Route path="/register/success" element={<RegisterSuccess />} />
-            <Route path="/mypage/resume/create" element={<RegisterSuccess />} />
           </Routes>
         </div>
       </div>
