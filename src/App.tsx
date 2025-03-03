@@ -23,6 +23,8 @@ import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
 import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
+import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
+import ChattingPage from "./pages/chat/chatting/page";
 
 function App() {
   return (
@@ -62,6 +64,12 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/work" element={<WorkPage />} />
             <Route path="*" element={<NotFound />} />
+            <Route
+              path="/mypage/edit/bank-account"
+              element={<EditBankAccountPage />}
+            />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/chat/:chatroomId" element={<ChattingPage />} />
           </Routes>
         </div>
       </div>
