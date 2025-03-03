@@ -6,6 +6,12 @@ import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
 import ProfileIcon from "@/components/icons/Profile";
 import CameraIcon from "@/components/icons/Camera";
 import PlusIcon from "@/components/icons/Plus";
+import MinusIcon from "@/components/icons/Minus";
+import DatePicker from "react-datepicker";
+import { ko } from "date-fns/locale/ko";
+import { format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
+import "@/css/datePicker.css";
 
 interface Props {
   width?: string;
@@ -24,17 +30,36 @@ const Title = styled.p`
   font-size: 16px;
 `;
 
-const InsertTextarea = styled.textarea<Props>`
+const InsertTextInput = styled.input<Props>`
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "40px"};
   border: 1px solid #d9d9d9;
   background: white;
-  border-radius: 5px;
+  border-radius: 10px;
+  padding: ${(props) => props.padding || "0 20px"};
 
-  /* ::placeholder {
-    color: #d9d9d9;
+  &::placeholder {
+    color: #717171;
     font-size: 14px;
-  } */
+  }
+
+  &:focus {
+    border: 1px solid #0b798b;
+    outline: none;
+  }
+`;
+
+const InsertTextarea = styled.textarea<Props>`
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "auto"};
+  border: 1px solid #d9d9d9;
+  background: white;
+  border-radius: ${(props) => props.radius || "10px"};
+
+  &::placeholder {
+    color: #717171;
+    font-size: 14px;
+  }
 
   &:focus {
     border: 1px solid #0b798b;
@@ -91,9 +116,30 @@ function MypageResumeAdd() {
   ];
   const [state, setState] = useState("");
   const stateTypes = ["졸업", "재학", "휴학", "중퇴"];
+  const [introduction, setIntroduction] = useState("");
+  const [carrers, setCarrers] = useState<
+    {
+      [key: string]: string | null | undefined;
+    }[]
+    // >([]);
+  >([
+    {
+      company: "회사",
+      dates: "25.01-25.02",
+      carrerDetail: "사무",
+    },
+  ]);
+  const [modal, setModal] = useState(false);
+  const [company, setCompany] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>();
+  const [endDate, setEndDate] = useState<Date | null>();
+  const [carrerDetail, setCarrerDetail] = useState("");
 
   return (
     <>
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[11]" />
+      )}
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
           <ArrowLeftIcon width={24} height={24} />
@@ -101,157 +147,368 @@ function MypageResumeAdd() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <form className="w-full p-layout flex flex-col gap-layout">
-          <div>
-            <input
-              className="w-full h-[22px] text-lg placeholder:underline bg-main-bg"
-              type="text"
-              placeholder="이력서 제목을 등록해주세요"
-            />
-            <div className="flex h-[74px] mt-5">
-              <div className="mr-5 relative">
-                <ProfileIcon />
-                <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
-                  <CameraIcon color="white" width={14} height={14} />
+        <>
+          {modal && (
+            <form className="w-full min-h-[65%] flex flex-col p-layout bg-white absolute z-[11] bottom-0 rounded-t-[20px]">
+              <div className="w-full mt-[14px] flex flex-col mb-[10px]">
+                <p className="basis-full font-bold">
+                  c 근무지명
+                  <span className="text-[#ff0000]">*</span>
                 </p>
               </div>
-              <ul className="flex flex-col gap-[10px] text-[12px] text-main-darkGray">
-                {["이름", "성별", "주민번호"].map((value, index) => (
-                  <li key={index}>{value}</li>
-                ))}
-              </ul>
-              <ul className="flex flex-col gap-[10px] text-[12px] ml-[10px]">
-                {[name, sex, residentNumber].map((value, index) => (
-                  <li key={index}>{value}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="rounded-t-[30px] bg-white p-layout flex flex-col gap-layout items-start -mx-[20px]">
-            <button
-              className="text-main-color text-xs underline -mb-[10px]"
-              type="button"
-            >
-              내 정보 불러오기
-            </button>
-            <div className="w-full flex flex-col gap-[10px]">
-              <p className="basis-full font-bold">
-                회원 정보
-                <span className="text-[#ff0000]">*</span>
-              </p>
-              <div className="flex w-full">
-                <ul className="flex flex-col gap-[10px] text-[12px] text-main-darkGray">
-                  {["연락처", "이메일", "거주지"].map((value, index) => (
-                    <li className="w-[49px]" key={index}>
-                      {value}
-                    </li>
-                  ))}
-                </ul>
-                <div className="w-full flex flex-col gap-[10px] text-[12px] ml-[10px] items-start">
-                  <input
-                    className="w-full h-[18px] text-xs placeholder:text-main-darkGray placeholder:underline "
-                    type="text"
-                    placeholder="'-'를 제외하고 입력해주세요'"
-                  />
-                  <input
-                    className="w-full h-[18px] text-xs placeholder:text-main-darkGray placeholder:underline "
-                    type="email"
-                    placeholder="이메일을 입력해주세요"
-                  />
-                  <button
-                    className="text-main-color font-bold text-xs underline"
-                    type="button"
-                  >
-                    주소 찾기
-                  </button>
-                </div>
+              <InsertTextInput
+                onBlur={(e) => setCompany(e.target.value)}
+                placeholder="근무지명을 입력해주세요"
+                required
+              />
+              <div className="w-full mt-5 flex flex-col mb-[10px]">
+                <p className="basis-full font-bold">
+                  근무기간
+                  <span className="text-[#ff0000]">*</span>
+                </p>
               </div>
-            </div>
-            <div className="w-full flex flex-col gap-[10px]">
-              <p className="basis-full font-bold">
-                최종 학력
-                <span className="text-[#ff0000]">*</span>
-              </p>
-              <div className="flex w-full h-10 gap-[10px]">
-                <SelectBox
-                  className="text-main-darkGray"
-                  width="50%"
-                  fontSize="12px"
-                  defaultValue={school}
-                  onClick={(e) =>
-                    e.currentTarget.classList.remove("text-main-darkGray")
+              <div className="w-full h-10 flex gap-[16px] items-center">
+                <DatePicker
+                  locale={ko}
+                  showIcon
+                  icon={
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="20px"
+                      height="20px"
+                      color="#717171"
+                      fill="none"
+                      style={{
+                        padding: "10px 0 10px 15px",
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    >
+                      <path
+                        d="M18 2V4M6 2V4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      <path
+                        d="M3 8H21"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   }
-                  onChange={(e) => setSchool(e.target.value)}
-                >
-                  <option
-                    className="text-main-darkGray"
-                    key={school.length + 1}
-                    value=""
-                    disabled
-                    hidden
-                  >
-                    학교
-                  </option>
-                  {schoolTypes.map((value, index) => (
-                    <option key={index} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </SelectBox>
-                <SelectBox
-                  className="text-main-darkGray"
-                  width="50%"
-                  fontSize="12px"
-                  defaultValue={state}
-                  onClick={(e) =>
-                    e.currentTarget.classList.remove("text-main-darkGray")
+                  toggleCalendarOnIconClick
+                  dateFormat="yyyy/MM"
+                  startDate={startDate}
+                  endDate={endDate}
+                  popperPlacement="bottom-start"
+                  fixedHeight
+                  showMonthYearPicker
+                  selectsStart
+                  className="placeholder:text-main-darkGray"
+                  maxDate={new Date()}
+                  placeholderText="년/월 선택"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  required
+                />
+                <span className="text-base font-semibold">-</span>
+                <DatePicker
+                  locale={ko}
+                  showIcon
+                  icon={
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="20px"
+                      height="20px"
+                      color="#717171"
+                      fill="none"
+                      style={{
+                        padding: "10px 0 10px 15px",
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    >
+                      <path
+                        d="M18 2V4M6 2V4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      <path
+                        d="M3 8H21"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   }
-                  onChange={(e) => setState(e.target.value)}
-                >
-                  <option
-                    className="text-main-darkGray"
-                    key={state.length + 1}
-                    value=""
-                    disabled
-                    hidden
-                  >
-                    상태
-                  </option>
-                  {stateTypes.map((value, index) => (
-                    <option key={index} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </SelectBox>
+                  toggleCalendarOnIconClick
+                  dateFormat="yyyy/MM"
+                  startDate={startDate}
+                  endDate={endDate}
+                  popperPlacement="bottom-start"
+                  fixedHeight
+                  showMonthYearPicker
+                  selectsEnd
+                  className="placeholder:text-main-darkGray"
+                  maxDate={new Date()}
+                  placeholderText="년/월 선택"
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  required
+                />
               </div>
-            </div>
-            <div className="w-full flex flex-col gap-[10px]">
-              <p className="basis-full font-bold">경력 사항</p>
-              <button
-                className="w-full h-10 rounded-[10px] border border-dashed border-main-color bg-selected-box flex items-center justify-center text-xs text-main-color"
-                type="button"
-              >
-                <span>
-                  <PlusIcon width={14} height={14} />
-                </span>
-                &nbsp; 경력 추가하기
-              </button>
-            </div>
-            <div className="w-full flex flex-col gap-[10px]">
-              <p className="w-full font-bold">기타 사항</p>
-              <div className="flex gap-[10.5px]">
-                <p className="w-[60px] text-xs text-main-darkGray">자기소개</p>
+              <div className="w-full mt-5 flex flex-col gap-[10px]">
+                <p className="w-full font-bold">근무 내용</p>
                 <InsertTextarea
-                  className="text-xs p-1"
+                  className="text-sm p-[15px] min-h-[140px]"
                   width="100%"
-                  height="101px"
+                  height="100%"
+                  placeholder="근무 시 담당했던 업무에 대해 작성해주세요"
+                  onBlur={(e) => setCarrerDetail(e.target.value)}
+                  required
                 ></InsertTextarea>
               </div>
+              <BottomButton
+                type="button"
+                onClick={(e) => {
+                  if (company && startDate && endDate && carrerDetail) {
+                    setCarrers([
+                      ...carrers,
+                      {
+                        company: company,
+                        dates:
+                          format(startDate, "yy.MM") +
+                          "-" +
+                          format(endDate, "yy.MM"),
+                        carrerDetail: carrerDetail,
+                      },
+                    ]);
+                    setCompany("");
+                    setStartDate(null);
+                    setEndDate(null);
+                    setCarrerDetail("");
+                    setModal(!modal);
+                  } else {
+                    alert("입력되지 않은 내용이 있습니다.");
+                  }
+                }}
+              >
+                경력 추가
+              </BottomButton>
+            </form>
+          )}
+          <form className="w-full p-layout flex flex-col gap-layout">
+            <div>
+              <input
+                className="w-full h-[22px] text-lg placeholder:underline bg-main-bg"
+                type="text"
+                placeholder="이력서 제목을 등록해주세요"
+                required
+              />
+              <div className="flex h-[74px] mt-5">
+                <div className="mr-5 relative">
+                  <ProfileIcon />
+                  <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
+                    <CameraIcon color="white" width={14} height={14} />
+                  </p>
+                </div>
+                <ul className="flex flex-col gap-[10px] text-[12px] text-main-darkGray">
+                  {["이름", "성별", "주민번호"].map((value, index) => (
+                    <li key={index}>{value}</li>
+                  ))}
+                </ul>
+                <ul className="flex flex-col gap-[10px] text-[12px] ml-[10px]">
+                  {[name, sex, residentNumber].map((value, index) => (
+                    <li key={index}>{value}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div className="w-[100vw] -mx-5 h-[120px] bg-white z-10" />
-          </div>
-          <BottomButton className="z-[11]">이력서 등록</BottomButton>
-        </form>
+            <div className="rounded-t-[30px] bg-white p-layout flex flex-col gap-layout items-start -mx-[20px]">
+              <button
+                className="text-main-color text-xs underline -mb-[10px]"
+                type="button"
+              >
+                내 정보 불러오기
+              </button>
+              <div className="w-full flex flex-col gap-[10px]">
+                <p className="basis-full font-bold">
+                  회원 정보
+                  <span className="text-[#ff0000]">*</span>
+                </p>
+                <div className="flex w-full">
+                  <ul className="flex flex-col gap-[10px] text-[12px] text-main-darkGray">
+                    {["연락처", "이메일", "거주지"].map((value, index) => (
+                      <li className="w-[49px]" key={index}>
+                        {value}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="w-full flex flex-col gap-[10px] text-[12px] ml-[10px] items-start">
+                    <input
+                      className="w-full h-[18px] text-xs placeholder:text-main-darkGray placeholder:underline "
+                      type="text"
+                      placeholder="'-'를 제외하고 입력해주세요'"
+                      required
+                    />
+                    <input
+                      className="w-full h-[18px] text-xs placeholder:text-main-darkGray placeholder:underline "
+                      type="email"
+                      placeholder="이메일을 입력해주세요"
+                      required
+                    />
+                    <input
+                      className="w-full text-xs placeholder:text-main-color placeholder:font-bold placeholder:text-xs placeholder:underline"
+                      placeholder="주소 찾기"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="w-full flex flex-col gap-[10px]">
+                <p className="basis-full font-bold">
+                  최종 학력
+                  <span className="text-[#ff0000]">*</span>
+                </p>
+                <div className="flex w-full h-10 gap-[10px]">
+                  <SelectBox
+                    className="text-main-darkGray"
+                    width="50%"
+                    fontSize="12px"
+                    defaultValue={school}
+                    onFocus={(e) =>
+                      e.target.classList.remove("text-main-darkGray")
+                    }
+                    onChange={(e) => setSchool(e.target.value)}
+                    required
+                  >
+                    <option
+                      className="text-main-darkGray"
+                      key={school.length + 1}
+                      value=""
+                      disabled
+                      hidden
+                    >
+                      학교
+                    </option>
+                    {schoolTypes.map((value, index) => (
+                      <option key={index} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </SelectBox>
+                  <SelectBox
+                    className="text-main-darkGray"
+                    width="50%"
+                    fontSize="12px"
+                    defaultValue={state}
+                    onFocus={(e) =>
+                      e.target.classList.remove("text-main-darkGray")
+                    }
+                    onChange={(e) => setState(e.target.value)}
+                    required
+                  >
+                    <option
+                      className="text-main-darkGray"
+                      key={state.length + 1}
+                      value=""
+                      disabled
+                      hidden
+                    >
+                      상태
+                    </option>
+                    {stateTypes.map((value, index) => (
+                      <option key={index} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </SelectBox>
+                </div>
+              </div>
+              <div className="w-full flex flex-col gap-[10px]">
+                <p className="basis-full font-bold">경력 사항</p>
+                <ul className="list-none">
+                  {carrers.map(({ company, dates }, index) => {
+                    return (
+                      <li
+                        key={index}
+                        className="w-full relative flex justify-start gap-[10px]"
+                      >
+                        <span className="text-main-darkGray text-xs">
+                          {dates}
+                        </span>
+                        <span className="text-main-darkGray text-xs">
+                          {company}
+                        </span>
+                        <span
+                          className="absolute right-0"
+                          onClick={() =>
+                            setCarrers(carrers.filter((v, i) => i !== index))
+                          }
+                        >
+                          <MinusIcon />
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <button
+                  className="w-full h-10 rounded-[10px] border border-dashed border-main-color bg-selected-box flex items-center justify-center text-xs text-main-color"
+                  onClick={() => setModal(!modal)}
+                  type="button"
+                >
+                  <span>
+                    <PlusIcon width={14} height={14} />
+                  </span>
+                  &nbsp; 경력 추가하기
+                </button>
+              </div>
+              <div className="w-full flex flex-col gap-[10px]">
+                <p className="w-full font-bold">기타 사항</p>
+                <div className="flex gap-[10.5px]">
+                  <p className="w-[60px] text-xs text-main-darkGray">
+                    자기소개
+                  </p>
+                  <InsertTextarea
+                    className="text-sm p-[10px] min-h-[101px]"
+                    width="100%"
+                    height="100%"
+                    radius="5px"
+                    onBlur={(e) => setIntroduction(e.target.value)}
+                    required
+                  ></InsertTextarea>
+                </div>
+              </div>
+              <div className="w-[100vw] -mx-5 h-[100%] bg-white z-[2]" />
+            </div>
+            <BottomButton className="z-[3]">이력서 등록</BottomButton>
+          </form>
+        </>
       </Main>
     </>
   );
