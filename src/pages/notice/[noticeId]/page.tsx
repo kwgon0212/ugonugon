@@ -15,6 +15,7 @@ const DeleteModal = Modal;
 const SelectResumeModal = Modal;
 const AcceptModal = Modal;
 const ApplyResultModal = Modal;
+const AlreadyApplyModal = Modal;
 
 interface ResumeType {
   title: string;
@@ -28,8 +29,10 @@ const NoticeDetailPage = () => {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
   const [isOpenApplyResultModal, setIsOpenApplyResultModal] = useState(false);
+  const [isOpenAlreadyApplyModal, setIsOpenAlreadyApplyModal] = useState(false);
   const [resumes, setResumes] = useState<ResumeType[]>([]);
 
+  const [isAlreadyApply, setIsAlreadyApply] = useState(false);
   const [selectedResume, setSelectedResume] = useState<ResumeType | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
 
@@ -46,7 +49,12 @@ const NoticeDetailPage = () => {
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
   useEffect(() => {
-    setIsEmployer(true);
+    setIsEmployer(false);
+  }, []);
+
+  // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
+  useEffect(() => {
+    setIsAlreadyApply(false);
   }, []);
 
   // useEffect -> 로그인한 유저의 이력서를 resume컬렉션에서 찾기
@@ -249,6 +257,21 @@ const NoticeDetailPage = () => {
             </div>
           </div>
 
+          <AlreadyApplyModal
+            isOpen={isOpenAlreadyApplyModal}
+            setIsOpen={setIsOpenAlreadyApplyModal}
+          >
+            <div className="size-full flex flex-col gap-[20px] text-center">
+              <p>이미 지원한 공고입니다.</p>
+              <button
+                onClick={() => setIsOpenAlreadyApplyModal(false)}
+                className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
+              >
+                확인
+              </button>
+            </div>
+          </AlreadyApplyModal>
+
           <SelectResumeModal
             isOpen={isOpenApplyModal}
             setIsOpen={setIsOpenApplyModal}
@@ -439,7 +462,11 @@ const NoticeDetailPage = () => {
               채팅하기
             </button>
             <button
-              onClick={() => setIsOpenApplyModal(true)}
+              onClick={() => {
+                isAlreadyApply
+                  ? setIsOpenAlreadyApplyModal(true)
+                  : setIsOpenApplyModal(true);
+              }}
               className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
             >
               지원하기
