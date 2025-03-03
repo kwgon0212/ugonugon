@@ -10,6 +10,7 @@ import StarIcon from "@/components/icons/Star";
 import ShareIcon from "@/components/icons/Share";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Modal from "@/components/Modal";
+import { AnimatePresence, motion } from "framer-motion";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -32,6 +33,8 @@ const NoticeDetailPage = () => {
   const [isOpenAlreadyApplyModal, setIsOpenAlreadyApplyModal] = useState(false);
   const [resumes, setResumes] = useState<ResumeType[]>([]);
 
+  const [isClickShare, setIsClickShare] = useState(false);
+
   const [isAlreadyApply, setIsAlreadyApply] = useState(false);
   const [selectedResume, setSelectedResume] = useState<ResumeType | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
@@ -49,7 +52,7 @@ const NoticeDetailPage = () => {
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
   useEffect(() => {
-    setIsEmployer(false);
+    setIsEmployer(true);
   }, []);
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
@@ -75,6 +78,15 @@ const NoticeDetailPage = () => {
     "https://placehold.co/560x125",
     "https://placehold.co/560x100",
   ];
+
+  const handleClickShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setIsClickShare(true);
+      setTimeout(() => {
+        setIsClickShare(false);
+      }, 1500);
+    });
+  };
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
@@ -116,7 +128,9 @@ const NoticeDetailPage = () => {
               {/* <span>스크랩</span> */}
             </div>
             <div className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]">
-              <ShareIcon />
+              <button onClick={handleClickShare}>
+                <ShareIcon />
+              </button>
               {/* <span>공유</span> */}
             </div>
           </div>
@@ -124,6 +138,18 @@ const NoticeDetailPage = () => {
       </Header>
       <Main hasBottomNav={false}>
         <div className="size-full bg-main-bg relative">
+          <AnimatePresence>
+            {isClickShare && (
+              <motion.div
+                initial={{ opacity: 0, x: "40px" }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: "40px" }}
+                className="w-fit absolute top-[20px] right-[20px] px-[10px] py-[5px] rounded-[10px] bg-black/30 z-10"
+              >
+                <span className="text-black">링크가 복사되었습니다</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <ImageSlider imageArr={imageArr} />
           <div
             ref={contentRef}
@@ -445,7 +471,7 @@ const NoticeDetailPage = () => {
             </button>
             <button
               onClick={() => navigate("#")}
-              className="flex flex-grow h-[50px] justify-center items-center bg-selected-box text-selected-text rounded-[10px]"
+              className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-selected-text rounded-[10px]"
             >
               공고 수정
             </button>
