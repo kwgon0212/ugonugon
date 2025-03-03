@@ -87,12 +87,8 @@ const SelectBox = styled.select<Props>`
   }
 `;
 
-const BottomButton = styled.button`
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
+const BottomButton = styled.button<Props>`
+  width: ${(props) => props.width || "calc(100% - 40px)"};
   height: 50px;
   border-radius: 10px;
   font-size: 14px;
@@ -149,10 +145,10 @@ function MypageResumeAdd() {
       <Main hasBottomNav={false}>
         <>
           {modal && (
-            <form className="w-full min-h-[65%] flex flex-col p-layout bg-white absolute z-[11] bottom-0 rounded-t-[20px]">
+            <form className="w-full min-h-[65%] flex flex-col p-layout bg-white z-[11] rounded-t-[20px] absolute bottom-0">
               <div className="w-full mt-[14px] flex flex-col mb-[10px]">
                 <p className="basis-full font-bold">
-                  c 근무지명
+                  근무지명
                   <span className="text-[#ff0000]">*</span>
                 </p>
               </div>
@@ -294,6 +290,7 @@ function MypageResumeAdd() {
                 ></InsertTextarea>
               </div>
               <BottomButton
+                className="absolute bottom-[38px]"
                 type="button"
                 onClick={(e) => {
                   if (company && startDate && endDate && carrerDetail) {
@@ -322,7 +319,7 @@ function MypageResumeAdd() {
               </BottomButton>
             </form>
           )}
-          <form className="w-full p-layout flex flex-col gap-layout">
+          <form className="w-full px-5 pt-5 flex flex-col gap-layout">
             <div>
               <input
                 className="w-full h-[22px] text-lg placeholder:underline bg-main-bg"
@@ -504,10 +501,10 @@ function MypageResumeAdd() {
                   ></InsertTextarea>
                 </div>
               </div>
-              <div className="w-[100vw] -mx-5 h-[100%] bg-white z-[2]" />
+              <BottomButton width="100%">이력서 등록</BottomButton>
             </div>
-            <BottomButton className="z-[3]">이력서 등록</BottomButton>
           </form>
+          <div className="w-full min-h-[38px] h-auto -mt-5 bg-white absolute" />
         </>
       </Main>
     </>
