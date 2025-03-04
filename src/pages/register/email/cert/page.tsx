@@ -48,19 +48,22 @@ function RegisterEmailCertPage() {
     }
   };
 
-  // const handleKeyDown = (event: any, index: number) => {
-  //   console.log([...nums]);
-  //   if (event.key === "Backspace" || event.key === "Delete")
-  //     if (index !== 0 && Number(nums[index]) < 10) {
-  //       document.getElementsByTagName("input")[index - 1].focus();
+  const handleKeyUp = (event: any, index: number) => {
+    if (event.key === "Backspace" || event.key === "Delete")
+      if (index !== 0 && nums[index] === "") {
+        const newNums = [...nums];
+        newNums[index] = "";
+        event.target.value = "";
+        document.getElementsByTagName("input")[index - 1].focus();
+      }
+  };
 
-  //       const newNums = [...nums];
-  //       newNums[index] = "";
-
-  //       event.target.value = "";
-  //       setNums(newNums.slice(0, 4));
-  //     }
-  // };
+  const handleKeyDown = (event: any, index: number) => {
+    if (!["Backspace", "Delete", "Tab", "Shift"].includes(event.key))
+      if (index !== 3 && nums[index] !== "") {
+        document.getElementsByTagName("input")[index + 1].focus();
+      }
+  };
 
   return (
     <>
@@ -83,7 +86,8 @@ function RegisterEmailCertPage() {
                 pattern="\d"
                 required
                 onChange={(event) => handleNums(event, index)}
-                // onKeyDown={(event) => handleKeyDown(event, index)}
+                onKeyUp={(event) => handleKeyUp(event, index)}
+                onKeyDown={(event) => handleKeyDown(event, index)}
               />
             ))}
           </div>
@@ -94,7 +98,6 @@ function RegisterEmailCertPage() {
             인증번호 재전송
           </a>
           <BottomButton>인증번호 전송</BottomButton>
-          {/* <BottomButton>인증번호 전송</BottomButton> */}
         </form>
       </Main>
     </>
