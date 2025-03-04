@@ -18,6 +18,7 @@ interface Props {
   padding?: string;
   bottom?: string;
   radius?: string;
+  bgSize?: string;
 }
 
 type ObjType = {
