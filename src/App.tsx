@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Aside from "./components/Aside";
 import RootPage from "./pages/page";
-import NoticeSearch from "./pages/notice/search/page";
 import RegisterEmailPage from "./pages/register/email/page";
 import RegisterEmailCertPage from "./pages/register/email/cert/page";
 import RegisterSign from "./pages/register/sign/page";
@@ -26,6 +25,10 @@ import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/pa
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
+import ReCruitManagePage from "./pages/recruit/manage/page";
+import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
+import MypageScrabPage from "./pages/mypage/scrab/page";
+import NoticeSearchPage from "./pages/notice/search/page";
 
 function App() {
   return (
@@ -48,12 +51,17 @@ function App() {
               <Route path="business-num" element={<RegisterBusinessPage />} />
               <Route path="success" element={<RegisterSuccess />} />
             </Route>
-            <Route path="/recruit" element={<ReCruitPage />} />
+
+            <Route path="/recruit">
+              <Route index element={<ReCruitPage />} />
+              <Route path="manage" element={<ReCruitManagePage />} />
+            </Route>
+
             <Route path="/map" element={<MapPage />} />
-            <Route path="/chat" element={<ChatPage />} />
+
             <Route path="/notice">
               <Route index element={<NotFound />} />
-              <Route path="search" element={<NoticeSearch />} />
+              <Route path="search" element={<NoticeSearchPage />} />
               <Route path=":noticeId">
                 <Route index element={<NoticeDetailPage />} />
                 <Route path="apply">
@@ -63,20 +71,27 @@ function App() {
               </Route>
               <Route path="list" element={<NoticeListPage />} />
             </Route>
+
             <Route path="/mypage">
               <Route index element={<MyPage />} />
               <Route path="resume/add" element={<MypageResumeAdd />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="scrab" element={<MypageScrabPage />} />
+              <Route path="edit">
+                <Route index element={<NotFound />} />
+                <Route path="info" element={<MyPageEditInfoPage />} />
+                <Route path="bank-account" element={<EditBankAccountPage />} />
+              </Route>
             </Route>
-            <Route path="/login" element={<LoginPage />} />
+
+            <Route path="/chat">
+              <Route index element={<ChatPage />} />
+              <Route path=":chatroomId" element={<ChattingPage />} />
+            </Route>
+
             <Route path="/work" element={<WorkPage />} />
+
+            <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFound />} />
-            <Route
-              path="/mypage/edit/bank-account"
-              element={<EditBankAccountPage />}
-            />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/chat/:chatroomId" element={<ChattingPage />} />
           </Routes>
         </div>
       </div>
