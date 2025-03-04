@@ -24,6 +24,35 @@ app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}에서 서버 구동중...`);
 });
 
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  businessNumber: { type: Array, required: false },
+  sex: { type: String, required: true },
+  residentId: { type: String, required: true },
+  phone: { type: String, required: true },
+  address: {
+    type: Object,
+    required: true,
+    zipcode: { type: String, required: true },
+    street: { type: String, required: true },
+    detatil: { type: String, required: true },
+  },
+  signature: { type: String, required: true },
+  bankInfo: {
+    type: Object,
+    required: true,
+    bank: { type: String, required: true },
+    account: { type: String, required: true },
+  },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+});
+
+mongoose.model("user", UserSchema);
+console.log("============");
+
+console.log(mongoose.modelNames());
+
 /**
  * @swagger
  * /api:
