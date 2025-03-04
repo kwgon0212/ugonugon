@@ -25,8 +25,17 @@ const ListWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
+  background-color: #f7f7f9;
+`;
+const ListScrollWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 93%;
   overflow-y: auto;
-  background-color: #f5f5f5;
+  background-color: #f7f7f9;
+  scrollbar-width: none;
 `;
 
 const ListContainer = styled.div`
@@ -56,6 +65,9 @@ const Numbernav = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  //수정
+  height: 7%;
+  //수정 끝
   padding: 5px 0;
   background-color: #fff;
 `;
@@ -172,73 +184,75 @@ export function MypageScrabPage() {
           {hasNotice ? (
             <>
               <ListWrapper className="bg-main-bg">
-                <div className="flex flex-row justify-between items-center pl-4 w-full h-[40px]">
-                  <div className="flex flex-row gap-1">
-                    <span>총 </span>
-                    <span className="text-main-color font-bold">
-                      {noticeList.length}건의
-                    </span>
-                    <span>스크랩 공고</span>
-                  </div>
-                  <div className="flex flex-row items-center justify-evenly text-[12px] w-[100px] h-[40px]">
-                    <div className="flex w-fit">필터</div>
-                    <div className="relative flex w-fit">
-                      <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
-                        <MinusIcon />
-                      </DropMenu>
-                      {isOpen && (
-                        <Drop ref={dropMenuRef}>
-                          <li onClick={() => handleSelectItem(5)}>5</li>
-                          <li onClick={() => handleSelectItem(10)}>10</li>
-                          <li onClick={() => handleSelectItem(20)}>20</li>
-                        </Drop>
-                      )}
+                <ListScrollWrapper>
+                  <div className="flex flex-row justify-between items-center pl-4 w-full h-[40px]">
+                    <div className="flex flex-row gap-1">
+                      <span>총 </span>
+                      <span className="text-main-color font-bold">
+                        {noticeList.length}건의
+                      </span>
+                      <span>스크랩 공고</span>
+                    </div>
+                    <div className="flex flex-row items-center justify-evenly text-[12px] w-[100px] h-[40px]">
+                      <div className="flex w-fit">필터</div>
+                      <div className="relative flex w-fit">
+                        <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
+                          <MinusIcon />
+                        </DropMenu>
+                        {isOpen && (
+                          <Drop ref={dropMenuRef}>
+                            <li onClick={() => handleSelectItem(5)}>5</li>
+                            <li onClick={() => handleSelectItem(10)}>10</li>
+                            <li onClick={() => handleSelectItem(20)}>20</li>
+                          </Drop>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/* 현재 페이지의 공고 아이템 렌더링 */}
-                {currentNotices.map((notice) => (
-                  <ListContainer key={notice.id}>
-                    <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray relative">
-                      <img
-                        src="/logo192.png"
-                        alt="공고 이미지"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                  {/* 현재 페이지의 공고 아이템 렌더링 */}
+                  {currentNotices.map((notice) => (
+                    <ListContainer key={notice.id}>
+                      <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray relative">
+                        <img
+                          src="/logo192.png"
+                          alt="공고 이미지"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
 
-                      {/* Star 아이콘을 감싸는 div 추가 */}
-                      <div className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full ">
-                        <div>
-                          <StarIcon />
+                        {/* Star 아이콘을 감싸는 div 추가 */}
+                        <div className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full ">
+                          <div>
+                            <StarIcon />
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <ListInfo>
-                      <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
-                        <span>{notice.companyName}</span>
-                        <div>
-                          <span>마감일 </span>
-                          <span>{notice.endDate}</span>
-                          <span>({notice.day})</span>
+                      <ListInfo>
+                        <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
+                          <span>{notice.companyName}</span>
+                          <div>
+                            <span>마감일 </span>
+                            <span>{notice.endDate}</span>
+                            <span>({notice.day})</span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="w-[95%] text-[12px] font-bold flex-wrap">
-                        {notice.title}
-                      </div>
-                      <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
-                        <div>{notice.address}</div>
-                        <div>
-                          <span className="font-bold text-[#1D8738]">
-                            시급{" "}
-                          </span>
-                          <span>{notice.pay.toLocaleString()} 원</span>
+                        <div className="w-[95%] text-[12px] font-bold flex-wrap">
+                          {notice.title}
                         </div>
-                        <div>{notice.period}</div>
-                      </div>
-                    </ListInfo>
-                  </ListContainer>
-                ))}
+                        <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
+                          <div>{notice.address}</div>
+                          <div>
+                            <span className="font-bold text-[#1D8738]">
+                              시급{" "}
+                            </span>
+                            <span>{notice.pay.toLocaleString()} 원</span>
+                          </div>
+                          <div>{notice.period}</div>
+                        </div>
+                      </ListInfo>
+                    </ListContainer>
+                  ))}
+                </ListScrollWrapper>
                 {/* 페이지 번호 버튼과 좌우 화살표 */}
 
                 <Numbernav>
