@@ -13,7 +13,7 @@ import RegisterBusinessPage from "./pages/register/business-num/page";
 import LoginPage from "./pages/login/page";
 import NoticeListPage from "./pages/notice/list/page";
 import WorkPage from "./pages/work/page";
-import NoticeDetailPage from "./pages/notice/[id]/page";
+import NoticeDetailPage from "./pages/notice/[noticeId]/page";
 import MyPage from "./pages/mypage/page";
 import ReCruitPage from "./pages/recruit/page";
 import MapPage from "./pages/map/page";
@@ -21,15 +21,19 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
+import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
+import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
+import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
+import ChattingPage from "./pages/chat/chatting/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
 
 function App() {
   return (
-    <div className="h-screen flex justify-center bg-gray-200">
-      <div className="flex w-full max-w-[1200px] justify-center h-screen">
+    <div className="min-h-screen flex justify-center bg-gray-200">
+      <div className="flex w-full max-w-[1200px] justify-center min-h-screen">
         <Aside />
         {/* 모바일 레이아웃 */}
-        <div className="relative max-w-[560px] w-full h-screen mx-auto lg:mx-0">
+        <div className="relative max-w-[560px] w-full min-h-screen mx-auto lg:mx-0 overflow-hidden">
           <Routes>
             <Route path="/" element={<RootPage />} />
             <Route path="/register">
@@ -46,10 +50,17 @@ function App() {
             </Route>
             <Route path="/recruit" element={<ReCruitPage />} />
             <Route path="/map" element={<MapPage />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/notice">
               <Route index element={<NotFound />} />
               <Route path="search" element={<NoticeSearch />} />
-              <Route path=":id" element={<NoticeDetailPage />} />
+              <Route path=":noticeId">
+                <Route index element={<NoticeDetailPage />} />
+                <Route path="apply">
+                  <Route index element={<NoticeApplyPage />} />
+                  <Route path=":resumeId" element={<NoticeApplyResumePage />} />
+                </Route>
+              </Route>
               <Route path="list" element={<NoticeListPage />} />
             </Route>
             <Route path="/mypage">
@@ -60,6 +71,12 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/work" element={<WorkPage />} />
             <Route path="*" element={<NotFound />} />
+            <Route
+              path="/mypage/edit/bank-account"
+              element={<EditBankAccountPage />}
+            />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/chat/:chatroomId" element={<ChattingPage />} />
           </Routes>
         </div>
       </div>
