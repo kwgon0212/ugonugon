@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { io } from "socket.io-client"; // Socket.IO 클라이언트 import
 
 import Header from "@/components/Header";
 import Main from "@/components/Main";
@@ -10,6 +11,7 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import SendIcon from "@/components/icons/Send";
 
+// styled components는 그대로 유지...
 const HeaderWrap = styled.div`
   position: relative;
   display: flex;
@@ -111,15 +113,50 @@ const SendIconWrap = styled.button`
   height: 45px;
   width: 45px;
 `;
-
 const user = "고용주";
-const time = "13:00";
-const otherChat = "안녕하세요! 근로자님";
 
 export function ChattingPage() {
   const [chat, setChat] = useState("");
   const [userChat, setUserChat] = useState<string[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [socket, setSocket] = useState<any>(null);
+  const [messages, setMessages] = useState<
+    { text: string; isMine: boolean; time: string }[]
+  >([]);
+  // 시간 포맷 함수 추가
+  const formatTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  // Socket.IO 연결 설정
+  useEffect(() => {
+    // 서버 URL을 적절히 수정하세요
+    const newSocket = io("http://localhost:8080");
+
+    newSocket.on("connect", () => {
+      console.log("서버에 연결됨:", newSocket.id);
+    });
+
+    // 서버로부터 메시지 수신 시
+    newSocket.on("chat message", (msg) => {
+      if (!msg.isMine) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: msg, isMine: false, time: formatTime() },
+        ]);
+      }
+    });
+
+    setSocket(newSocket);
+
+    // 컴포넌트 언마운트 시 소켓 연결 해제
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   const handleOpenAlertModal = () => {
     setModalOpen(true);
@@ -134,10 +171,26 @@ export function ChattingPage() {
     setChat(value);
   };
 
+  // 메시지 전송 시
   const handleSendChat = () => {
-    if (chat.trim() === "") return;
-    setUserChat((prevChat) => [...prevChat, chat]);
+    if (chat.trim() === "" || !socket) return;
+
+    socket.emit("chat message", chat);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: chat, isMine: true, time: formatTime() },
+    ]);
+
     setChat("");
+  };
+
+  // 엔터 키로 메시지 전송
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendChat();
+    }
   };
 
   return (
@@ -157,45 +210,44 @@ export function ChattingPage() {
       <Main hasBottomNav={false}>
         <MainWrap>
           <ChattingAreaWrap>
-            {/* 상대방 채팅 말풍선 */}
-            <OtherChatWrap>
-              <div className="text-[12px] text-main-darkGray mb-[5px]">
-                {time}
-              </div>
-              <ChatBox className="bg-white">{otherChat}</ChatBox>
-            </OtherChatWrap>
-            {/* 사용자 채팅 말풍선 */}
-            <UserChatWrap>
-              {userChat.map((chat, index) => (
-                <>
-                  <div
-                    key={index}
-                    className="text-[12px] text-main-darkGray mb-[5px]"
-                  >
-                    {time}
+            {/* 모든 메시지 표시 */}
+            {messages.map((message, index) =>
+              message.isMine ? (
+                // 내 메시지
+                <UserChatWrap key={index}>
+                  <div className="text-[12px] text-main-darkGray mb-[5px]">
+                    {message.time}{" "}
+                    {/* 여기서 time 상수 대신 message.time을 사용 */}
                   </div>
-                  <ChatBox
-                    key={index}
-                    className="bg-selected-box text-selected-text text-[12px]"
-                  >
-                    {chat}
+                  <ChatBox className="bg-selected-box text-selected-text text-[12px]">
+                    {message.text}
                   </ChatBox>
-                </>
-              ))}
-            </UserChatWrap>
+                </UserChatWrap>
+              ) : (
+                // 상대방 메시지
+                <OtherChatWrap key={index}>
+                  <div className="text-[12px] text-main-darkGray mb-[5px]">
+                    {message.time}{" "}
+                    {/* 여기서 time 상수 대신 message.time을 사용 */}
+                  </div>
+                  <ChatBox className="bg-white">{message.text}</ChatBox>
+                </OtherChatWrap>
+              )
+            )}
           </ChattingAreaWrap>
           <InputBar className="bg-main-bg">
-            <div className="flex flex-[80%] h-fit  ">
+            <div className="flex flex-[80%] h-fit">
               <ChatInput
                 placeholder="채팅 입력"
                 onChange={handleChangeChat}
+                onKeyPress={handleKeyPress}
                 value={chat}
                 className="border-2 border-main-gray"
               ></ChatInput>
             </div>
             <div className="flex flex-[20%] justify-center w-full h-fit">
               <SendIconWrap
-                className=" bg-selected-box"
+                className="bg-selected-box"
                 onClick={handleSendChat}
               >
                 <SendIcon />
