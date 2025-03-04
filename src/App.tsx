@@ -21,6 +21,8 @@ import ChatPage from "./pages/chat/page";
 import { AnimatePresence } from "framer-motion";
 import RegisterSuccess from "./pages/register/success/page";
 import ReCruitManagePage from "./pages/recruit/manage/page";
+import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
+import MypageScrabPage from "./pages/mypage/scrab/page";
 function App() {
   return (
     <div className="h-screen flex justify-center bg-gray-200">
@@ -53,6 +55,11 @@ function App() {
                 <Route path="list" element={<NoticeListPage />} />
               </Route>
               <Route path="/mypage" element={<MyPage />} />
+              <Route
+                path="/mypage/edit/info"
+                element={<MyPageEditInfoPage />}
+              />
+              <Route path="/mypage/scrab" element={<MypageScrabPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/work" element={<WorkPage />} />
             </Routes>
