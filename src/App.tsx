@@ -26,8 +26,6 @@ import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/pa
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
-import MypageResumeList from "./pages/mypage/resume/list/page";
-import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
 
 function App() {
   return (
@@ -67,13 +65,8 @@ function App() {
             </Route>
             <Route path="/mypage">
               <Route index element={<MyPage />} />
-              <Route path="*" element={<NotFound />} />
               <Route path="resume/add" element={<MypageResumeAdd />} />
-              <Route path="resume/list">
-                <Route index element={<MypageResumeList />} />
-                <Route path=":resumeId" element={<MypageResumeListId />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
+              <Route path="*" element={<NotFound />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/work" element={<WorkPage />} />
