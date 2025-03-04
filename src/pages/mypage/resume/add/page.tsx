@@ -486,20 +486,15 @@ function MypageResumeAdd() {
                 </button>
               </div>
               <div className="w-full flex flex-col gap-[10px]">
-                <p className="w-full font-bold">기타 사항</p>
-                <div className="flex gap-[10.5px]">
-                  <p className="w-[60px] text-xs text-main-darkGray">
-                    자기소개
-                  </p>
-                  <InsertTextarea
-                    className="text-sm p-[10px] min-h-[101px]"
-                    width="100%"
-                    height="100%"
-                    radius="5px"
-                    onBlur={(e) => setIntroduction(e.target.value)}
-                    required
-                  ></InsertTextarea>
-                </div>
+                <p className="w-full font-bold">자기 소개</p>
+                <InsertTextarea
+                  className="text-sm p-[10px] min-h-[101px]"
+                  width="100%"
+                  height="100%"
+                  radius="5px"
+                  onBlur={(e) => setIntroduction(e.target.value)}
+                  required
+                ></InsertTextarea>
               </div>
               <BottomButton width="100%">이력서 등록</BottomButton>
             </div>
