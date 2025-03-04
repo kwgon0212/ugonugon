@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import testRoutes from "./routes/test.ts";
+import postRoutes from "./routes/post.ts";
 import { setupSwagger } from "../swagger/swagger.ts";
 import mongoose from "mongoose";
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 
 app.use("/api/test", testRoutes);
+app.use("/postApi/test", postRoutes);
 
 app.listen(PORT, () => {
   mongoose
