@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Header from "../../../../components/Header";
-import Main from "../../../../components/Main";
-import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ProfileIcon from "@/components/icons/Profile";
 import CameraIcon from "@/components/icons/Camera";
 import PlusIcon from "@/components/icons/Plus";
@@ -20,6 +20,8 @@ interface Props {
   bottom?: string;
   radius?: string;
   fontSize?: string;
+  background?: string;
+  color?: string;
 }
 
 const Title = styled.p`
@@ -92,11 +94,11 @@ const BottomButton = styled.button<Props>`
   height: 50px;
   border-radius: 10px;
   font-size: 14px;
-  background: #0b798b;
-  color: white;
+  background: ${(props) => props.background || "#0b798b"};
+  color: ${(props) => props.color || "white"};
 `;
 
-function MypageResumeAdd() {
+function MypageResumeListId() {
   const name = "김김김";
   const sex = "남성";
   const residentNumber = "000123-3******";
@@ -496,7 +498,18 @@ function MypageResumeAdd() {
                   required
                 ></InsertTextarea>
               </div>
-              <BottomButton width="100%">이력서 등록</BottomButton>
+              <div className="w-full flex gap-[10px]">
+                <BottomButton
+                  width="50%"
+                  background="white"
+                  color="#0b798b"
+                  className="border border-main-color"
+                  type="button"
+                >
+                  이력서 삭제
+                </BottomButton>
+                <BottomButton width="50%">이력서 등록</BottomButton>
+              </div>
             </div>
           </form>
           <div className="w-full min-h-[38px] h-auto -mt-5 bg-white absolute" />
@@ -506,4 +519,4 @@ function MypageResumeAdd() {
   );
 }
 
-export default MypageResumeAdd;
+export default MypageResumeListId;

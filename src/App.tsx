@@ -29,6 +29,8 @@ import ReCruitManagePage from "./pages/recruit/manage/page";
 import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
 import MypageScrabPage from "./pages/mypage/scrab/page";
 import NoticeSearchPage from "./pages/notice/search/page";
+import MypageResumeList from "./pages/mypage/resume/list/page";
+import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
 
 function App() {
   return (
@@ -74,7 +76,12 @@ function App() {
 
             <Route path="/mypage">
               <Route index element={<MyPage />} />
+              <Route path="*" element={<NotFound />} />
               <Route path="resume/add" element={<MypageResumeAdd />} />
+              <Route path="resume/list">
+                <Route index element={<MypageResumeList />} />
+                <Route path=":resumeID" element={<MypageResumeListId />} />
+              </Route>
               <Route path="scrab" element={<MypageScrabPage />} />
               <Route path="edit">
                 <Route index element={<NotFound />} />
