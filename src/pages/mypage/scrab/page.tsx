@@ -37,6 +37,7 @@ const ListContainer = styled.div`
   background-color: white;
   padding: 10px;
   margin-bottom: 10px;
+  border-radius: 10px;
 `;
 
 const ListInfo = styled.div`
@@ -103,14 +104,7 @@ export function MypageScrabPage() {
   const [itemsPerPage, setItemsPerPage] = useState(5); // 드롭다운에서 선택한 아이템 수
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const [pageGroup, setPageGroup] = useState(0); // 현재 보이는 페이지 그룹(0부터 시작)
-  // 초기 카테고리 배열 (원하는 만큼 추가 가능)
-  const [categories, setCategories] = useState([
-    "서울 용산구",
-    "서울 강남구",
-    "서울 종로구",
-    "부산 해운대구",
-    "제주도",
-  ]);
+
   const dropMenuRef = useRef<HTMLUListElement | null>(null);
   const minusIconRef = useRef<HTMLDivElement | null>(null);
 
@@ -235,7 +229,9 @@ export function MypageScrabPage() {
                       <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
                         <div>{notice.address}</div>
                         <div>
-                          <span>시급 </span>
+                          <span className="font-bold text-[#1D8738]">
+                            시급{" "}
+                          </span>
                           <span>{notice.pay.toLocaleString()} 원</span>
                         </div>
                         <div>{notice.period}</div>
