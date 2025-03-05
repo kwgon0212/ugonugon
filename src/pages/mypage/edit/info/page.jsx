@@ -5,7 +5,7 @@ import Main from "@/components/Main";
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CameraIcon from "@/components/icons/Camera";
-// import ProfileIcon from "@/components/icons/Profile";
+import ProfileIcon from "@/components/icons/Profile";
 import { Link } from "react-router-dom";
 function MyPageEditInfoPage() {
   const name = "김김김";
@@ -52,7 +52,7 @@ function MyPageEditInfoPage() {
           <div>
             <div className="flex h-[74px] mt-5">
               <div className="mr-5 relative">
-                {/* <ProfileIcon /> */}
+                <ProfileIcon />
                 <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
                   <CameraIcon color="white" width={14} height={14} />
                 </p>
