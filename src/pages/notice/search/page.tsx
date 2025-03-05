@@ -451,13 +451,15 @@ function NoticeSearchPage() {
             </SelectBox>
           </div>
           <SubTitle>직종</SubTitle>
-          <SelectBox onChange={(e) => setJobType(e.target.value)}>
-            {jobTypes.map((value, index) => (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            ))}
-          </SelectBox>
+          <div>
+            <SelectBox onChange={(e) => setJobType(e.target.value)}>
+              {jobTypes.map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </SelectBox>
+          </div>
           <SubTitle>급여</SubTitle>
           <div className="flex w-full relative">
             <SelectBox
