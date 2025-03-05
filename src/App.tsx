@@ -31,6 +31,7 @@ import MypageScrabPage from "./pages/mypage/scrab/page";
 import NoticeSearchPage from "./pages/notice/search/page";
 import MypageResumeList from "./pages/mypage/resume/list/page";
 import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
+import NoticeAddPage from "./pages/notice/add/page";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
             <Route path="/notice">
               <Route index element={<NotFound />} />
               <Route path="search" element={<NoticeSearchPage />} />
+              <Route path="add" element={<NoticeAddPage />} />
               <Route path=":noticeId">
                 <Route index element={<NoticeDetailPage />} />
                 <Route path="apply">
