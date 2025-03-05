@@ -121,7 +121,7 @@ export function LoginPage() {
           </form>
           <div className="flex flex-row justify-center gap-3 w-full">
             <div className=" text-main-darkGray">계정이 없으신가요?</div>
-            <Link to="/register/business-num">
+            <Link to="/register/info">
               <div className="text-main-color font-bold">회원가입하기</div>
             </Link>
           </div>

@@ -2,19 +2,35 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
-import React, { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { setUserPassword } from "@/util/slices/registerUserInfoSlice";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterBankAccount = () => {
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const isCorrectPassword =
     Boolean(password) && Boolean(rePassword) && password === rePassword;
-  const email = "test@gmail.com"; // 전역상태변수 불러오기
-  // const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const email = useAppSelector((state) => state.registerUserInfo.email);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (email === "") {
+      alert("잘못된 접근입니다");
+      alert("로그인 화면으로 이동합니다");
+      navigate("/login");
+    }
+  }, []);
 
   const handleClickNext = () => {
     console.log(password, rePassword);
-    // navigate('/')
+    if (!isCorrectPassword) return;
+
+    dispatch(setUserPassword(password));
+    navigate("/register/success");
   };
 
   return (

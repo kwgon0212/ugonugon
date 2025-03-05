@@ -8,7 +8,7 @@ const SuccessIcon = ({ width = 150, height = 150 }: IconOptions) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_177_4716)">
+    <g clipPath="url(#clip0_177_4716)">
       <rect width={width} height={height} fill="url(#pattern0_177_4716)" />
     </g>
     <defs>
