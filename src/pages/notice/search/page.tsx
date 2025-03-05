@@ -496,7 +496,7 @@ function NoticeSearchPage() {
             {Object.keys(hireType).map((value, index) => (
               <li
                 key={index}
-                className="btn w-1/3 h-full text-sm border-main-gray bg-white rounded-[10px] text-main-darkGray"
+                className="w-1/3 text-sm flex justify-center items-center border border-main-gray bg-white rounded-[10px] text-main-darkGray"
                 onClick={handleClick}
               >
                 {value}
