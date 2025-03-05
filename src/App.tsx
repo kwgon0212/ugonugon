@@ -32,6 +32,8 @@ import NoticeSearchPage from "./pages/notice/search/page";
 import MypageResumeList from "./pages/mypage/resume/list/page";
 import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
 
+import PostDataTest from "./pages/notice/post/page";
+
 function App() {
   return (
     <div className="min-h-screen flex justify-center bg-gray-200">
@@ -63,6 +65,7 @@ function App() {
 
             <Route path="/notice">
               <Route index element={<NotFound />} />
+              <Route path="post" element={<PostDataTest />} />
               <Route path="search" element={<NoticeSearchPage />} />
               <Route path=":noticeId">
                 <Route index element={<NoticeDetailPage />} />
