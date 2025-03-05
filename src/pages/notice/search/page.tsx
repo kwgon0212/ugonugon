@@ -494,7 +494,7 @@ function NoticeSearchPage() {
             </span>
           </div>
           <SubTitle>고용 형태</SubTitle>
-          <ul className="flex w-full gap-x-[5px] mb-[10px] h-10 list-none relative">
+          <ul className="flex w-full gap-x-[5px] h-10 list-none relative">
             {Object.keys(hireType).map((value, index) => (
               <li
                 key={index}
