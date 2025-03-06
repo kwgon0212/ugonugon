@@ -17,7 +17,7 @@ const registerInitialState: RegisterUserInfo = {
     bank: "",
     account: "",
   },
-  email: "123",
+  email: "",
   emailCode: 0,
   emailCert: false,
   password: "",

@@ -8,6 +8,7 @@ import {
   setUserEmail,
   setUserEmailCode,
 } from "@/util/slices/registerUserInfoSlice";
+import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -44,13 +45,16 @@ function RegisterEmailPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleSubmitEmail = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const email = form["email"].value;
     dispatch(setUserEmail(email));
-    dispatch(setUserEmailCode(1234));
+
     // 서버에 해당 이메일로 인증번호 전송 요청
+    const result = await axios.post("/api/email/cert", { email });
+    const emailCode = result.data;
+    dispatch(setUserEmailCode(emailCode));
 
     navigate("/register/email/cert");
   };

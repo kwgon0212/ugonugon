@@ -8,6 +8,7 @@ import {
   setUserEmailCert,
   setUserEmailCode,
 } from "@/util/slices/registerUserInfoSlice";
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -53,7 +54,7 @@ function RegisterEmailCertPage() {
     useState(false);
 
   const dispatch = useAppDispatch();
-  const userEmail = useAppSelector((state) => state.registerUserInfo.email);
+  const email = useAppSelector((state) => state.registerUserInfo.email);
   const emailCode = useAppSelector((state) => state.registerUserInfo.emailCode);
   const navigate = useNavigate();
 
@@ -84,11 +85,17 @@ function RegisterEmailCertPage() {
       }
   };
 
-  const handleReSendEmailCode = () => {
-    const code = 2345;
-    dispatch(setUserEmailCode(code));
-
+  const handleReSendEmailCode = async () => {
     // 이메일로 다시 코드 전송
+    // 서버에 해당 이메일로 인증번호 전송 요청
+    if (!email) {
+      alert("잘못된 접근입니다");
+      navigate("/login");
+      return;
+    }
+    const result = await axios.post("/api/email/cert", { email });
+    const emailCode = result.data;
+    dispatch(setUserEmailCode(emailCode));
   };
 
   const handleEmailCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
