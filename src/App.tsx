@@ -20,10 +20,6 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
-import { useAppDispatch } from "./hooks/useRedux";
-import { useEffect } from "react";
-import axios from "axios";
-import { loginSuccess } from "./util/slices/authSlice";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ReCruitManagePage from "./pages/recruit/manage/page";
 import NoticeSearchPage from "./pages/notice/search/page";
@@ -40,20 +36,6 @@ import ChattingPage from "./pages/chat/chatting/page";
 import PostDataTest from "./pages/notice/post/page";
 
 function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get("/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => dispatch(loginSuccess({ user: res.data.user, token })))
-        .catch(() => localStorage.removeItem("token"));
-    }
-  }, [dispatch]);
-
   return (
     <div className="min-h-screen flex justify-center bg-gray-200">
       <div className="flex w-full max-w-[1200px] justify-center min-h-screen">

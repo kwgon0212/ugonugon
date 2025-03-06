@@ -29,7 +29,7 @@ router.post("/login", async (req: Request, res: Response) => {
       { id: user._id.toString() },
       process.env.JWT_SECRET as string,
       {
-        expiresIn: 60,
+        expiresIn: "1h",
       }
     );
 
@@ -41,11 +41,11 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.get("/me", authMiddleware, async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.body.userId).select("-password"); // 비밀번호 제외하고 조회
+    const user = await User.findById(req.body.userId);
     if (!user)
       return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
 
-    res.json({ user });
+    res.json({ _id: user._id, email: user.email });
   } catch (err) {
     res.status(500).json({ message: "서버 오류" });
   }
