@@ -7,7 +7,8 @@ import ResumeEditIcon from "@/components/icons/ResumeEdit";
 import StarIcon from "@/components/icons/Star";
 import WalletIcon from "@/components/icons/Wallet";
 import Main from "@/components/Main";
-import React from "react";
+import { useAppSelector } from "@/hooks/useRedux";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const MyPage = () => {
@@ -15,6 +16,14 @@ const MyPage = () => {
   const userEmail = "example@example.com";
   const userAddress = "서울 서대문구 충정로 43-4";
   const userBankAccount = { bank: "토스뱅크", account: "1234-1234-1234" };
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user) {
+      console.log(user._id);
+    }
+  }, [user]);
   return (
     <>
       <Header>
