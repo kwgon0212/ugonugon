@@ -2,25 +2,25 @@ import RegisterUserInfo from "@/types/RegisterUserInfo";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const registerInitialState: RegisterUserInfo = {
-  name: "",
-  businessNumber: [],
-  sex: "",
-  residentId: "",
-  phone: "",
+  name: "rrr",
+  businessNumber: [""],
+  sex: "female",
+  residentId: "1234561234567",
+  phone: "01022222222",
   address: {
-    zipcode: "",
-    street: "",
+    zipcode: "59392",
+    street: "서울 서대문구 어쩌구",
     detail: "",
   },
-  signature: "",
+  signature: "1231243134432",
   bankAccount: {
-    bank: "",
-    account: "",
+    bank: "토스뱅크",
+    account: "00000000000",
   },
-  email: "",
-  emailCode: 0,
-  emailCert: false,
-  password: "",
+  email: "123@123.com",
+  emailCode: 6543,
+  emailCert: true,
+  password: "123",
 };
 
 const registerUserInfo = createSlice({
