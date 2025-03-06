@@ -6,21 +6,21 @@ import Main from "@/components/Main";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setUserBankAccount } from "@/util/slices/registerUserInfoSlice";
+import { useNavigate } from "react-router-dom";
 
 const RegisterBankAccount = () => {
   const [account, setAccount] = useState("");
   const [bank, setBank] = useState("");
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  // const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleChangeAccount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
     setAccount(value);
-  };
-
-  const handleClickBank = () => {
-    setIsOpenBottomSheet(true);
-    console.log("hi");
   };
 
   const handleBank = (bankName: string) => {
@@ -29,8 +29,10 @@ const RegisterBankAccount = () => {
   };
 
   const handleClickNext = () => {
-    console.log(account, bank);
-    // navigate('/')
+    if (!account || !bank) return;
+
+    dispatch(setUserBankAccount({ bank, account }));
+    navigate("/register/business-num");
   };
 
   return (
@@ -54,8 +56,9 @@ const RegisterBankAccount = () => {
             />
             <div className="w-full relative">
               <input
-                className="w-full h-[50px] rounded-[10px] px-layout bg-white text-left border border-main-gray outline-none"
-                onClick={handleClickBank}
+                type="text"
+                className="w-full h-[50px] rounded-[10px] px-layout bg-white text-left border border-main-gray outline-none cursor-pointer"
+                onClick={() => setIsOpenBottomSheet(true)}
                 readOnly
                 placeholder="은행선택"
                 value={

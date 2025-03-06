@@ -3,7 +3,13 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
+import { useAppDispatch } from "@/hooks/useRedux";
+import {
+  setUserEmail,
+  setUserEmailCode,
+} from "@/util/slices/registerUserInfoSlice";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const InsertTextInput = styled.input`
@@ -12,6 +18,7 @@ const InsertTextInput = styled.input`
   background: white;
   border-radius: 10px;
   padding: 0 20px;
+  border: 1px solid var(--main-gray);
 
   ::placeholder {
     padding: 0 20px;
@@ -34,6 +41,19 @@ const BottomButton = styled.button`
 `;
 
 function RegisterEmailPage() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleSubmitEmail = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const email = form["email"].value;
+    dispatch(setUserEmail(email));
+    dispatch(setUserEmailCode(1234));
+    // 서버에 해당 이메일로 인증번호 전송 요청
+
+    navigate("/register/email/cert");
+  };
   return (
     <>
       <Header>
@@ -44,7 +64,10 @@ function RegisterEmailPage() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+        <form
+          className="w-full p-layout flex flex-col gap-layout"
+          onSubmit={handleSubmitEmail}
+        >
           <p className="font-semibold text-xl">이메일 인증</p>
           <p className="text-main-darkGray">
             원활한 서비스 이용을 위한
@@ -53,6 +76,7 @@ function RegisterEmailPage() {
           </p>
           <InsertTextInput
             type="email"
+            name="email"
             placeholder="이메일 계정"
             className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
             pattern="[\w]+@+[\w]+\.[\w]+"

@@ -20,19 +20,40 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
+import { useAppDispatch } from "./hooks/useRedux";
+import { useEffect } from "react";
+import axios from "axios";
+import { loginSuccess } from "./util/slices/authSlice";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ReCruitManagePage from "./pages/recruit/manage/page";
+import NoticeSearchPage from "./pages/notice/search/page";
+import NoticeAddPage from "./pages/notice/add/page";
 import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
+import MypageResumeAdd from "./pages/mypage/resume/add/page";
+import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
+import MypageScrabPage from "./pages/mypage/scrab/page";
+import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
+import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
-import MypageResumeAdd from "./pages/mypage/resume/add/page";
-import ReCruitManagePage from "./pages/recruit/manage/page";
-import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
-import MypageScrabPage from "./pages/mypage/scrab/page";
-import NoticeSearchPage from "./pages/notice/search/page";
-import MypageResumeList from "./pages/mypage/resume/list/page";
-import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
+import PostDataTest from "./pages/notice/post/page";
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => dispatch(loginSuccess({ user: res.data.user, token })))
+        .catch(() => localStorage.removeItem("token"));
+    }
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen flex justify-center bg-gray-200">
       <div className="flex w-full max-w-[1200px] justify-center min-h-screen">
@@ -40,7 +61,7 @@ function App() {
         {/* 모바일 레이아웃 */}
         <div className="relative max-w-[560px] w-full min-h-screen mx-auto lg:mx-0 overflow-hidden">
           <Routes>
-            <Route path="/" element={<RootPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/register">
               <Route index element={<NotFound />} />
               <Route path="sign" element={<RegisterSign />} />
@@ -54,50 +75,60 @@ function App() {
               <Route path="success" element={<RegisterSuccess />} />
             </Route>
 
-            <Route path="/recruit">
-              <Route index element={<ReCruitPage />} />
-              <Route path="manage" element={<ReCruitManagePage />} />
-            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<RootPage />} />
 
-            <Route path="/map" element={<MapPage />} />
+              <Route path="/recruit">
+                <Route index element={<ReCruitPage />} />
+                <Route path="manage" element={<ReCruitManagePage />} />
+              </Route>
 
-            <Route path="/notice">
-              <Route index element={<NotFound />} />
-              <Route path="search" element={<NoticeSearchPage />} />
-              <Route path=":noticeId">
-                <Route index element={<NoticeDetailPage />} />
-                <Route path="apply">
-                  <Route index element={<NoticeApplyPage />} />
-                  <Route path=":resumeId" element={<NoticeApplyResumePage />} />
+              <Route path="/map" element={<MapPage />} />
+
+              <Route path="/notice">
+                <Route index element={<NotFound />} />
+                <Route path="post" element={<PostDataTest />} />
+                <Route path="search" element={<NoticeSearchPage />} />
+                <Route path="add" element={<NoticeAddPage />} />
+                <Route path=":noticeId">
+                  <Route index element={<NoticeDetailPage />} />
+                  <Route path="apply">
+                    <Route index element={<NoticeApplyPage />} />
+                    <Route
+                      path=":resumeId"
+                      element={<NoticeApplyResumePage />}
+                    />
+                  </Route>
+                </Route>
+                <Route path="list" element={<NoticeListPage />} />
+              </Route>
+
+              <Route path="/mypage">
+                <Route index element={<MyPage />} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="resume/add" element={<MypageResumeAdd />} />
+                <Route path="resume/list">
+                  <Route index element={<MypageResumeList />} />
+                  <Route path=":resumeID" element={<MypageResumeListId />} />
+                </Route>
+                <Route path="scrab" element={<MypageScrabPage />} />
+                <Route path="edit">
+                  <Route index element={<NotFound />} />
+                  <Route path="info" element={<MyPageEditInfoPage />} />
+                  <Route
+                    path="bank-account"
+                    element={<EditBankAccountPage />}
+                  />
                 </Route>
               </Route>
-              <Route path="list" element={<NoticeListPage />} />
-            </Route>
 
-            <Route path="/mypage">
-              <Route index element={<MyPage />} />
-              <Route path="*" element={<NotFound />} />
-              <Route path="resume/add" element={<MypageResumeAdd />} />
-              <Route path="resume/list">
-                <Route index element={<MypageResumeList />} />
-                <Route path=":resumeID" element={<MypageResumeListId />} />
+              <Route path="/chat">
+                <Route index element={<ChatPage />} />
+                <Route path=":chatroomId" element={<ChattingPage />} />
               </Route>
-              <Route path="scrab" element={<MypageScrabPage />} />
-              <Route path="edit">
-                <Route index element={<NotFound />} />
-                <Route path="info" element={<MyPageEditInfoPage />} />
-                <Route path="bank-account" element={<EditBankAccountPage />} />
-              </Route>
+
+              <Route path="/work" element={<WorkPage />} />
             </Route>
-
-            <Route path="/chat">
-              <Route index element={<ChatPage />} />
-              <Route path=":chatroomId" element={<ChattingPage />} />
-            </Route>
-
-            <Route path="/work" element={<WorkPage />} />
-
-            <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

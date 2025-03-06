@@ -2,11 +2,16 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setUserBisnessNumber } from "@/util/slices/registerUserInfoSlice";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function RegisterBusinessPage() {
   const [businessNumbers, setBusinessNumbers] = useState([""]);
+  const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
 
   // 사업자 번호 추가
   const addBusinessNumber = () => {
@@ -24,17 +29,23 @@ function RegisterBusinessPage() {
     updatedNumbers[index] = value;
     setBusinessNumbers(updatedNumbers);
   };
+
   const handleNumericInput =
     (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거
       handleChange(index, value); // 업데이트된 숫자를 설정
     };
 
+  const handleClickNext = () => {
+    dispatch(setUserBisnessNumber(businessNumbers));
+    navigate("/register/user-account");
+  };
+
   return (
     <>
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between pl-5 pr-5">
+          <div className="flex flex-row items-center justify-between pl-5 pr-5">
             <Link to="/register/login">
               <ArrowLeftIcon />
             </Link>
@@ -58,7 +69,7 @@ function RegisterBusinessPage() {
                   placeholder="'-'를 제외하고 입력해주세요"
                   className="border border-white rounded-[10px] px-3 py-2 w-full focus:border-[#0B798B] focus:border-2 focus:outline-none"
                   value={number}
-                  onChange={() => handleNumericInput(index)}
+                  onChange={handleNumericInput(index)}
                   maxLength={10}
                 />
 
@@ -82,11 +93,12 @@ function RegisterBusinessPage() {
           </div>
 
           <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
-            <Link to="/register/info" className="w-full flex justify-center">
-              <button className="bg-main-color text-white w-full p-[12px] rounded-[10px] text-[16px] hover:bg-[#0e6977]">
-                다음
-              </button>
-            </Link>
+            <button
+              onClick={handleClickNext}
+              className="bg-main-color text-white w-full p-[12px] rounded-[10px] text-[16px] hover:bg-[#0e6977]"
+            >
+              다음
+            </button>
           </div>
         </div>
       </Main>
