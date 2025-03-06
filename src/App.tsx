@@ -20,23 +20,24 @@ import RegisterInfoPage from "./pages/register/Info/page.jsx";
 import ChatPage from "./pages/chat/page";
 import RegisterSuccess from "./pages/register/success/page";
 import NotFound from "./NotFound";
+import { useAppDispatch } from "./hooks/useRedux";
+import { useEffect } from "react";
+import axios from "axios";
+import { loginSuccess } from "./util/slices/authSlice";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ReCruitManagePage from "./pages/recruit/manage/page";
+import NoticeSearchPage from "./pages/notice/search/page";
+import NoticeAddPage from "./pages/notice/add/page";
 import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
+import MypageResumeAdd from "./pages/mypage/resume/add/page";
+import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
+import MypageScrabPage from "./pages/mypage/scrab/page";
+import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
+import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
-import MypageResumeAdd from "./pages/mypage/resume/add/page";
-import ReCruitManagePage from "./pages/recruit/manage/page";
-import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
-import MypageScrabPage from "./pages/mypage/scrab/page";
-import NoticeSearchPage from "./pages/notice/search/page";
-import MypageResumeList from "./pages/mypage/resume/list/page";
-import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useEffect } from "react";
-import { useAppDispatch } from "./hooks/useRedux";
-import { loginSuccess } from "./util/slices/authSlice";
-import axios from "axios";
-import NoticeAddPage from "./pages/notice/add/page";
+import PostDataTest from "./pages/notice/post/page";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -86,6 +87,7 @@ function App() {
 
               <Route path="/notice">
                 <Route index element={<NotFound />} />
+                <Route path="post" element={<PostDataTest />} />
                 <Route path="search" element={<NoticeSearchPage />} />
                 <Route path="add" element={<NoticeAddPage />} />
                 <Route path=":noticeId">
