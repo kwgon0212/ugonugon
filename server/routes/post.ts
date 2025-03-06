@@ -1,4 +1,4 @@
-import { log } from "console";
+import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
 
@@ -32,6 +32,7 @@ const PostSchema = new Schema(
   // _id: String|Number, => MongoDB가 자동으로 생성해줌
   {
     writter: { type: String, required: true }, // 공고 작성한 userId
+
     applicantInfo: [
       // 지원자 정보
       {
@@ -58,6 +59,7 @@ const PostSchema = new Schema(
     ],
     postDate: { type: Date, required: true }, // 공고 등록한 날짜
     title: { type: String, required: true },
+    endOfNotice: { type: Date, required: true }, // 공고 마감일
     summary: { type: String, required: true },
     firstImage: { type: String, required: true }, // require: true공고 등록시 대표 이미지
     agentInfo: {
@@ -287,6 +289,76 @@ router.delete("/delete/:postId", async (req, res) => {
   } catch (err) {
     console.error("에러 발생:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/post/get/notice/lists
+ *   get:
+ *     summary: notice 목록 전체 가져오기 API
+ *     description: 공고 목록 보기 시 사용 됨 (필요한 데이터만 불러오는거로 했음)
+ *     responses:
+ *       200:
+ *         description: 성공적으로 get 완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: "get all notice lists"
+ */
+router.get("/get/notice/lists", async (req, res) => {
+  try {
+    // 모든 공고 데이터 가져옴
+    const posts = await Post.find().select(
+      "_id title summary exposedArea.goo payType pay workingPeriod"
+    );
+
+    if (!posts.length) {
+      return res.status(404).json({ message: "공고가 없습니다." });
+    }
+
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error("에러 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/post/get/notice/:postId
+ *   get:
+ *     summary: notice 하나의 정보 가져오기 API
+ *     description: 공고 상세 보기 시 사용 됨
+ *     responses:
+ *       200:
+ *         description: 성공적으로 get 완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: "get notice success"
+ */
+router.get("/get/notice/:postId", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "해당 공고를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error("에러 발생: ", err);
+    res.status(500).json({ err: err.message });
   }
 });
 
