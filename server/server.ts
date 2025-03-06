@@ -2,6 +2,9 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import usersRoutes from "./routes/users.ts";
+import testRoutes from "./routes/test.ts";
+import registerRoutes from "./routes/register.ts";
+import authRoutes from "./routes/auth.ts";
 import { setupSwagger } from "../swagger/swagger.ts";
 import mongoose from "mongoose";
 import { defaultMaxListeners } from "events";
@@ -10,12 +13,21 @@ dotenv.config();
 const app: Express = express();
 const PORT = 8080;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // ✅ 프론트엔드 도메인 지정
+    credentials: true, // ✅ 쿠키 허용
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 
 app.use("/api/users", usersRoutes);
+app.use("/api/test", testRoutes);
+app.use("/api/register", registerRoutes);
+
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   mongoose
@@ -23,31 +35,4 @@ app.listen(PORT, () => {
     .then(() => console.log("MongoDB Connected"))
     .catch((err) => console.log(err));
   console.log(`http://localhost:${PORT}에서 서버 구동중...`);
-});
-
-/**
- * @swagger
- * /api:
- *   get:
- *     summary: 유저 목록 조회
- *     description: 모든 유저를 조회하는 API
- *     responses:
- *       200:
- *         description: 성공적으로 유저 목록을 반환함
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Jaehyun"
- */
-app.get("/api", (req: Request, res: Response) => {
-  res.status(200).json({ message: "root" });
 });

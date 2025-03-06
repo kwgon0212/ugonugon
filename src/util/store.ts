@@ -1,37 +1,13 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
-import UserInfo from "@/types/UserInfo";
+import { configureStore } from "@reduxjs/toolkit";
+import registerUserInfoReducer from "./slices/registerUserInfoSlice";
+import authReducer from "./slices/authSlice";
 
-const userInitialState: UserInfo = {
-  _id: "",
-  name: "",
-  사업자번호: "",
-  sex: "",
-  주민번호: "",
-  phone: "",
-  address: {
-    zip: "",
-    mainAddress: "",
-    subAddress: "",
-  },
-  sign: {},
-  bankAccount: {
-    bank: "",
-    account: "",
-  },
-  email: "",
-  password: "",
-};
-
-const user = createSlice({
-  name: "user",
-  initialState: userInitialState,
-  reducers: {},
-});
-
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    user: user.reducer,
+    registerUserInfo: registerUserInfoReducer,
+    auth: authReducer,
   },
 });
 
-export default store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

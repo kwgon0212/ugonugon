@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Header from "../../components/Header";
 import Main from "../../components/Main";
@@ -8,6 +8,8 @@ import Main from "../../components/Main";
 import MailIcon from "../../components/icons/Mail";
 import LockIcon from "../../components//icons/Lock";
 import ArrowRightIcon from "../../components/icons/ArrowRight";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { loginSuccess } from "@/util/slices/authSlice";
 
 const Body = styled.div`
   display: flex;
@@ -73,6 +75,37 @@ const LoginButton = styled.button`
 `;
 
 export function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const auth = useAppSelector((state) => state.auth);
+  console.log(auth);
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      dispatch(loginSuccess(data)); // Redux 상태 업데이트
+      navigate("/");
+    }
+  };
+
   return (
     <>
       <Header>
@@ -87,7 +120,10 @@ export function LoginPage() {
               alt="로고 이미지"
             />
           </div>
-          <form className="flex flex-col justify-center items-center mt-7 w-full">
+          <form
+            className="flex flex-col justify-center items-center mt-7 w-full"
+            onSubmit={handleLogin}
+          >
             <InputContainer>
               <div className="absolute left-5 top-4">
                 <MailIcon color="#BABABA" />
@@ -95,14 +131,25 @@ export function LoginPage() {
               <IconInputMail
                 type="text"
                 placeholder="이메일 계정"
-              ></IconInputMail>
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
             </InputContainer>
             <InputContainer>
               <div className="absolute left-5 top-4">
                 <LockIcon color="#BABABA" />
               </div>
 
-              <IconInputPw type="password" placeholder="비밀번호"></IconInputPw>
+              <IconInputPw
+                type="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
             </InputContainer>
 
             <FindPw className="pr-[15px] text-main-darkGray">
@@ -111,17 +158,13 @@ export function LoginPage() {
               </Link>
               <ArrowRightIcon color="#BABABA" />
             </FindPw>
-            <Link to="/" className="flex w-full justify-center">
-              {/* 로그인하는 함수 만들어야 됨 */}
-              {/* 나중에 타입 변경 */}
-              <LoginButton type="button" className="bg-main-color">
-                로그인
-              </LoginButton>
-            </Link>
+            {/* 로그인하는 함수 만들어야 됨 */}
+            {/* 나중에 타입 변경 */}
+            <LoginButton className="bg-main-color">로그인</LoginButton>
           </form>
           <div className="flex flex-row justify-center gap-3 w-full">
             <div className=" text-main-darkGray">계정이 없으신가요?</div>
-            <Link to="/register/business-num">
+            <Link to="/register/info">
               <div className="text-main-color font-bold">회원가입하기</div>
             </Link>
           </div>

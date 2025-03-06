@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "@/components/Header";
@@ -9,6 +9,8 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 // 전자 서명판
 import SignatureCanvas from "react-signature-canvas";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setUserSignature } from "@/util/slices/registerUserInfoSlice";
 
 // 스타일 정의
 const Container = styled.div`
@@ -36,17 +38,17 @@ const ClearButton = styled.button`
   text-align: center;
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--selected-box);
+  color: var(--main-color);
   border: none;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
   width: 200px;
 
-  &:hover {
+  /* &:hover {
     background-color: #357abd;
-  }
+  } */
 `;
 
 const NextButton = styled.button`
@@ -64,29 +66,44 @@ const NextButton = styled.button`
 `;
 
 export const RegisterSignPage = () => {
+  const [isSigned, setIsSigned] = useState(false);
   const signaturePadRef = useRef<SignatureCanvas | null>(null);
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // 서명 초기화
   const handleClearSignature = () => {
     if (!signaturePadRef.current) return;
     signaturePadRef.current.clear();
+    setIsSigned(false);
+  };
+
+  // 서명 여부 확인
+  const handleEnd = () => {
+    if (!signaturePadRef.current) return;
+    setIsSigned(!signaturePadRef.current.isEmpty());
   };
 
   // 서명 저장 후 다운로드
   const handleSaveSignature = () => {
     if (!signaturePadRef.current) return;
+    if (!isSigned) return;
     const dataURL = signaturePadRef.current.toDataURL("image/png");
     const link = document.createElement("a");
-    link.href = dataURL;
-    link.download = "signature.png";
-    link.click();
+    // link.href = dataURL;
+    // setSignature(link.href);
+    // link.download = "signature.png";
+    // link.click();
+    dispatch(setUserSignature(dataURL));
+    navigate("/register/bank-account");
   };
 
   return (
     <>
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between pl-5 pr-5">
+          <div className="flex flex-row items-center justify-between pl-5 pr-5">
             <Link to="/register/address">
               <ArrowLeftIcon />
             </Link>
@@ -104,10 +121,12 @@ export const RegisterSignPage = () => {
             <div className="flex flex-col justify-items-center items-center w-full h-full px-[20px] mb-11">
               <SignatureCanvas
                 ref={signaturePadRef}
-                penColor="black"
+                penColor="#0B798B"
                 backgroundColor="white"
+                onEnd={handleEnd}
                 canvasProps={{
-                  className: "signature-canvas flex",
+                  className:
+                    "signature-canvas flex rounded-[10px] border border-main-gray",
                   style: { width: "100%", height: "250px" },
                 }}
               />
@@ -117,14 +136,12 @@ export const RegisterSignPage = () => {
             </div>
 
             <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
-              <Link to="/register/bank-account" className="w-full">
-                <NextButton
-                  className="bg-main-color"
-                  onClick={handleSaveSignature}
-                >
-                  다음
-                </NextButton>
-              </Link>
+              <NextButton
+                className="bg-main-color"
+                onClick={handleSaveSignature}
+              >
+                다음
+              </NextButton>
             </div>
           </Container>
         </>
