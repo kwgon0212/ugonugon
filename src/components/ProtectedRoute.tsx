@@ -7,7 +7,6 @@ import axios from "axios";
 const ProtectedRoute = () => {
   const pathname = useLocation().pathname;
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const auth = useAppSelector((state) => state.auth);
 
   const dispatch = useAppDispatch();
 
@@ -25,8 +24,6 @@ const ProtectedRoute = () => {
         .catch(() => localStorage.removeItem("token"));
     }
   }, [dispatch]);
-
-  console.log(auth);
 
   return isAuthenticated ? <Outlet key={pathname} /> : <Navigate to="/login" />;
 };
