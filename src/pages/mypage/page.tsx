@@ -25,31 +25,17 @@ interface User {
 }
 
 const MyPage = () => {
-  const [userData, setUserData] = useState<User>({});
-  // const userId = useAppSelector((state) => "67c901f21e006624c5145f13");
+  const userId = useAppSelector((state) => state.auth.user?._id);
+  const [userData, setUserData] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const userId = useAppSelector((state) => state.auth.user?.email);
-  // const userId = useAppSelector((state) => state.auth.user?.id);
-
-  console.log("useAppSelector((state) => state.auth.user?.email)");
-  console.log(useAppSelector((state) => state.auth.user?.email));
-
-  // console.log(Object.keys(userId));
-  // console.log(Object.values(userId));
-
-  useEffect(() => {
-    if (userId) {
-      console.log("test");
-      console.log(userId);
-      fetch(`/api/users?userId=${userId}`)
-        .then((res) => res.json())
-        .then((data) => setUserData(data));
-    }
-
-    // fetch(`/api/users?userId=${userId}`)
-    //   .then((res) => res.json())
-    //   .then((data) => setUserData(data));
-  }, []);
+  // useEffect(() => {
+  //   if (userId) {
+  //     fetch(`/api/users?userId=${userId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => setUserData(data));
+  //   }
+  // }, [userId]);
 
   // const res = fetch("api/users", {
   //   method: "POST",
@@ -58,48 +44,33 @@ const MyPage = () => {
   //   }),
   // });
 
-  // let data = {};
+  const postData = async () => {
+    try {
+      setLoading(true); // 로딩 시작
 
-  // const postData = async () => {
-  //   try {
-  //     const res = await fetch("/api/users", {
-  //       method: "POST",
-  //       body: JSON.stringify({ userId }),
-  //     });
-  //     // console.log(await res.json());
-  //     let tmp = await res.json();
-  //     data = { ...tmp };
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   postData();
-  // }, []);
+      const res = await fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify({ userId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-  // const getData = async () => {
-  //   try {
-  //     const res = await fetch("/api/users?userId=" + userId, {
-  //       method: "GET",
-  //     });
-  //     // console.log(await res.json());
-  //     let tmp = await res.json();
-  //     data = { ...tmp };
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-
-  const user = useAppSelector((state) => state.auth.user);
+      const jsonResponse = await res.json(); // 응답을 JSON으로 파싱
+      setUserData(jsonResponse); // data 상태를 업데이트
+    } catch (err: any) {
+      console.log(err, err?.messages);
+    } finally {
+      setLoading(false); // 로딩 끝
+    }
+  };
 
   useEffect(() => {
-    if (user) {
-      console.log(user._id);
+    if (userId) {
+      postData(); // userId가 있을 때만 호출
     }
-  }, [user]);
+  }, [userId]); // userId가 변경될 때마다 호출
+
   return (
     <>
       <Header>
@@ -107,80 +78,88 @@ const MyPage = () => {
           <span>마이페이지</span>
         </div>
       </Header>
-      <Main hasBottomNav={true}>
-        <div className="size-full flex flex-col gap-[20px] pt-[20px]">
-          <div className="w-full flex gap-[10px] px-[20px]">
-            <img src="https://placehold.co/80" alt="" />
-            <div className="flex flex-col">
-              <span className="text-[18px]">
-                안녕하세요! <b className="text-main-color">{userData.name}</b>님
-              </span>
-              <span className="text-main-gray">{userData.email}</span>
-              <span className="text-main-gray">{userData.address?.street}</span>
-            </div>
-          </div>
-
-          <div className="px-[20px]">
-            <Link
-              to={"#"}
-              className="w-full h-[50px] rounded-[10px] flex gap-[10px] justify-center items-center border-main-gray border bg-white"
-            >
-              <EditIcon color="#717171" width={18} height={18} />
-              <span className="text-main-darkGray">내 정보 수정</span>
-            </Link>
-          </div>
-
-          <div className="size-full flex flex-col gap-[20px] rounded-t-[30px] bg-white p-[20px]">
-            <div className="w-full rounded-[10px] bg-selected-box p-[20px] flex flex-col gap-[10px]">
-              <p className="text-[18px] font-bold text-main-color mb-[10px]">
-                나의 이력서
-              </p>
-              <Link to={"#"} className="flex gap-[10px] items-center">
-                <ResumeEditIcon />
-                <span className="text-selected-text">이력서 등록</span>
-              </Link>
-              <Link to={"#"} className="flex gap-[10px] items-center">
-                <ResumeIcon />
-                <span className="text-selected-text">이력서 관리</span>
-              </Link>
+      {!loading && (
+        <Main hasBottomNav={true}>
+          <div className="size-full flex flex-col gap-[20px] pt-[20px]">
+            <div className="w-full flex gap-[10px] px-[20px]">
+              <img src="https://placehold.co/80" alt="" />
+              <div className="flex flex-col">
+                <span className="text-[18px]">
+                  안녕하세요!{" "}
+                  <b className="text-main-color">{userData?.name}</b>님
+                </span>
+                <span className="text-main-gray">{userData?.email}</span>
+                <span className="text-main-gray">
+                  {userData?.address?.street}
+                </span>
+              </div>
             </div>
 
-            <div className="w-full p-[20px] flex flex-col gap-[10px]">
-              <Link to={"#"} className="flex justify-between items-center">
-                <div className="flex gap-[10px] items-center">
-                  <WalletIcon color="#717171" />
-                  <span className="text-main-darkGray">
-                    {userData.bankAccount?.bank} {userData.bankAccount?.account}
-                  </span>
-                </div>
-                <ArrowRightIcon color="#717171" />
-              </Link>
-              <Link to={"#"} className="flex justify-between items-center">
-                <div className="flex gap-[10px] items-center">
-                  <StarIcon color="#717171" />
-                  <span className="text-main-darkGray">내가 스크랩한 공고</span>
-                </div>
-                <ArrowRightIcon color="#717171" />
-              </Link>
-            </div>
-
-            <div className="w-full flex justify-center gap-[10px]">
+            <div className="px-[20px]">
               <Link
                 to={"#"}
-                className="border border-main-gray px-2 rounded-[10px] text-main-darkGray"
+                className="w-full h-[50px] rounded-[10px] flex gap-[10px] justify-center items-center border-main-gray border bg-white"
               >
-                로그아웃
-              </Link>
-              <Link
-                to={"#"}
-                className="border border-main-gray px-2 rounded-[10px] text-main-gray"
-              >
-                탈퇴하기
+                <EditIcon color="#717171" width={18} height={18} />
+                <span className="text-main-darkGray">내 정보 수정</span>
               </Link>
             </div>
+
+            <div className="size-full flex flex-col gap-[20px] rounded-t-[30px] bg-white p-[20px]">
+              <div className="w-full rounded-[10px] bg-selected-box p-[20px] flex flex-col gap-[10px]">
+                <p className="text-[18px] font-bold text-main-color mb-[10px]">
+                  나의 이력서
+                </p>
+                <Link to={"#"} className="flex gap-[10px] items-center">
+                  <ResumeEditIcon />
+                  <span className="text-selected-text">이력서 등록</span>
+                </Link>
+                <Link to={"#"} className="flex gap-[10px] items-center">
+                  <ResumeIcon />
+                  <span className="text-selected-text">이력서 관리</span>
+                </Link>
+              </div>
+
+              <div className="w-full p-[20px] flex flex-col gap-[10px]">
+                <Link to={"#"} className="flex justify-between items-center">
+                  <div className="flex gap-[10px] items-center">
+                    <WalletIcon color="#717171" />
+                    <span className="text-main-darkGray">
+                      {userData?.bankAccount?.bank}{" "}
+                      {userData?.bankAccount?.account}
+                    </span>
+                  </div>
+                  <ArrowRightIcon color="#717171" />
+                </Link>
+                <Link to={"#"} className="flex justify-between items-center">
+                  <div className="flex gap-[10px] items-center">
+                    <StarIcon color="#717171" />
+                    <span className="text-main-darkGray">
+                      내가 스크랩한 공고
+                    </span>
+                  </div>
+                  <ArrowRightIcon color="#717171" />
+                </Link>
+              </div>
+
+              <div className="w-full flex justify-center gap-[10px]">
+                <Link
+                  to={"#"}
+                  className="border border-main-gray px-2 rounded-[10px] text-main-darkGray"
+                >
+                  로그아웃
+                </Link>
+                <Link
+                  to={"#"}
+                  className="border border-main-gray px-2 rounded-[10px] text-main-gray"
+                >
+                  탈퇴하기
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </Main>
+        </Main>
+      )}
       <BottomNav />
     </>
   );

@@ -50,15 +50,14 @@ const UsersSchema = new mongoose.Schema({
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
 const Users = mongoose.model("users", UsersSchema);
 
-router.post("/", async (req, res) => {
-  try {
-    // const userId = req.body.userId;
-    const user = await Users.findById(req.body.userId);
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// router.post("/", async (req, res) => {
+//   try {
+//     const user = await Users.findById(req.body.userId);
+//     res.status(201).json(user);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 router.post("/", async (req, res) => {
   try {
@@ -76,12 +75,7 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    // const userId = req.query.userId;
-    // mongoose.Types.ObjectId.isValid(userId?.toString());
-
-    // const userId = new mongoose.Types.ObjectId(req.query.userId);
-    console.log("req.query.userId");
-    console.log(req.query.userId);
+    const userId = req.query.userId;
     const user = await Users.findById(req.query.userId).select(
       "businessNumber address bankAccount name sex phone signature email residentId"
     );
