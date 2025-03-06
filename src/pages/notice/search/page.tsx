@@ -18,6 +18,7 @@ interface Props {
   padding?: string;
   bottom?: string;
   radius?: string;
+  bgSize?: string;
 }
 
 type ObjType = {
@@ -67,7 +68,7 @@ const SelectBox = styled.select<Props>`
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
   background-repeat: no-repeat;
   background-position: right 10px center;
-  background-size: 20px;
+  background-size: ${(props) => props.bgSize || "20px"};
   outline: none;
 
   &:focus {
@@ -450,13 +451,15 @@ function NoticeSearchPage() {
             </SelectBox>
           </div>
           <SubTitle>직종</SubTitle>
-          <SelectBox onChange={(e) => setJobType(e.target.value)}>
-            {jobTypes.map((value, index) => (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            ))}
-          </SelectBox>
+          <div>
+            <SelectBox onChange={(e) => setJobType(e.target.value)}>
+              {jobTypes.map((value, index) => (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              ))}
+            </SelectBox>
+          </div>
           <SubTitle>급여</SubTitle>
           <div className="flex w-full relative">
             <SelectBox
@@ -491,11 +494,11 @@ function NoticeSearchPage() {
             </span>
           </div>
           <SubTitle>고용 형태</SubTitle>
-          <ul className="flex w-full gap-x-[5px] mb-[10px] h-10 list-none relative">
+          <ul className="flex w-full gap-x-[5px] h-10 list-none relative">
             {Object.keys(hireType).map((value, index) => (
               <li
                 key={index}
-                className="btn w-1/3 h-full text-sm border-main-gray bg-white rounded-[10px] text-main-darkGray"
+                className="w-1/3 text-sm flex justify-center items-center border border-main-gray bg-white rounded-[10px] text-main-darkGray"
                 onClick={handleClick}
               >
                 {value}

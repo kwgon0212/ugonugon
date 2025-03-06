@@ -36,6 +36,7 @@ import { useEffect } from "react";
 import { useAppDispatch } from "./hooks/useRedux";
 import { loginSuccess } from "./util/slices/authSlice";
 import axios from "axios";
+import NoticeAddPage from "./pages/notice/add/page";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -86,6 +87,7 @@ function App() {
               <Route path="/notice">
                 <Route index element={<NotFound />} />
                 <Route path="search" element={<NoticeSearchPage />} />
+                <Route path="add" element={<NoticeAddPage />} />
                 <Route path=":noticeId">
                   <Route index element={<NoticeDetailPage />} />
                   <Route path="apply">
