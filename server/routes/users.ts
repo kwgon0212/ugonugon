@@ -50,36 +50,63 @@ const UsersSchema = new mongoose.Schema({
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
 const Users = mongoose.model("users", UsersSchema);
 
-const TestSchema = new mongoose.Schema({
-  arr: { type: Array, required: true },
-});
-const Tests = mongoose.model("tests", TestSchema);
-
-router.post("/sign", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const signUser = new Users(...req.body);
-    signUser.save();
-    res.status(201).json(signUser);
+    // const userId = req.body.userId;
+    const user = await Users.findById(req.body.userId);
+    res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.get("/apply", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    // const applyUserId = new Users(...req.body._id);
-    const applyUserId = "67c7ab9db5bf1de0912592cc";
-    const applyUser = await Users.findById(applyUserId).select(
-      "name email bankInfo"
+    const user = await Users.findById(
+      await Users.findById(req.body.userId)
+    ).select(
+      "businessNumber address bankAccount name sex phone signature email residentId"
     );
-    if (!applyUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(applyUser);
+    if (user) user["residentId"] = user.residentId.slice(0, 6);
+    res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get("/", async (req, res) => {
+  try {
+    // const userId = req.query.userId;
+    // mongoose.Types.ObjectId.isValid(userId?.toString());
+
+    // const userId = new mongoose.Types.ObjectId(req.query.userId);
+    console.log("req.query.userId");
+    console.log(req.query.userId);
+    const user = await Users.findById(req.query.userId).select(
+      "businessNumber address bankAccount name sex phone signature email residentId"
+    );
+    if (user) user["residentId"] = user.residentId.slice(0, 6);
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// router.post("/apply", async (req, res) => {
+//   try {
+//     const applyUserId = new Users(...req.body._id);
+//     // const applyUserId = "67c7ab9db5bf1de0912592cc";
+//     const applyUser = await Users.findById(applyUserId).select(
+//       "name email bankInfo"
+//     );
+//     if (!applyUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     res.status(200).json(applyUser);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 // router.post("/apply", async (req, res) => {
 //   try {
@@ -92,8 +119,8 @@ router.get("/apply", async (req, res) => {
 // });
 
 router.post("/apply", async (req, res) => {
-  const applyUserId = "67c7ab9db5bf1de0912592cc";
-  const applyPostId = "67c7d72dcb90716e8d3c1932";
+  const applyUserId = "67c901f21e006624c5145f13";
+  const applyPostId = "67c7d7abcb90716e8d3c1934";
 
   if (!applyUserId || !applyPostId) {
     return res

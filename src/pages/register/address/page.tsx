@@ -138,7 +138,7 @@ export function RegisterAddressPage() {
               placeholder="상세주소"
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
-              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray outline-main-color"
+              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray outline outline-main-color"
             ></input>
           </div>
 
@@ -159,7 +159,6 @@ export function RegisterAddressPage() {
               autoClose
             />
           </Modal>
-
           {/* 주소 검색 팝업 */}
           {/* {isPostcodeOpen && (
             

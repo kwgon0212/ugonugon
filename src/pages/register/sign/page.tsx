@@ -121,7 +121,6 @@ export const RegisterSignPage = () => {
             <div className="flex flex-col justify-items-center items-center w-full h-full px-[20px] mb-11">
               <SignatureCanvas
                 ref={signaturePadRef}
-                penColor="#0B798B"
                 backgroundColor="white"
                 onEnd={handleEnd}
                 canvasProps={{

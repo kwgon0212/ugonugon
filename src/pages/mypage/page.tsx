@@ -7,14 +7,92 @@ import ResumeEditIcon from "@/components/icons/ResumeEdit";
 import StarIcon from "@/components/icons/Star";
 import WalletIcon from "@/components/icons/Wallet";
 import Main from "@/components/Main";
-import React from "react";
+import { useAppSelector } from "@/hooks/useRedux";
+import React, { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
+import mongoose from "mongoose";
+
+interface User {
+  businessNumber?: string[];
+  address?: { zipcode: string; street: string; detail: string };
+  bankAccount?: { bank: string; account: string };
+  name?: string;
+  sex?: string;
+  residentId?: string;
+  phone?: string;
+  signature?: string;
+  email?: string;
+}
 
 const MyPage = () => {
-  const userName = "의문의 계정";
-  const userEmail = "example@example.com";
-  const userAddress = "서울 서대문구 충정로 43-4";
-  const userBankAccount = { bank: "토스뱅크", account: "1234-1234-1234" };
+  const [userData, setUserData] = useState<User>({});
+  // const userId = useAppSelector((state) => "67c901f21e006624c5145f13");
+
+  const userId = useAppSelector((state) => state.auth.user?.email);
+  // const userId = useAppSelector((state) => state.auth.user?.id);
+
+  console.log("useAppSelector((state) => state.auth.user?.email)");
+  console.log(useAppSelector((state) => state.auth.user?.email));
+
+  // console.log(Object.keys(userId));
+  // console.log(Object.values(userId));
+
+  useEffect(() => {
+    if (userId) {
+      console.log("test");
+      console.log(userId);
+      fetch(`/api/users?userId=${userId}`)
+        .then((res) => res.json())
+        .then((data) => setUserData(data));
+    }
+
+    // fetch(`/api/users?userId=${userId}`)
+    //   .then((res) => res.json())
+    //   .then((data) => setUserData(data));
+  }, []);
+
+  // const res = fetch("api/users", {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     userId,
+  //   }),
+  // });
+
+  // let data = {};
+
+  // const postData = async () => {
+  //   try {
+  //     const res = await fetch("/api/users", {
+  //       method: "POST",
+  //       body: JSON.stringify({ userId }),
+  //     });
+  //     // console.log(await res.json());
+  //     let tmp = await res.json();
+  //     data = { ...tmp };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   postData();
+  // }, []);
+
+  // const getData = async () => {
+  //   try {
+  //     const res = await fetch("/api/users?userId=" + userId, {
+  //       method: "GET",
+  //     });
+  //     // console.log(await res.json());
+  //     let tmp = await res.json();
+  //     data = { ...tmp };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getData();
+  // }, []);
+
   return (
     <>
       <Header>
@@ -28,10 +106,10 @@ const MyPage = () => {
             <img src="https://placehold.co/80" alt="" />
             <div className="flex flex-col">
               <span className="text-[18px]">
-                안녕하세요! <b className="text-main-color">{userName}</b>님
+                안녕하세요! <b className="text-main-color">{userData.name}</b>님
               </span>
-              <span className="text-main-gray">{userEmail}</span>
-              <span className="text-main-gray">{userAddress}</span>
+              <span className="text-main-gray">{userData.email}</span>
+              <span className="text-main-gray">{userData.address?.street}</span>
             </div>
           </div>
 
@@ -65,7 +143,7 @@ const MyPage = () => {
                 <div className="flex gap-[10px] items-center">
                   <WalletIcon color="#717171" />
                   <span className="text-main-darkGray">
-                    {userBankAccount.bank} {userBankAccount.account}
+                    {userData.bankAccount?.bank} {userData.bankAccount?.account}
                   </span>
                 </div>
                 <ArrowRightIcon color="#717171" />
