@@ -5,7 +5,7 @@ import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import DatePicker from "react-datepicker";
-
+import { ko } from "date-fns/locale/ko";
 import DaumPostcode from "react-daum-postcode";
 import PlusIcon from "@/components/icons/Plus";
 
