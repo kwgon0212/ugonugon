@@ -27,5 +27,5 @@ export function setupSwagger(app: Express) {
     swaggerUi.serve,
     swaggerUi.setup(swaggerSpec, { explorer: true })
   );
-  console.log("📄 Swagger Docs: http://localhost:3000/docs");
+  console.log("📄 Swagger Docs: http://localhost:8080/docs");
 }
