@@ -1,6 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const MainWrap = styled.div`
   position: absolute;
@@ -43,10 +44,72 @@ const ExitBtn = styled.button`
 `;
 
 interface AlertModalProps {
-  handleClose: () => void; // handleClose 함수 타입 정의
+  handleClose: () => void;
+  roomId: string; // 채팅방 ID 추가
 }
 
-export function AlertModal({ handleClose }: AlertModalProps) {
+export function AlertModal({ handleClose, roomId }: AlertModalProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // URL에서 userId 파라미터 가져오기
+  const searchParams = new URLSearchParams(location.search);
+  const userId = searchParams.get("userId") || "";
+
+  // 채팅방 ID에서 상대방 ID 추출
+  const getOtherUserId = (roomId: string, myId: string): string => {
+    // 채팅방 ID 형식: chat_user1Id_user2Id
+    const parts = roomId.split("_");
+    if (parts.length === 3) {
+      const id1 = parts[1];
+      const id2 = parts[2];
+      return id1 === myId ? id2 : id1;
+    }
+    return "";
+  };
+
+  const handleExit = async () => {
+    try {
+      // 1. 로컬 스토리지에서 채팅방 나감 정보 가져오기
+      const leftRooms = JSON.parse(
+        localStorage.getItem("leftChatRooms") || "{}"
+      );
+
+      // 채팅방 정보 있는지 확인
+      if (!leftRooms[roomId]) {
+        // 처음 나가는 사람인 경우
+        leftRooms[roomId] = {
+          leftBy: userId,
+          leftAt: new Date().toISOString(),
+        };
+      } else {
+        // 이미 누군가 나간 경우, 두 번째 나가는 사람인지 확인
+        if (leftRooms[roomId].leftBy && leftRooms[roomId].leftBy !== userId) {
+          leftRooms[roomId].leftBy2 = userId;
+          leftRooms[roomId].leftAt2 = new Date().toISOString();
+        } else if (!leftRooms[roomId].leftBy) {
+          leftRooms[roomId].leftBy = userId;
+          leftRooms[roomId].leftAt = new Date().toISOString();
+        }
+      }
+
+      // 스토리지에 저장
+      localStorage.setItem("leftChatRooms", JSON.stringify(leftRooms));
+
+      // 2. 메시지 삭제 API 호출
+      await axios.delete("/api/messages/clear", {
+        data: { roomId },
+      });
+
+      // 3. 채팅 목록 페이지로 이동 (userId 유지)
+      navigate(`/chat?userId=${userId}`);
+    } catch (error) {
+      console.error("메시지 삭제 중 오류 발생:", error);
+      // 에러 처리 (선택적)
+      alert("채팅 기록 삭제 중 문제가 발생했습니다.");
+    }
+  };
+
   return (
     <>
       <MainWrap>
@@ -67,9 +130,11 @@ export function AlertModal({ handleClose }: AlertModalProps) {
                 취소
               </CancleBtn>
             </div>
-            <Link to="/chat" className="flex w-[40%]">
-              <ExitBtn className=" bg-main-color">나가기</ExitBtn>
-            </Link>
+            <div className="flex w-[40%]">
+              <ExitBtn className="bg-main-color" onClick={handleExit}>
+                나가기
+              </ExitBtn>
+            </div>
           </div>
         </AlertBox>
       </MainWrap>
