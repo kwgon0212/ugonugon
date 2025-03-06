@@ -2,10 +2,11 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
+import StatusBar from "@/components/StatusBar";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setUserPassword } from "@/util/slices/registerUserInfoSlice";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterBankAccount = () => {
   const [password, setPassword] = useState("");
@@ -36,14 +37,21 @@ const RegisterBankAccount = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center justify-between px-[20px]">
-          <ArrowLeftIcon width={24} height={24} />
-          <CancelIcon width={24} height={24} />
+        <div className="relative flex flex-col justify-center w-full h-full">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeftIcon />
+            </button>
+            <Link to="/login">
+              <CancelIcon />
+            </Link>
+          </div>
+          <StatusBar percent={87.5} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <div className="size-full p-layout flex flex-col gap-layout relative">
-          <p className="text-[20px] font-bold">계정 등록</p>
+          <p className="text-xl font-bold">계정 등록</p>
           <div className="flex flex-col gap-layout">
             <div className="w-full flex flex-col gap-[4px]">
               <span className="text-[14px] text-main-darkGray">
@@ -88,9 +96,7 @@ const RegisterBankAccount = () => {
 
           <div className="w-full absolute bottom-[20px] left-0 px-[20px]">
             <button
-              className={`w-full h-[50px] rounded-[10px] px-layout ${
-                isCorrectPassword ? "bg-main-color" : "bg-selected-box"
-              } text-center text-white`}
+              className={`w-full h-[50px] rounded-[10px] px-layout bg-main-color text-center text-white`}
               disabled={!isCorrectPassword}
               onClick={handleClickNext}
             >

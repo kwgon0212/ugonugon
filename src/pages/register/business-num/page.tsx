@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
+import StatusBar from "@/components/StatusBar";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserBisnessNumber } from "@/util/slices/registerUserInfoSlice";
 import React, { useState } from "react";
@@ -45,20 +46,21 @@ function RegisterBusinessPage() {
     <>
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row items-center justify-between pl-5 pr-5">
-            <Link to="/register/login">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
-            </Link>
+            </button>
             <Link to="/login">
               <CancelIcon />
             </Link>
           </div>
+          <StatusBar percent={75} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <div className="flex flex-col gap-4 p-5">
-          <p className="font-semibold text-[20px]">사업자번호</p>
-          <p className="text-[16px] text-main-darkGray">
+          <p className="font-semibold text-xl">사업자번호</p>
+          <p className="text-main-darkGray">
             사업자번호가 있으시면 입력해주세요
           </p>
           <div className="flex flex-col gap-2">

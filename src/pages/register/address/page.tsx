@@ -12,6 +12,7 @@ import Main from "@/components/Main";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserAddress } from "@/util/slices/registerUserInfoSlice";
 import Modal from "@/components/Modal";
+import StatusBar from "@/components/StatusBar";
 
 // 우편번호 데이터 타입 정의
 interface PostcodeData {
@@ -25,7 +26,7 @@ const Head = styled.div`
   margin-bottom: 20px;
   margin-top: 20px;
   padding-left: 20px;
-  font-size: 18px;
+  /* font-size: 18px; */
   font-weight: bold;
 `;
 
@@ -91,20 +92,20 @@ export function RegisterAddressPage() {
     <>
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between pl-5 pr-5">
-            <Link to="/register/address">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
-            </Link>
+            </button>
             <Link to="/login">
               <CancelIcon />
             </Link>
           </div>
-          <div className="absolute bottom-0 bg-main-color h-[3px] w-[148.8px]" />
+          <StatusBar percent={25} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <div className="flex flex-col items-center w-full h-full">
-          <Head>주소지 등록</Head>
+          <Head className="text-xl">주소지 등록</Head>
           {/* 우편번호 + 주소검색 버튼 */}
           <div className="w-full px-[20px]">
             <div className="flex flex-row gap-[20px] w-full mb-[20px]">
@@ -143,26 +144,20 @@ export function RegisterAddressPage() {
           </div>
 
           <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
-            {/* <Link
-              className="w-full rounded-[10px] bg-main-color"
-            > */}
             <NextButton onClick={handleClickNext} type="button">
               다음
             </NextButton>
-            {/* </Link> */}
           </div>
 
           <Modal isOpen={isPostcodeOpen} setIsOpen={setIsPostcodeOpen}>
-            <DaumPostcode
-              onComplete={handlePostcodeComplete} // 주소 선택 시 실행되는 함수
-              className="mt-5"
-              autoClose
-            />
+            {isPostcodeOpen && (
+              <DaumPostcode
+                onComplete={handlePostcodeComplete} // 주소 선택 시 실행되는 함수
+                className="mt-5"
+                autoClose
+              />
+            )}
           </Modal>
-          {/* 주소 검색 팝업 */}
-          {/* {isPostcodeOpen && (
-            
-          )} */}
         </div>
       </Main>
     </>

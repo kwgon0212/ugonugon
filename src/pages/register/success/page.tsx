@@ -6,8 +6,9 @@ import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
 import CancelIcon from "../../../components/icons/Cancel";
 import SuccessIcon from "../../../components/icons/Success";
 import { useAppSelector } from "@/hooks/useRedux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import JSConfetti from "js-confetti";
+import StatusBar from "@/components/StatusBar";
 
 const BottomButton = styled.button`
   position: absolute;
@@ -17,7 +18,6 @@ const BottomButton = styled.button`
   width: calc(100% - 40px);
   height: 50px;
   border-radius: 10px;
-  font-size: 14px;
   background: #0b798b;
   color: white;
 `;
@@ -33,18 +33,19 @@ function RegisterSuccessPage() {
     ...userInfo
   } = registerUserInfo;
   const confettiRef = useRef(null);
-  console.log(registerUserInfo);
   const navigate = useNavigate();
 
   const isCompleteRegister =
     Object.values(userInfo).every((value) => {
       return value !== "";
     }) &&
-    bankAccount.account &&
-    bankAccount.bank &&
-    address.zipcode &&
-    address.street &&
-    emailCert;
+    Boolean(
+      bankAccount.account &&
+        bankAccount.bank &&
+        address.zipcode &&
+        address.street &&
+        emailCert
+    );
 
   useEffect(() => {
     if (!confettiRef.current) return;
@@ -68,6 +69,8 @@ function RegisterSuccessPage() {
     if (!isCompleteRegister) {
       alert("잘못된 접근입니다");
       navigate("/login");
+
+      return;
     }
 
     const response = await fetch("/api/register", {
@@ -83,7 +86,10 @@ function RegisterSuccessPage() {
       }),
     });
 
+    const data = await response.json();
+
     if (response.ok) {
+      console.log(data.message);
       navigate("/login");
     } else {
       alert("잘못된 접근입니다");
@@ -93,10 +99,16 @@ function RegisterSuccessPage() {
   return (
     <>
       <Header>
-        <div className="px-5 h-full flex justify-between flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
-          <CancelIcon width={24} height={24} />
-          {/* <hr /> */}
+        <div className="relative flex flex-col justify-center w-full h-full">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeftIcon />
+            </button>
+            <Link to="/login">
+              <CancelIcon />
+            </Link>
+          </div>
+          <StatusBar percent={100} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
@@ -113,7 +125,7 @@ function RegisterSuccessPage() {
           <div className="mt-[81px] flex justify-center">
             <SuccessIcon />
           </div>
-          <BottomButton onClick={handleClickNext}>로그인 하기</BottomButton>
+          <BottomButton onClick={handleClickNext}>로그인</BottomButton>
         </div>
       </Main>
     </>

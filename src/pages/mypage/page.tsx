@@ -8,7 +8,7 @@ import StarIcon from "@/components/icons/Star";
 import WalletIcon from "@/components/icons/Wallet";
 import Main from "@/components/Main";
 import { useAppSelector } from "@/hooks/useRedux";
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import mongoose from "mongoose";
 
@@ -93,6 +93,13 @@ const MyPage = () => {
   //   getData();
   // }, []);
 
+  const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user) {
+      console.log(user._id);
+    }
+  }, [user]);
   return (
     <>
       <Header>

@@ -85,6 +85,7 @@ const User = mongoose.model("user", UserSchema);
  */
 router.post("/", async (req, res) => {
   const { password, signature, ...userInfo } = req.body;
+  console.log(req.body);
   const tempSignature = "@@@";
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({
@@ -92,6 +93,7 @@ router.post("/", async (req, res) => {
     password: hashedPassword,
     signature: tempSignature,
   });
+
   try {
     const savedUser = await newUser.save();
     console.log(savedUser);
