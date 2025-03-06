@@ -8,7 +8,8 @@ import CancelIcon from "@/components/icons/Cancel";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserBankAccount } from "@/util/slices/registerUserInfoSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import StatusBar from "@/components/StatusBar";
 
 const RegisterBankAccount = () => {
   const [account, setAccount] = useState("");
@@ -38,14 +39,21 @@ const RegisterBankAccount = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center justify-between px-[20px]">
-          <ArrowLeftIcon width={24} height={24} />
-          <CancelIcon width={24} height={24} />
+        <div className="relative flex flex-col justify-center w-full h-full">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeftIcon />
+            </button>
+            <Link to="/login">
+              <CancelIcon />
+            </Link>
+          </div>
+          <StatusBar percent={62.5} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <div className="size-full p-layout flex flex-col gap-layout relative">
-          <p className="text-[20px] font-bold">계좌 등록</p>
+          <p className="text-xl font-bold">계좌 등록</p>
           <div className="flex flex-col gap-layout">
             <input
               placeholder="계좌번호를 입력해주세요"
@@ -54,11 +62,13 @@ const RegisterBankAccount = () => {
               type="numeric"
               className="h-[50px] rounded-[10px] px-layout border border-main-gray outline-main-color"
             />
-            <div className="w-full relative">
+            <div
+              className="w-full relative"
+              onClick={() => setIsOpenBottomSheet(true)}
+            >
               <input
                 type="text"
                 className="w-full h-[50px] rounded-[10px] px-layout bg-white text-left border border-main-gray outline-none cursor-pointer"
-                onClick={() => setIsOpenBottomSheet(true)}
                 readOnly
                 placeholder="은행선택"
                 value={
@@ -73,9 +83,7 @@ const RegisterBankAccount = () => {
 
           <div className="w-full absolute bottom-[20px] left-0 px-[20px]">
             <button
-              className={`w-full h-[50px] rounded-[10px] px-layout ${
-                account && bank ? "bg-main-color" : "bg-selected-box"
-              } text-center text-white`}
+              className={`w-full h-[50px] rounded-[10px] px-layout bg-main-color text-center text-white`}
               disabled={!account || !bank}
               onClick={handleClickNext}
             >

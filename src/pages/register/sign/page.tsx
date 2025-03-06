@@ -11,6 +11,7 @@ import CancelIcon from "@/components/icons/Cancel";
 import SignatureCanvas from "react-signature-canvas";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserSignature } from "@/util/slices/registerUserInfoSlice";
+import StatusBar from "@/components/StatusBar";
 
 // 스타일 정의
 const Container = styled.div`
@@ -24,7 +25,6 @@ const Container = styled.div`
 const Head = styled.div`
   display: flex;
   align-self: start;
-  font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
   margin-top: 20px;
@@ -103,25 +103,25 @@ export const RegisterSignPage = () => {
     <>
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row items-center justify-between pl-5 pr-5">
-            <Link to="/register/address">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
-            </Link>
+            </button>
             <Link to="/login">
               <CancelIcon />
             </Link>
           </div>
-          <div className="absolute bottom-0 bg-main-color h-[3px] w-[217.2px]" />
+          <StatusBar percent={50} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <>
-          <Head>서명 등록</Head>
+          <Head className="text-xl">서명 등록</Head>
           <Container>
             <div className="flex flex-col justify-items-center items-center w-full h-full px-[20px] mb-11">
               <SignatureCanvas
                 ref={signaturePadRef}
-                penColor="#0B798B"
+                penColor="black"
                 backgroundColor="white"
                 onEnd={handleEnd}
                 canvasProps={{

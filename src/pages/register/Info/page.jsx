@@ -13,6 +13,7 @@ import {
   setUserResidentId,
   setUserSex,
 } from "@/util/slices/registerUserInfoSlice";
+import StatusBar from "@/components/StatusBar";
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -39,7 +40,7 @@ const FieldContainer = styled.div`
 `;
 // 라벨 스타일
 const Label = styled.p`
-  font-size: 20px;
+  /* font-size: 20px; */
   font-weight: 600;
   letter-spacing: -1px; //글자 간격
   margin-top: 15px;
@@ -50,7 +51,7 @@ const StyledInput = styled.input`
   height: 50px;
   padding: 12px;
   border-radius: 10px;
-  font-size: 16px;
+  /* font-size: 16px; */
   outline: none;
   &:focus {
     border: 2px solid #0b798b;
@@ -66,7 +67,7 @@ const GenderButton = styled.button`
   flex: 1;
   height: 50px;
   padding: 10px;
-  font-size: 16px;
+  /* font-size: 16px; */
   background: ${(props) => (props.selected ? "#D7F6F6" : "white")};
   color: ${(props) => (props.selected ? "#0B798B" : "black")};
   border-radius: 10px;
@@ -91,7 +92,7 @@ const ResidentInput = styled(StyledInput)`
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
-  font-size: 16px;
+  /* font-size: 16px; */
   border: none;
   border-radius: 10px;
   background-color: #0b798b;
@@ -136,15 +137,14 @@ function RegisterInfoPage() {
       <Header>
         <div className="relative flex flex-col justify-center w-full h-full">
           <div className="flex flex-row justify-between px-[20px]">
-            <Link to="/register/business-num">
+            <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
-            </Link>
+            </button>
             <Link to="/login">
               <CancelIcon />
             </Link>
           </div>
-          <div className="absolute bottom-0 bg-main-color h-[3px] w-[72.4px]" />
-          {/* 위 코드는 헤더에 색깔 바를 나타내는 코드이다. */}
+          <StatusBar percent={12.5} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
@@ -154,7 +154,7 @@ function RegisterInfoPage() {
               {/* 이름 입력 */}
               {/* <div className="overflow-hidden "> */}
               <FieldContainer>
-                <Label>이름</Label>
+                <Label className="text-xl">이름</Label>
                 <StyledInput
                   type="text"
                   placeholder="이름을 입력해주세요"
@@ -164,27 +164,27 @@ function RegisterInfoPage() {
               </FieldContainer>
               {/* 성별 선택 */}
               <FieldContainer>
-                <Label>성별</Label>
+                <Label className="text-xl">성별</Label>
                 <GenderContainer>
                   <GenderButton
-                    selected={gender === "남성"}
-                    onClick={() => setGender("남성")}
+                    selected={gender === "male"}
+                    onClick={() => setGender("male")}
                   >
                     {" "}
                     <div style={{ marginRight: "5px" }}>
                       <CheckIcon
-                        color={gender === "남성" ? "#0B798B" : "#A5A5A5"}
+                        color={gender === "male" ? "#0B798B" : "#A5A5A5"}
                       />
                     </div>
                     남성
                   </GenderButton>
                   <GenderButton
-                    selected={gender === "여성"}
-                    onClick={() => setGender("여성")}
+                    selected={gender === "female"}
+                    onClick={() => setGender("female")}
                   >
                     <div style={{ marginRight: "5px" }}>
                       <CheckIcon
-                        color={gender === "여성" ? "#0B798B" : "#A5A5A5"}
+                        color={gender === "female" ? "#0B798B" : "#A5A5A5"}
                       />
                     </div>
                     여성
@@ -193,7 +193,7 @@ function RegisterInfoPage() {
               </FieldContainer>
               {/* 주민번호 입력 */}
               <FieldContainer>
-                <Label>주민번호</Label>
+                <Label className="text-xl">주민번호</Label>
                 <ResidentNumberContainer>
                   <ResidentInput
                     type="text"
@@ -214,7 +214,7 @@ function RegisterInfoPage() {
               </FieldContainer>
               {/* 휴대폰 번호 입력 */}
               <FieldContainer className="mb-[30%]">
-                <Label>휴대폰 번호</Label>
+                <Label className="text-xl">휴대폰 번호</Label>
                 <StyledInput
                   type="text"
                   placeholder="- 를 제외한 전화번호를 입력해주세요"

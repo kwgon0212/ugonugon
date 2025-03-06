@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -7,6 +7,7 @@ import registerRoutes from "./routes/register.ts";
 import authRoutes from "./routes/auth.ts";
 import postRoutes from "./routes/post.ts";
 
+import emailRoutes from "./routes/email.ts";
 import { setupSwagger } from "../swagger/swagger.ts";
 import mongoose from "mongoose";
 dotenv.config();
@@ -28,6 +29,7 @@ app.use("/api/test", testRoutes);
 app.use("/api/register", registerRoutes);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
 
 app.use("/api/post", postRoutes);
 

@@ -3,13 +3,15 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
+import StatusBar from "@/components/StatusBar";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   setUserEmailCert,
   setUserEmailCode,
 } from "@/util/slices/registerUserInfoSlice";
+import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const CertificationInput = styled.input`
@@ -37,7 +39,6 @@ const BottomButton = styled.button`
   width: calc(100% - 40px);
   height: 50px;
   border-radius: 10px;
-  font-size: 14px;
   background: #0b798b;
   color: white;
 `;
@@ -53,7 +54,7 @@ function RegisterEmailCertPage() {
     useState(false);
 
   const dispatch = useAppDispatch();
-  const userEmail = useAppSelector((state) => state.registerUserInfo.email);
+  const email = useAppSelector((state) => state.registerUserInfo.email);
   const emailCode = useAppSelector((state) => state.registerUserInfo.emailCode);
   const navigate = useNavigate();
 
@@ -84,11 +85,17 @@ function RegisterEmailCertPage() {
       }
   };
 
-  const handleReSendEmailCode = () => {
-    const code = 2345;
-    dispatch(setUserEmailCode(code));
-
+  const handleReSendEmailCode = async () => {
     // 이메일로 다시 코드 전송
+    // 서버에 해당 이메일로 인증번호 전송 요청
+    if (!email) {
+      alert("잘못된 접근입니다");
+      navigate("/login");
+      return;
+    }
+    const result = await axios.post("/api/email/cert", { email });
+    const emailCode = result.data;
+    dispatch(setUserEmailCode(emailCode));
   };
 
   const handleEmailCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -107,10 +114,16 @@ function RegisterEmailCertPage() {
   return (
     <>
       <Header>
-        <div className="px-5 h-full flex justify-between flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
-          <CancelIcon width={24} height={24} />
-          {/* <hr /> */}
+        <div className="relative flex flex-col justify-center w-full h-full">
+          <div className="flex flex-row justify-between px-[20px]">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeftIcon />
+            </button>
+            <Link to="/login">
+              <CancelIcon />
+            </Link>
+          </div>
+          <StatusBar percent={37.5} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
@@ -134,19 +147,21 @@ function RegisterEmailCertPage() {
                 />
               ))}
             </div>
-            <p className="font-semibold text-sm text-center">
-              아직 인증 번호를 받지 못하셨나요?
-            </p>
-            <button
-              className="text-main-color text-xs text-center"
-              onClick={() => {
-                setIsOpenReSendEmailCodeModal(true);
-                handleReSendEmailCode();
-              }}
-              type="button"
-            >
-              인증번호 재전송
-            </button>
+            <div className="flex flex-col items-center gap-[5px] text-sm">
+              <p className="text-center text-main-darkGray">
+                아직 인증 번호를 받지 못하셨나요?
+              </p>
+              <button
+                className="text-main-color text-sm text-center"
+                onClick={() => {
+                  setIsOpenReSendEmailCodeModal(true);
+                  handleReSendEmailCode();
+                }}
+                type="button"
+              >
+                인증번호 재전송
+              </button>
+            </div>
             <BottomButton>확인</BottomButton>
           </form>
           <NotEqualEmailCodeModal
