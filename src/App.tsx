@@ -33,7 +33,7 @@ import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
 import PostDataTest from "./pages/notice/post/page";
-import NoticeAddPage from "./pages/notice/add/\bpage";
+import NoticeAddPage from "./pages/notice/add/page";
 
 function App() {
   return (
