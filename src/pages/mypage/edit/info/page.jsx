@@ -74,7 +74,7 @@ function MyPageEditInfoPage() {
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="bg-white border p-2 h-[50px] border-main-gray rounded-[10px] mt-1 p-2"
+                className="bg-white border p-2 h-[50px] border-main-gray rounded-[10px] mt-1"
               />
               <p className="font-semibold mt-2">거주지</p>
               <div className="flex gap-3 mb-2">
