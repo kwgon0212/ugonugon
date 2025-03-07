@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
@@ -10,6 +10,8 @@ import Main from "@/components/Main";
 
 import banks from "./banks";
 import AlertModal from "./AlertMocal";
+import { useAppSelector } from "@/hooks/useRedux";
+import getUser, { postUser, type User } from "@/hooks/fetchUser";
 
 const HeaderWrap = styled.div`
   display: flex;
@@ -50,15 +52,21 @@ const SaveBtn = styled.button`
 `;
 
 export function EditBankAccountPage() {
+  const userId = useAppSelector((state) => state.auth.user?._id);
+  const [userData, setUserData] = useState<User | null>(null);
+
   const [account, setAccount] = useState("");
   const [bank, setBank] = useState("");
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  // const navigate = useNavigate();
+
   const [color, setColor] = useState("#0B798B");
+  // color State가 필요한지?
   const [isModalOpen, setModalOpen] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
 
   const handleChangeAccount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+    // 은행마다 계좌번호 길이가 다를 수 있음 (ex: 폰 번호로 계좌 번호)
     setAccount(value);
   };
 
@@ -112,7 +120,10 @@ export function EditBankAccountPage() {
                 className="flex pl-4 w-[95%] h-[50px] rounded-[10px] border border-main-gray"
               />
             </div>
-            <div className="relative flex w-full h-[50px] justify-center">
+            <div
+              className="relative flex w-full h-[50px] justify-center"
+              onClick={handleClickBank}
+            >
               <input
                 type="text"
                 readOnly
@@ -122,19 +133,43 @@ export function EditBankAccountPage() {
                 }
                 className="flex pl-4 w-[95%] h-[50px] rounded-[10px] border border-main-gray"
               />
-              <div
-                onClick={handleClickBank}
-                className="absolute flex right-[7%] top-[30%]"
-              >
+              <div className="absolute flex right-[7%] top-[30%]">
                 <ArrowDownIcon />
               </div>
             </div>
           </ColWrap>
-          <Link to="/mypage" className="flex justify-center w-full h-[10%]">
-            <SaveBtn className="bg-main-color" onClick={handleClickNext}>
+          <div className="flex justify-center w-full h-[10%]">
+            <SaveBtn
+              className="bg-main-color"
+              onClick={() => {
+                postUser(userId, {
+                  bankAccount: {
+                    bank,
+                    account,
+                  },
+                });
+                handleClickNext();
+                setSaveModalOpen(!saveModalOpen);
+              }}
+            >
               저장
             </SaveBtn>
-          </Link>
+            {saveModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+                <div className="bg-white flex flex-col gap-[20px] p-5 rounded-[10px] w-[362px] items-center">
+                  <p className="font-bold text-lg">
+                    입출금 계좌가 성공적으로 변경되었습니다.
+                  </p>
+                  <Link
+                    to="/mypage"
+                    className="w-1/2 p-2 rounded-[10px] bg-main-color text-white text-center"
+                  >
+                    확인
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
 
           {isOpenBottomSheet && (
             <Overlay
