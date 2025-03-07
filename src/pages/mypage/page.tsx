@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 const MyPage = () => {
   const [userData, setUserData] = useState(useFetchUser("get"));
-  const fetchUser = useFetchUser("post");
+  const fetchUser = useFetchUser("get");
 
   useEffect(() => {
     if (fetchUser != null) {
