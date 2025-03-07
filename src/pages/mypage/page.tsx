@@ -7,69 +7,19 @@ import ResumeEditIcon from "@/components/icons/ResumeEdit";
 import StarIcon from "@/components/icons/Star";
 import WalletIcon from "@/components/icons/Wallet";
 import Main from "@/components/Main";
-import { useAppSelector } from "@/hooks/useRedux";
+import useFetchUser from "@/hooks/useFetchUser";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import mongoose from "mongoose";
-
-interface User {
-  businessNumber?: string[];
-  address?: { zipcode: string; street: string; detail: string };
-  bankAccount?: { bank: string; account: string };
-  name?: string;
-  sex?: string;
-  residentId?: string;
-  phone?: string;
-  signature?: string;
-  email?: string;
-}
 
 const MyPage = () => {
-  const userId = useAppSelector((state) => state.auth.user?._id);
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // useEffect(() => {
-  //   if (userId) {
-  //     fetch(`/api/users?userId=${userId}`)
-  //       .then((res) => res.json())
-  //       .then((data) => setUserData(data));
-  //   }
-  // }, [userId]);
-
-  // const res = fetch("api/users", {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     userId,
-  //   }),
-  // });
-
-  const postData = async () => {
-    try {
-      setLoading(true); // 로딩 시작
-
-      const res = await fetch("/api/users", {
-        method: "POST",
-        body: JSON.stringify({ userId }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const jsonResponse = await res.json(); // 응답을 JSON으로 파싱
-      setUserData(jsonResponse); // data 상태를 업데이트
-    } catch (err: any) {
-      console.log(err, err?.messages);
-    } finally {
-      setLoading(false); // 로딩 끝
-    }
-  };
+  const [userData, setUserData] = useState(useFetchUser("get"));
+  const fetchUser = useFetchUser("post");
 
   useEffect(() => {
-    if (userId) {
-      postData(); // userId가 있을 때만 호출
+    if (fetchUser != null) {
+      setUserData(fetchUser);
     }
-  }, [userId]); // userId가 변경될 때마다 호출
+  }, [fetchUser]);
 
   return (
     <>
@@ -78,7 +28,7 @@ const MyPage = () => {
           <span>마이페이지</span>
         </div>
       </Header>
-      {!loading && (
+      {fetchUser !== null && (
         <Main hasBottomNav={true}>
           <div className="size-full flex flex-col gap-[20px] pt-[20px]">
             <div className="w-full flex gap-[10px] px-[20px]">

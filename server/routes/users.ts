@@ -1,7 +1,4 @@
-import express, { Express, Request, Response } from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { setupSwagger } from "../../swagger/swagger.ts";
+import express from "express";
 import mongoose from "mongoose";
 const router = express.Router();
 
@@ -38,6 +35,7 @@ const UsersSchema = new mongoose.Schema({
     detatil: { type: String, required: true },
   },
   signature: { type: String, required: true },
+  profile: { type: String },
   bankInfo: {
     type: Object,
     required: true,
@@ -64,9 +62,9 @@ router.post("/", async (req, res) => {
     const user = await Users.findById(
       await Users.findById(req.body.userId)
     ).select(
-      "businessNumber address bankAccount name sex phone signature email residentId"
+      "businessNumber address bankAccount name sex phone signature email residentId profile"
     );
-    if (user) user["residentId"] = user.residentId.slice(0, 6);
+    if (user) user["residentId"] = user.residentId.slice(0, 7);
     res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -77,81 +75,16 @@ router.get("/", async (req, res) => {
   try {
     const userId = req.query.userId;
     const user = await Users.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId"
+      "businessNumber address bankAccount name sex phone signature email residentId profile"
     );
-    if (user) user["residentId"] = user.residentId.slice(0, 6);
+    if (user) user["residentId"] = user.residentId.slice(0, 7);
     res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// router.post("/apply", async (req, res) => {
-//   try {
-//     const applyUserId = new Users(...req.body._id);
-//     // const applyUserId = "67c7ab9db5bf1de0912592cc";
-//     const applyUser = await Users.findById(applyUserId).select(
-//       "name email bankInfo"
-//     );
-//     if (!applyUser) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     res.status(200).json(applyUser);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// router.post("/apply", async (req, res) => {
-//   try {
-//     const applyUser = new Users(...req.body._id);
-//     applyUser.save();
-//     res.status(201).json(applyUser);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-router.post("/apply", async (req, res) => {
-  const applyUserId = "67c901f21e006624c5145f13";
-  const applyPostId = "67c7d7abcb90716e8d3c1934";
-
-  if (!applyUserId || !applyPostId) {
-    return res
-      .status(400)
-      .json({ message: "applyUserId and postContent are required" });
-  }
-
-  try {
-    // applyUserId를 이용해 사용자의 name과 email을 찾습니다.
-    const applyUser = await Users.findById(applyUserId).select("name email");
-    const applyUsers = await Posts.findById(applyPostId).select("workDays");
-    if (!applyUsers) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (!applyUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Post 모델을 이용해 새로운 포스트를 생성합니다.
-    await Posts.findByIdAndUpdate(applyPostId, {
-      workDays: [...applyUsers.workDays, applyUser.name, applyUser.email],
-    });
-    res.status(201).json({ message: "Post created successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
 export default router;
-
-// const addApply = async (req, res) => {
-//   const { id } = req.params;
-//   await Users.findByIdAndUpdate(id, {
-//     apply: [...applyIds, id],
-//   });
-// };
 
 const PostSchema = new mongoose.Schema({
   // _id: String|Number, => MongoDB가 자동으로 생성해줌
@@ -241,4 +174,5 @@ const PostSchema = new mongoose.Schema({
   // enum: ["일일 근로", "단기 근로", "장기 근로"],
   benefits: String,
 });
+
 const Posts = mongoose.model("posts", PostSchema);
