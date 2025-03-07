@@ -36,7 +36,7 @@ const UsersSchema = new mongoose.Schema({
   },
   signature: { type: String, required: true },
   profile: { type: String },
-  bankInfo: {
+  bankAccount: {
     type: Object,
     required: true,
     bank: { type: String, required: true },
@@ -66,9 +66,7 @@ const Users = mongoose.model("users", UsersSchema);
 
 router.post("/", async (req, res) => {
   try {
-    await Users.findByIdAndUpdate(req.body.userId, {
-      ...req.body.data,
-    });
+    await Users.findByIdAndUpdate(req.body.userId, req.body.data);
     res.status(201).end();
   } catch (err) {
     res.status(500).json({ error: err.message });
