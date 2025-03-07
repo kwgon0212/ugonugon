@@ -36,7 +36,7 @@ const MyPage = () => {
               <img src="https://placehold.co/80" alt="" />
               <div className="flex flex-col">
                 <span className="text-[18px]">
-                  안녕하세요!{" "}
+                  안녕하세요!&nbsp;
                   <b className="text-main-color">{userData?.name}</b>님
                 </span>
                 <span className="text-main-gray">{userData?.email}</span>
@@ -48,7 +48,7 @@ const MyPage = () => {
 
             <div className="px-[20px]">
               <Link
-                to={"#"}
+                to="/mypage/edit/info"
                 className="w-full h-[50px] rounded-[10px] flex gap-[10px] justify-center items-center border-main-gray border bg-white"
               >
                 <EditIcon color="#717171" width={18} height={18} />
@@ -61,28 +61,40 @@ const MyPage = () => {
                 <p className="text-[18px] font-bold text-main-color mb-[10px]">
                   나의 이력서
                 </p>
-                <Link to={"#"} className="flex gap-[10px] items-center">
+                <Link
+                  to="/mypage/resume/add"
+                  className="flex gap-[10px] items-center"
+                >
                   <ResumeEditIcon />
                   <span className="text-selected-text">이력서 등록</span>
                 </Link>
-                <Link to={"#"} className="flex gap-[10px] items-center">
+                <Link
+                  to="/mypage/resume/list"
+                  className="flex gap-[10px] items-center"
+                >
                   <ResumeIcon />
                   <span className="text-selected-text">이력서 관리</span>
                 </Link>
               </div>
 
               <div className="w-full p-[20px] flex flex-col gap-[10px]">
-                <Link to={"#"} className="flex justify-between items-center">
+                <Link
+                  to="/mypage/edit/bank-account"
+                  className="flex justify-between items-center"
+                >
                   <div className="flex gap-[10px] items-center">
                     <WalletIcon color="#717171" />
                     <span className="text-main-darkGray">
-                      {userData?.bankAccount?.bank}{" "}
+                      {userData?.bankAccount?.bank}&nbsp;
                       {userData?.bankAccount?.account}
                     </span>
                   </div>
                   <ArrowRightIcon color="#717171" />
                 </Link>
-                <Link to={"#"} className="flex justify-between items-center">
+                <Link
+                  to="/mypage/scrab"
+                  className="flex justify-between items-center"
+                >
                   <div className="flex gap-[10px] items-center">
                     <StarIcon color="#717171" />
                     <span className="text-main-darkGray">
@@ -95,13 +107,13 @@ const MyPage = () => {
 
               <div className="w-full flex justify-center gap-[10px]">
                 <Link
-                  to={"#"}
+                  to="#"
                   className="border border-main-gray px-2 rounded-[10px] text-main-darkGray"
                 >
                   로그아웃
                 </Link>
                 <Link
-                  to={"#"}
+                  to="#"
                   className="border border-main-gray px-2 rounded-[10px] text-main-gray"
                 >
                   탈퇴하기

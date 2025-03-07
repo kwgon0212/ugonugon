@@ -172,12 +172,12 @@ export function MypageScrabPage() {
   return (
     <>
       <Header>
-        <div className="flex items-center h-full ml-2">
+        <Link to="/mypage" className="flex items-center h-full ml-2">
           <ArrowLeftIcon />
           <span className="font-bold flex justify-center w-full mr-3">
             스크랩알바
           </span>
-        </div>
+        </Link>
       </Header>
       <Main hasBottomNav={true}>
         <Body>

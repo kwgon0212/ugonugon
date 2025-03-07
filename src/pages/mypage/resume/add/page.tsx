@@ -12,6 +12,7 @@ import { ko } from "date-fns/locale/ko";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
+import { Link } from "react-router-dom";
 
 interface Props {
   width?: string;
@@ -137,10 +138,13 @@ function MypageResumeAdd() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[11]" />
       )}
       <Header>
-        <div className="p-layout h-full flex flex-wrap content-center">
+        <Link
+          to="/mypage"
+          className="p-layout h-full flex flex-wrap content-center"
+        >
           <ArrowLeftIcon width={24} height={24} />
           <Title>이력서 등록</Title>
-        </div>
+        </Link>
       </Header>
       <Main hasBottomNav={false}>
         <>

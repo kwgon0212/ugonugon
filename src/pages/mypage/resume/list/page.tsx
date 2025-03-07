@@ -108,10 +108,13 @@ function MypageResumeList() {
   return (
     <>
       <Header>
-        <div className="p-layout h-full flex flex-wrap content-center">
+        <Link
+          to="/mypage"
+          className="p-layout h-full flex flex-wrap content-center"
+        >
           <ArrowLeftIcon width={24} height={24} />
           <Title>이력서 관리</Title>
-        </div>
+        </Link>
       </Header>
 
       <Main hasBottomNav={false}>
