@@ -1,12 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import BottomNav from "../../../components/BottomNav";
 
-import MinusIcon from "@/components/icons/Minus";
+import ArrowDownIcon from "@/components/icons/ArrowDown";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import CancelIcon from "@/components/icons/Cancel";
@@ -55,16 +56,19 @@ const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between; /* 📌 추가 */
   width: 100%;
   height: 100%;
   background-color: #f7f7f9;
 `;
+
 const ListScrollWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 93%;
+  min-height: 100%;
+  height: 100%;
   overflow-y: auto;
   background-color: #f7f7f9;
   scrollbar-width: none;
@@ -98,15 +102,34 @@ const Numbernav = styled.div`
   width: 100%;
   padding: 5px 0;
   background-color: #fff;
-  //수정
+  min-height: 7%;
   height: 7%;
-  //수정 여기까지
+`;
+
+const NumberBtnWrap = styled.div`
+  display: flex;
+  height: 100%;
+  min-width: 200px; // 최소 너비 설정 (숫자가 적어도 너무 벌어지지 않도록)
+  justify-content: center;
+  align-items: center;
+  gap: 10px; // 숫자 간격 일정하게 유지
 `;
 
 const NavBtn = styled.div`
-  flex: 1;
-  color: #717171;
+  padding: 5px 10px; // 버튼 내부 간격 조정
+  border-radius: 5px; // 버튼 모양 둥글게
   cursor: pointer;
+  color: #717171;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &.active {
+    color: #0b798b;
+    font-weight: bold;
+  }
 `;
 
 const DropMenu = styled.div`
@@ -129,17 +152,18 @@ const Drop = styled.ul`
   list-style: none;
 `;
 
-interface GetNoticeInfo {
-  id: number;
-  companyName: string;
-  endDate: string;
-  day: string;
+interface PostData {
+  _id: string;
   title: string;
-  address: string;
+  companyInfo: {
+    exposedArea: { goo: string };
+    companyName: string;
+  };
+  payType: string;
   pay: number;
-  period: string;
+  workingPeriod: string;
+  endOfNotice: Date;
 }
-
 export function NoticeListPage() {
   const location = useLocation();
   const [hasNotice, setNotice] = useState(true);
@@ -147,45 +171,39 @@ export function NoticeListPage() {
   const [itemsPerPage, setItemsPerPage] = useState(5); // 드롭다운에서 선택한 아이템 수
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const [pageGroup, setPageGroup] = useState(0); // 현재 보이는 페이지 그룹(0부터 시작)
-  // 초기 카테고리 배열 (원하는 만큼 추가 가능)
-  const [categories, setCategories] = useState([
-    "서울 용산구",
-    "서울 강남구",
-    "서울 종로구",
-    "부산 해운대구",
-    "제주도",
-  ]);
+
   const dropMenuRef = useRef<HTMLUListElement | null>(null);
   const minusIconRef = useRef<HTMLDivElement | null>(null);
 
-  // 예시용 103건의 공고 데이터 배열 생성
-  const noticeList: GetNoticeInfo[] = Array.from(
-    { length: 103 },
-    (_, index) => ({
-      id: index,
-      companyName: "회사명",
-      endDate: "3/1",
-      day: "토",
-      title: `[업무강도 상]풀스택 프로젝트 보조 구인 / 중식 제공 - ${
-        index + 1
-      }`,
-      address: "서울 용산구",
-      pay: 100030,
-      period: "1주일 ~ 1개월",
-    })
-  );
+  const [posts, setPosts] = useState<PostData[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/post/get/notice/lists"
+        );
+        console.log("0");
+
+        setPosts(response.data); // 받아온 데이터를 상태에 저장
+        setNotice(!!posts.length);
+      } catch (error) {
+        console.error("데이터 가져오기 실패:", error);
+      }
+    };
+
+    fetchPosts();
+  });
 
   // 총 페이지 수 계산
-  const totalPages = Math.ceil(noticeList.length / itemsPerPage);
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
   // 현재 페이지에 해당하는 아이템들
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentNotices = noticeList.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const currentNotices = posts.slice(startIndex, startIndex + itemsPerPage);
 
   // 페이지 그룹 당 보여줄 페이지 개수
   const pagesToShow = 5;
+
   // 현재 그룹에 보여질 시작 페이지 번호와 종료 페이지 번호 계산
   const startPage = pageGroup * pagesToShow + 1;
   const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
@@ -206,6 +224,15 @@ export function NoticeListPage() {
     setPageGroup(0); // 페이지 그룹도 초기화
     setOpen(false);
   };
+
+  // 초기 카테고리 배열 (원하는 만큼 추가 가능)
+  const [categories, setCategories] = useState([
+    "서울 용산구",
+    "서울 강남구",
+    "서울 종로구",
+    "부산 해운대구",
+    "제주도",
+  ]);
 
   // 특정 카테고리 제거 핸들러
   const handleRemoveCategory = (index: number) => {
@@ -252,7 +279,7 @@ export function NoticeListPage() {
                     <div className="flex flex-row">
                       <span>총 </span>
                       <span className="text-main-color">
-                        {noticeList.length} 건{" "}
+                        {posts.length} 건{" "}
                       </span>
                       <span>공고</span>
                     </div>
@@ -260,7 +287,7 @@ export function NoticeListPage() {
                       <div className="flex w-fit">{itemsPerPage}개씩 보기</div>
                       <div className="relative flex w-fit">
                         <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
-                          <MinusIcon />
+                          <ArrowDownIcon />
                         </DropMenu>
                         {isOpen && (
                           <Drop ref={dropMenuRef}>
@@ -274,36 +301,39 @@ export function NoticeListPage() {
                   </div>
                   {/* 현재 페이지의 공고 아이템 렌더링 */}
                   {currentNotices.map((notice) => (
-                    <ListContainer key={notice.id}>
+                    <ListContainer key={notice._id}>
                       <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray">
                         <img src="/logo192.png" alt="공고 이미지" />
                       </div>
                       <ListInfo>
                         <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
-                          <span>{notice.companyName}</span>
+                          <span>{notice.companyInfo.companyName}</span>
                           <div>
                             <span>마감일 </span>
-                            <span>{notice.endDate}</span>
-                            <span>({notice.day})</span>
+                            <span>
+                              {new Date(
+                                notice.endOfNotice
+                              ).toLocaleDateString()}
+                            </span>
                           </div>
                         </div>
-                        <div className="w-[95%] text-[12px] font-bold flex-wrap">
+                        <div className="w-[95%] text-[16px] font-bold flex-wrap">
                           {notice.title}
                         </div>
                         <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
                           <div className="text-main-darkGray">
-                            {notice.address}
+                            {notice.companyInfo.exposedArea.goo}
                           </div>
                           <div>
                             <span className="text-[#1D8738] font-bold">
-                              시급{" "}
+                              {notice.payType}
                             </span>
                             <span className="text-main-darkGray">
                               {notice.pay.toLocaleString()} 원
                             </span>
                           </div>
                           <div className="text-main-darkGray">
-                            {notice.period}
+                            {notice.workingPeriod}
                           </div>
                         </div>
                       </ListInfo>
@@ -313,29 +343,29 @@ export function NoticeListPage() {
 
                 {/* 페이지 번호 버튼과 좌우 화살표 */}
                 <Numbernav>
-                  <div className="flex flex-row w-[50%] justify-around">
+                  <NumberBtnWrap>
                     {pageGroup > 0 && (
                       <NavBtn onClick={() => setPageGroup(pageGroup - 1)}>
                         <ArrowLeftIcon />
                       </NavBtn>
                     )}
+
                     {visiblePages.map((page) => (
                       <NavBtn
                         key={page}
+                        className={currentPage === page ? "active" : ""}
                         onClick={() => setCurrentPage(page)}
-                        style={{
-                          color: currentPage === page ? "#0B798B" : "#717171",
-                        }}
                       >
                         {page}
                       </NavBtn>
                     ))}
+
                     {(pageGroup + 1) * pagesToShow < totalPages && (
                       <NavBtn onClick={() => setPageGroup(pageGroup + 1)}>
                         <ArrowRightIcon />
                       </NavBtn>
                     )}
-                  </div>
+                  </NumberBtnWrap>
                 </Numbernav>
               </ListWrapper>
             </>

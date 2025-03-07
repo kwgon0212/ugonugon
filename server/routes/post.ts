@@ -1,37 +1,16 @@
-import { log } from "console";
+import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
 
 const router = express.Router();
 const { Schema } = mongoose;
 
-/**
- * @swagger
- * /postApi/test/posts:
- *   get:
- *     summary: post전용 테스트 API
- *     description: 그냥 post의 테스트 API임
- *     responses:
- *       200:
- *         description: 성공적으로 message 반환
- *         content:
- *           application/json:
- *             schema:
- *                 type: object
- *                 properties:
- *                   message:
- *                     type: string
- *                     example: "test"
- */
-router.get("/test", (req, res) => {
-  res.status(200).json({ message: "test" });
-});
-
 // 공고 스키마
 const PostSchema = new Schema(
   // _id: String|Number, => MongoDB가 자동으로 생성해줌
   {
     writter: { type: String, required: true }, // 공고 작성한 userId
+
     applicantInfo: [
       // 지원자 정보
       {
@@ -58,6 +37,7 @@ const PostSchema = new Schema(
     ],
     postDate: { type: Date, required: true }, // 공고 등록한 날짜
     title: { type: String, required: true },
+    endOfNotice: { type: Date, required: true }, // 공고 마감일
     summary: { type: String, required: true },
     firstImage: { type: String, required: true }, // require: true공고 등록시 대표 이미지
     agentInfo: {
@@ -73,13 +53,6 @@ const PostSchema = new Schema(
       zcode: { type: String, required: true },
       address: { type: String, required: true },
       detailAddress: { type: String, required: true },
-    },
-
-    exposedArea: {
-      // 광고 노출 지역
-      sido: { type: String, required: true },
-      si: { type: String, required: true },
-      goo: { type: String, required: true },
     },
 
     // 모집 조건
@@ -139,7 +112,7 @@ const PostSchema = new Schema(
     timeNago: { type: Boolean, default: false },
     timeAdd: {
       type: [String],
-      enum: ["협의 가능", "로테이션 (교대)", "휴게시간 있음"],
+      enum: ["협의 가능", "로테이션 (교대)", "휴게시간 있음", "재택근무 가능"],
       required: false,
     },
     timeAdditional: { type: String, required: true },
@@ -155,10 +128,21 @@ const PostSchema = new Schema(
     employmentType: {
       // 고용 형태 (select)
       type: String,
-      enum: ["일일 근로", "단기 근로", "장기 근로"],
+      enum: ["일일 근로", "단기 근로", "장기 근로", "정규직"],
       required: true,
     },
     benefits: { type: String },
+
+    // 회사 정보
+    companyInfo: {
+      exposedArea: {
+        // 광고 노출 지역
+        sido: { type: String, required: true },
+        si: { type: String, required: true },
+        goo: { type: String, required: true },
+      },
+      companyName: { type: String, required: true },
+    },
   },
   { collection: "posts" } // 컬렉션 이름 강제 지정
 );
@@ -198,7 +182,7 @@ router.post("/notice", async (req, res) => {
 
 /**
  * @swagger
- * /api/post/update/:postId:
+ * /api/post/update/{postId}:
  *   post:
  *     summary: post 스키마 수정 API
  *     description: 사용자가 공고 수정 시 사용됨
@@ -251,7 +235,7 @@ router.post("/update/:postId", async (req, res) => {
 
 /**
  * @swagger
- * /api/post/delete/:postId
+ * /api/post/delete/{postId}:
  *   delete:
  *     summary: post 스키마 삭제 API
  *     description: 사용자가 공고 삭제 시 사용됨
@@ -287,6 +271,76 @@ router.delete("/delete/:postId", async (req, res) => {
   } catch (err) {
     console.error("에러 발생:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/post/get/notice/lists:
+ *   get:
+ *     summary: notice 목록 전체 가져오기 API
+ *     description: 공고 목록 보기 시 사용 됨 (필요한 데이터만 불러오는거로 했음)
+ *     responses:
+ *       200:
+ *         description: 성공적으로 get 완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: "get all notice lists"
+ */
+router.get("/get/notice/lists", async (req, res) => {
+  try {
+    // 모든 공고 데이터 가져옴
+    const posts = await Post.find().select(
+      "_id title companyInfo.exposedArea.goo payType pay workingPeriod endOfNotice companyInfo.companyName "
+    );
+
+    if (!posts.length) {
+      return res.status(404).json({ message: "공고가 없습니다." });
+    }
+
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error("에러 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/post/get/notice/{postId}:
+ *   get:
+ *     summary: notice 하나의 정보 가져오기 API
+ *     description: 공고 상세 보기 시 사용 됨
+ *     responses:
+ *       200:
+ *         description: 성공적으로 get 완료
+ *         content:
+ *           application/json:
+ *             schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: "get notice success"
+ */
+router.get("/get/oneNotice/:postId", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "해당 공고를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error("에러 발생: ", err);
+    res.status(500).json({ err: err.message });
   }
 });
 

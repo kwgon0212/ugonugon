@@ -8,8 +8,8 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale/ko";
 import DaumPostcode from "react-daum-postcode";
 import PlusIcon from "@/components/icons/Plus";
-import "react-datepicker/dist/react-datepicker.css";
-import "@/css/datePicker.css";
+
+import locations from "./locations";
 
 interface Props {
   width?: string;
@@ -134,10 +134,6 @@ const SubTitle = styled.label`
   font-size: 18px;
   margin-bottom: -10px;
 `;
-
-type Location = {
-  [key: string]: string[];
-};
 
 function NoticeAddPage() {
   const [jobType, setJobType] = useState<string>("");
