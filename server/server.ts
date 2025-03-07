@@ -1,9 +1,12 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 import testRoutes from "./routes/test.ts";
 import registerRoutes from "./routes/register.ts";
 import authRoutes from "./routes/auth.ts";
+import postRoutes from "./routes/post.ts";
+
 import emailRoutes from "./routes/email.ts";
 import chatRoutes from "./routes/chatServer.ts";
 import { setupSwagger } from "../swagger/swagger.ts";
@@ -39,6 +42,8 @@ app.use("/api/test", testRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
+
+app.use("/api/post", postRoutes);
 app.use("/api", chatRoutes); // 채팅 관련 라우트를 /api 접두사로 설정
 
 // 기본 라우트
