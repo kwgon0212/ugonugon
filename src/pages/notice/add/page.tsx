@@ -22,6 +22,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AddressModal = Modal;
+const AddNoticeResultModal = Modal;
 
 interface PostcodeData {
   zonecode: string; // 우편번호
@@ -53,9 +54,10 @@ interface RestTime extends NoticeTime {}
 
 const NoticeAddPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
+  console.log(userId);
   const navigate = useNavigate();
 
-  const [jobType, setJobType] = useState("");
+  const [jobType, setJobType] = useState("전체");
   const [pay, setPay] = useState<Pay>({
     type: "시급",
     value: 0,
@@ -84,8 +86,8 @@ const NoticeAddPage = () => {
     time: new Date(),
   });
   const [person, setPerson] = useState(0);
-  const [preferences, setPreferences] = useState("무관");
-  const [education, setEducation] = useState({ school: "무관", state: "" });
+  const [preferences, setPreferences] = useState("");
+  const [education, setEducation] = useState({ school: "무관", state: "무관" });
   const [address, setAddress] = useState({
     zipcode: "",
     street: "",
@@ -98,7 +100,10 @@ const NoticeAddPage = () => {
   });
 
   const [isOpenAddressModal, setIsOpenAddressModal] = useState(false);
+  const [isOpenAddNoticeResultModal, setIsOpenAddNoticeResultModal] =
+    useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
+  const [postId, setPostId] = useState("");
 
   const handleSetType = (
     state: string[],
@@ -120,30 +125,14 @@ const NoticeAddPage = () => {
 
   const handleSubmitNotice = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("📝 현재 상태 목록:");
-    console.log("💼 직종:", jobType);
-    console.log("💰 급여:", pay);
-    console.log("📌 고용 형태:", hireType);
-    console.log("📅 근무 기간:", period);
-    console.log("⏳ 근무 시간:", hour);
-    console.log("☕ 휴식 시간:", restTime);
-    console.log("📆 근무 요일:", day);
-    console.log("🛠 업무 상세:", workDetail);
-    console.log("🎁 복리후생:", welfare);
-    console.log("📝 공고 상세:", postDetail);
-    console.log("🕒 모집 마감:", deadline);
-    console.log("👥 모집 인원:", person);
-    console.log("✅ 우대 사항:", preferences);
-    console.log("🎓 학력:", education);
-    console.log("🏠 주소:", address);
-    console.log("📞 채용 담당자:", recruiter);
-    if (person <= 0 || !address.zipcode || !address.street) {
+    if (pay.value <= 0 || person <= 0 || !address.zipcode || !address.street) {
+      alert("입력하지 않은 정보가 존재합니다");
       return;
     }
 
     if (userId) {
       try {
-        await axios.post("/api/post/notice", {
+        const response = await axios.post("/api/post/notice", {
           jobType,
           pay,
           hireType,
@@ -162,12 +151,16 @@ const NoticeAddPage = () => {
           recruiter,
           author: userId,
         });
+        const { postId } = response.data;
 
-        navigate(`/notice/123`);
+        setIsOpenAddNoticeResultModal(true);
+        setPostId(postId.toString());
       } catch (error) {
         alert("error");
         console.log(error);
       }
+    } else {
+      alert("잠시 후에 시도해주세요");
     }
   };
 
@@ -299,7 +292,7 @@ const NoticeAddPage = () => {
                   />
                 </div>
               </p>
-              <div className="flex gap-[10px]">
+              <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={period?.start || null}
                   setSelectedDate={(date) =>
@@ -312,6 +305,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={period?.start}
                 />
+                <span>~</span>
                 <CustomDatePicker
                   selected={period?.end || null}
                   setSelectedDate={(date) =>
@@ -345,7 +339,7 @@ const NoticeAddPage = () => {
                   />
                 </div>
               </p>
-              <div className="flex gap-[10px]">
+              <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={hour?.start || null}
                   setSelectedDate={(date) =>
@@ -356,6 +350,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={hour?.start}
                 />
+                <span>~</span>
                 <CustomDatePicker
                   selected={hour?.end || null}
                   setSelectedDate={(date) =>
@@ -373,7 +368,7 @@ const NoticeAddPage = () => {
               <b>
                 휴게시간 <b className="text-warn">*</b>
               </b>
-              <div className="flex gap-[10px]">
+              <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={restTime?.start || null}
                   setSelectedDate={(date) =>
@@ -386,6 +381,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={restTime?.start}
                 />
+                <span>~</span>
                 <CustomDatePicker
                   selected={restTime?.end || null}
                   setSelectedDate={(date) =>
@@ -460,7 +456,7 @@ const NoticeAddPage = () => {
               <b>
                 모집마감 <b className="text-warn">*</b>
               </b>
-              <div className="flex gap-[10px]">
+              <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={deadline?.date || null}
                   setSelectedDate={(date) =>
@@ -473,6 +469,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={deadline?.date}
                 />
+                <span>-</span>
                 <CustomDatePicker
                   selected={deadline?.time || null}
                   setSelectedDate={(date) =>
@@ -606,6 +603,9 @@ const NoticeAddPage = () => {
                   type="text"
                   placeholder="상세주소"
                   value={address.detail}
+                  onChange={(e) => {
+                    setAddress({ ...address, detail: e.target.value });
+                  }}
                   className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                 />
               </div>
@@ -672,6 +672,27 @@ const NoticeAddPage = () => {
               />
             )}
           </AddressModal>
+
+          <AddNoticeResultModal
+            isOpen={isOpenAddNoticeResultModal}
+            setIsOpen={setIsOpenAddNoticeResultModal}
+          >
+            <div className="size-full flex flex-col items-center gap-[20px]">
+              <div className="text-center">
+                <p>정상적으로</p>
+                <p>공고가 등록됐어요</p>
+              </div>
+              <button
+                onClick={() => {
+                  setIsOpenAddNoticeResultModal(false);
+                  postId && navigate(`/notice/${postId}`);
+                }}
+                className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
+              >
+                해당 페이지로 이동
+              </button>
+            </div>
+          </AddNoticeResultModal>
         </div>
       </Main>
       <BottomNav />

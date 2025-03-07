@@ -155,68 +155,60 @@ const { Schema } = mongoose;
 // const Post = mongoose.model("Post", PostSchema);
 
 // 수정 된 공고 스키마 입니다. 이거 기반으로 사용하시면 됩니다.
-// 급여 (Pay)
-const PaySchema = new Schema({
-  type: { type: String, required: true, default: "시급" }, // 급여 유형 (ex. 시급, 월급)
-  value: { type: Number, required: true, default: 0 }, // 급여 금액
-});
-
-// 기간 (PeriodTime, WorkTime, RestTime)
-const TimeSchema = new Schema({
-  start: { type: Date, required: true, default: Date.now },
-  end: { type: Date, required: true, default: Date.now },
-  discussion: { type: Boolean, default: false }, // 협의 여부
-});
-
-// 마감 시간 (DeadLineTime)
-const DeadlineSchema = new Schema({
-  date: { type: Date, required: true, default: Date.now },
-  time: { type: Date, required: true, default: Date.now },
-});
-
-// 학력 (Education)
-const EducationSchema = new Schema({
-  school: { type: String, required: true, default: "무관" }, // 학력 (무관, 고졸, 대졸 등)
-  state: { type: String, default: "" }, // 학교 상태 (졸업, 재학 중 등)
-});
-
-// 주소 (Address)
-const AddressSchema = new Schema({
-  zipcode: { type: String, required: true }, // 우편번호
-  street: { type: String, required: true }, // 도로명 주소
-  detail: { type: String, required: true }, // 상세 주소
-});
-
-// 채용 담당자 (Recruiter)
-const RecruiterSchema = new Schema({
-  name: { type: String, required: true }, // 담당자 이름
-  email: { type: String, required: true }, // 이메일
-  phone: { type: String, required: true }, // 연락처
-});
-
-// 채용 공고 (JobPosting)
 const JobPostingSchema = new Schema({
-  jobType: { type: String, required: true }, // 직종
-  pay: { type: PaySchema, required: true }, // 급여
-  hireType: { type: [String], required: true, default: ["일일"] }, // 고용 형태 (ex. 정규직, 계약직 등)
-  period: { type: TimeSchema, required: true }, // 근무 기간
-  hour: { type: TimeSchema, required: true }, // 근무 시간
-  restTime: { type: TimeSchema, required: true }, // 휴식 시간
-  day: { type: [String], required: true, default: ["월"] }, // 근무 요일 (월~일)
-  workDetail: { type: String, default: "" }, // 업무 상세 내용
-  welfare: { type: String, default: "" }, // 복리후생
-  postDetail: { type: String, default: "" }, // 공고 상세 설명
-  deadline: { type: DeadlineSchema, required: true }, // 모집 마감일
-  person: { type: Number, required: true, min: 1 }, // 모집 인원
-  preferences: { type: String, required: true, default: "무관" }, // 우대 사항
-  education: { type: EducationSchema, required: true }, // 학력
-  address: { type: AddressSchema, required: true }, // 근무지 주소
-  recruiter: { type: RecruiterSchema, required: true }, // 채용 담당자
-  createdAt: { type: Date, default: Date.now }, // 생성 날짜
+  jobType: { type: String, required: true, default: "전체" },
+  pay: {
+    type: { type: String, required: true, default: "시급" },
+    value: { type: Number, required: true, default: 0 },
+  },
+  hireType: { type: [String], required: true, default: ["일일"] },
+  period: {
+    start: { type: Date, required: true, default: Date.now },
+    end: { type: Date, required: true, default: Date.now },
+    discussion: { type: Boolean, default: false }, // 선택 가능
+  },
+  hour: {
+    start: { type: Date, required: true, default: Date.now },
+    end: { type: Date, required: true, default: Date.now },
+    discussion: { type: Boolean, default: false }, // 선택 가능
+  },
+  restTime: {
+    start: { type: Date, required: true, default: Date.now },
+    end: { type: Date, required: true, default: Date.now },
+  },
+  day: { type: [String], required: true, default: ["월"] },
+  workDetail: { type: String, default: "" },
+  welfare: { type: String, default: "" },
+  postDetail: { type: String, default: "" },
+  deadline: {
+    date: { type: Date, required: true, default: Date.now },
+    time: { type: Date, required: true, default: Date.now },
+  },
+  person: { type: Number, required: true, min: 1 },
+  preferences: { type: String, default: "" },
+  education: {
+    school: { type: String, required: true, default: "무관" },
+    state: { type: String, required: true, default: "무관" },
+  },
+  address: {
+    zipcode: { type: String, required: true },
+    street: { type: String, required: true },
+    detail: { type: String },
+  },
+  recruiter: {
+    name: { type: String },
+    email: { type: String },
+    phone: { type: String },
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  createdAt: { type: Date, default: Date.now },
 });
 
 // 모델 생성
-const JobPosting = mongoose.model("JobPosting", JobPostingSchema);
+const JobPosting = mongoose.model("JobPosting", JobPostingSchema, "posts");
 
 /**
  * @swagger
@@ -238,10 +230,15 @@ const JobPosting = mongoose.model("JobPosting", JobPostingSchema);
  */
 router.post("/notice", async (req, res) => {
   try {
-    const newPost = new JobPosting({ ...req.body });
+    const { author, ...postData } = req.body;
+    const newPost = new JobPosting({
+      ...postData,
+      author: new mongoose.Types.ObjectId(author),
+    });
+
     await newPost.save(); // 새로 생성한 객체를 DB에 저장
 
-    res.status(200).end();
+    res.status(200).json({ postId: newPost._id });
     // .json({ message: "Post created successfully", post: newPost });
   } catch (err) {
     res.status(500).json({ error: err.message });

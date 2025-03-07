@@ -102,6 +102,7 @@ const CustomDatePicker = ({
       selected={selected}
       onChange={setSelectedDate}
       locale={ko}
+      className="w-full"
       customInput={
         <div className="relative">
           <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
