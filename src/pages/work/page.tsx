@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { useAppSelector } from "@/hooks/useRedux";
 
 import Header from "../../components/Header";
 import Main from "../../components/Main";
@@ -40,9 +41,16 @@ const NavBtn = styled.div`
 `;
 
 export function WorkPage() {
+  const user = useAppSelector((state) => state.auth.user); // 현재 접속한 유저
+
+  // 유저의 근무 존재 관리
   const [hasWorkItem, setWorkItem] = useState(true);
 
-  const [userId, setUserId] = useState("의문의 계정");
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    setUserEmail(user?.email ?? "의문의 계정님");
+  });
 
   return (
     <>
@@ -69,7 +77,7 @@ export function WorkPage() {
               <CenterDiv className="text-main-darkGray">
                 <div className="text-xl">
                   <span>현재</span>
-                  <span className="text-main-color font-bold">{userId}</span>
+                  <span className="text-main-color font-bold">{userEmail}</span>
                   <span>님의</span>
                 </div>
                 <div className="text-xl mb-5">근무가 존재하지 않아요</div>

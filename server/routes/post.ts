@@ -48,13 +48,6 @@ const PostSchema = new Schema(
     },
     images: [{ type: String }], // 이미지 URL을 저장하는 배열 // 근무지 이미지
 
-    companyAddress: {
-      // 회사 주소
-      zcode: { type: String, required: true },
-      address: { type: String, required: true },
-      detailAddress: { type: String, required: true },
-    },
-
     // 모집 조건
     recruitmentEndDate: { type: Date, required: true }, // 모집 마감일
     numberOfPeople: { type: Number, required: true }, // 모집 인원
@@ -74,6 +67,7 @@ const PostSchema = new Schema(
       startDate: { type: Date, required: true },
       endDate: { type: Date, required: true },
     },
+    // 근무 기간
     workingPeriod: {
       type: String,
       enum: [
@@ -86,6 +80,8 @@ const PostSchema = new Schema(
       ],
       required: true,
     },
+    // 근무 날짜
+    workDate: { type: Date },
 
     // 근무 요일 설정
     workingDetail: {
@@ -99,6 +95,7 @@ const PostSchema = new Schema(
       type: [String],
       enum: ["월", "화", "수", "목", "금", "토", "일"],
     },
+
     dayNagotiable: { type: Boolean, default: false }, // 요일 선택 후 추가 협의 가능할 경우
     dayAdditional: { type: String }, // 근무 요일 설명
     dayNago: { type: Boolean, default: false }, // 요일 협의 (*)
@@ -134,14 +131,21 @@ const PostSchema = new Schema(
     benefits: { type: String },
 
     // 회사 정보
-    companyInfo: {
-      exposedArea: {
-        // 광고 노출 지역
-        sido: { type: String, required: true },
-        si: { type: String, required: true },
-        goo: { type: String, required: true },
-      },
-      companyName: { type: String, required: true },
+    companyName: { type: String, required: true }, // 회사 이름
+    // 회사 주소
+    companyAddress: {
+      zcode: { type: String, required: true },
+      address: { type: String, required: true },
+      detailAddress: { type: String, required: true },
+      // 주소를 좌표로 변환해서 저장
+      Latitude: { type: String, required: true }, // 위도
+      Longitude: { type: String, required: true }, // 경도
+    },
+    exposedArea: {
+      // 광고 노출 지역
+      sido: { type: String, required: true },
+      si: { type: String, required: true },
+      goo: { type: String, required: true },
     },
   },
   { collection: "posts" } // 컬렉션 이름 강제 지정
@@ -232,6 +236,7 @@ router.post("/update/:postId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// fetch / 뭐시였더라?("/update/:postId" 로 바꾸기
 
 /**
  * @swagger
@@ -273,6 +278,7 @@ router.delete("/delete/:postId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// delete("/:postId" 로 바꾸기
 
 /**
  * @swagger
@@ -309,6 +315,7 @@ router.get("/get/notice/lists", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// get("/lists" 로 바꾸기
 
 /**
  * @swagger
@@ -343,5 +350,6 @@ router.get("/get/oneNotice/:postId", async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
+// get("/:postId" 로 바꾸기
 
 export default router;
