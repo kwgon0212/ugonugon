@@ -27,6 +27,7 @@ function MyPageEditInfoPage() {
 
   const [zipcodeOpen, setZipcodeOpen] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
 
   useEffect(() => {
     if (userData !== null) {
@@ -130,7 +131,7 @@ function MyPageEditInfoPage() {
               <button
                 type="button"
                 className="w-full h-[50px] mt-28 bg-main-color rounded-[10px] font-semibold text-white"
-                onClick={() =>
+                onClick={() => {
                   postUser(userId, {
                     phone,
                     address: {
@@ -138,12 +139,29 @@ function MyPageEditInfoPage() {
                       street: address,
                       detail: detailAddress,
                     },
-                  })
-                }
+                  });
+                  setSaveModalOpen(!saveModalOpen);
+                }}
               >
                 저장하기
               </button>
             </div>
+            {saveModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+                <div className="bg-white flex flex-col gap-[20px] p-5 rounded-[10px] w-[362px] items-center">
+                  <p className="font-bold text-lg">
+                    정보가 성공적으로 수정되었습니다.
+                  </p>
+                  <button
+                    type="button"
+                    className="w-1/2 p-2 rounded-[10px] bg-main-color text-white"
+                    onClick={() => setSaveModalOpen(!saveModalOpen)}
+                  >
+                    확인
+                  </button>
+                </div>
+              </div>
+            )}
           </form>
           {zipcodeOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
