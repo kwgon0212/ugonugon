@@ -23,7 +23,6 @@ import NotFound from "./NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ReCruitManagePage from "./pages/recruit/manage/page";
 import NoticeSearchPage from "./pages/notice/search/page";
-import NoticeAddPage from "./pages/notice/add/page";
 import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
@@ -34,6 +33,7 @@ import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
 import PostDataTest from "./pages/notice/post/page";
+import NoticeAddPage from "./pages/notice/add/page";
 
 function App() {
   return (

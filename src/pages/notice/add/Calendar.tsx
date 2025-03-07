@@ -1,73 +1,129 @@
+// import { ko } from "date-fns/locale/ko";
+// import React from "react";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+
+// interface Props {
+//   value?: string;
+//   onClick?: () => void;
+//   icon: React.ReactNode;
+//   dateFormat?: string;
+//   placeholder?: string;
+//   selectedDate?: Date | null;
+//   setSelectedDate: (date: Date | null) => void;
+//   showTimeSelect?: boolean;
+//   showTimeSelectOnly?: boolean;
+//   selected?: Date | null; // 선택된 ���� (선택적)
+// }
+
+// const CustomDatePicker = ({
+//   value,
+//   onClick,
+//   icon,
+//   dateFormat = "yyyy-MM-dd",
+//   placeholder = "날짜 선택",
+//   selectedDate,
+//   setSelectedDate,
+//   showTimeSelect,
+//   showTimeSelectOnly,
+//   selected
+// }: Props) => {
+//   return (
+//     <DatePicker
+//       selected={selected}
+
+//       onChange={setSelectedDate}
+//       locale={ko}
+//       customInput={
+//         <div className="relative">
+//           <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
+//             {icon}
+//           </div>
+//           <input
+//             type="text"
+//             className="w-full rounded-[10px] pl-[40px] pr-[10px] border border-gray-300 h-[40px] cursor-pointer outline-main-color"
+//             value={value}
+//             readOnly
+//             onClick={onClick} // 클릭 시 달력 열기
+//             placeholder={placeholder}
+//           />
+//         </div>
+//       }
+//       value={value || ""}
+//       dateFormat={dateFormat}
+//       showTimeSelect={showTimeSelect}
+//       showTimeSelectOnly={showTimeSelectOnly}
+//       timeIntervals={30}
+//       popperPlacement="bottom"
+//       // showTimeSelectOnly={showTimeSelectOnly}
+//     />
+//   );
+// };
+
+// export default CustomDatePicker;
+
+import { ko } from "date-fns/locale";
 import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "@/css/datePicker.css";
-import { ko } from "date-fns/locale/ko";
 
-interface CalendarProps {
-  onChange: (date: Date | null) => void; // 날짜가 변경될 때 실행될 함수
-  startDate?: Date | null; // 시작 날짜 (선택적)
-  endDate?: Date | null; // 종료 날짜 (선택적)
-  selected?: Date | null; // 현재 선택된 날짜 (선택적)
-  dateFormat?: string; // 날짜 형식 (선택적)
+interface Props {
+  value?: Date | null;
+  onClick?: () => void;
+  icon: React.ReactNode;
+  dateFormat?: string;
+  placeholder?: string;
+  selected?: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  mode?: "date" | "time"; // 날짜 선택 또는 시간 선택 모드
 }
 
-const Calendar = ({
-  onChange,
-  startDate,
-  endDate,
-  selected,
+const CustomDatePicker = ({
+  value,
+  onClick,
+  icon,
   dateFormat,
-}: CalendarProps) => {
+  placeholder = "날짜 선택",
+  selected,
+  setSelectedDate,
+  mode = "date", // 기본값은 날짜 선택 모드
+}: Props) => {
+  const formattedValue = value
+    ? mode === "date"
+      ? value.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
+      : value.toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }) // HH:mm 형식
+    : "";
+
   return (
     <DatePicker
-      locale={ko}
-      showIcon
-      icon={
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20px"
-          height="20px"
-          color="#717171"
-          fill="none"
-          style={{
-            padding: "10px 0 10px 15px",
-            width: "20px",
-            height: "20px",
-          }}
-        >
-          <path
-            d="M10 18.3333C14.6024 18.3333 18.3333 14.6023 18.3333 9.99996C18.3333 5.39759 14.6024 1.66663 10 1.66663C5.39763 1.66663 1.66667 5.39759 1.66667 9.99996C1.66667 14.6023 5.39763 18.3333 10 18.3333Z"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M10 5V10L13.3333 11.6667"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      }
-      toggleCalendarOnIconClick
-      showTimeSelect
-      showTimeSelectOnly
-      // dateFormat="HH : mm"
-      dateFormat={dateFormat}
-      startDate={startDate}
-      endDate={endDate}
-      popperPlacement="bottom-start"
-      fixedHeight
-      selectsStart
-      className="left-wrapper"
-      placeholderText="출근 시간"
       selected={selected}
-      onChange={onChange}
+      onChange={setSelectedDate}
+      locale={ko}
+      customInput={
+        <div className="relative">
+          <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
+            {icon}
+          </div>
+          <input
+            type="text"
+            className="w-full rounded-[10px] pl-[40px] pr-[10px] border border-gray-300 h-[40px] cursor-pointer outline-main-color"
+            value={formattedValue}
+            readOnly
+            onClick={onClick}
+            placeholder={placeholder}
+          />
+        </div>
+      }
+      dateFormat={dateFormat || (mode === "date" ? "yyyy-MM-dd" : "HH:mm")}
+      showTimeSelect={mode === "time"} // 시간 선택 모드일 경우 활성화
+      showTimeSelectOnly={mode === "time"} // 시간만 선택하는 경우
+      timeIntervals={30}
+      popperPlacement="bottom"
     />
   );
 };
 
-export default Calendar;
+export default CustomDatePicker;

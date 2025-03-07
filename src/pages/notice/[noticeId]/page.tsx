@@ -52,7 +52,7 @@ const NoticeDetailPage = () => {
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
   useEffect(() => {
-    setIsEmployer(true);
+    setIsEmployer(false);
   }, []);
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
