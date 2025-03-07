@@ -7,19 +7,20 @@ import ResumeEditIcon from "@/components/icons/ResumeEdit";
 import StarIcon from "@/components/icons/Star";
 import WalletIcon from "@/components/icons/Wallet";
 import Main from "@/components/Main";
-import useFetchUser from "@/hooks/useFetchUser";
+import getUser, { type User } from "@/hooks/fetchUser";
+import { useAppSelector } from "@/hooks/useRedux";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const MyPage = () => {
-  const [userData, setUserData] = useState(useFetchUser("get"));
-  const fetchUser = useFetchUser("get");
+  const userId = useAppSelector((state) => state.auth.user?._id);
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
-    if (fetchUser != null) {
-      setUserData(fetchUser);
+    if (userId) {
+      getUser(userId, setUserData);
     }
-  }, [fetchUser]);
+  }, [userId]); // userId가 변경될 때마다 호출
 
   return (
     <>
@@ -28,7 +29,7 @@ const MyPage = () => {
           <span>마이페이지</span>
         </div>
       </Header>
-      {fetchUser !== null && (
+      {userData !== null && (
         <Main hasBottomNav={true}>
           <div className="size-full flex flex-col gap-[20px] pt-[20px]">
             <div className="w-full flex gap-[10px] px-[20px]">
