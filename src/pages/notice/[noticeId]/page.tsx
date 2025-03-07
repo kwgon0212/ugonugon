@@ -11,6 +11,10 @@ import ShareIcon from "@/components/icons/Share";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Modal from "@/components/Modal";
 import { AnimatePresence, motion } from "framer-motion";
+import axios from "axios";
+import { useAppSelector } from "@/hooks/useRedux";
+import Notice from "@/types/Notice";
+import WorkPlaceMap from "./WorkPlaceMap";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -25,7 +29,13 @@ interface ResumeType {
 
 const NoticeDetailPage = () => {
   const { noticeId } = useParams();
+  const userId = useAppSelector((state) => state.auth.user?._id);
+  const [postData, setPostData] = useState<Notice | null>(null);
+  console.log(userId);
+  console.log(postData);
+
   const [isEmployer, setIsEmployer] = useState(false);
+  console.log(isEmployer);
   const [isOpenApplyModal, setIsOpenApplyModal] = useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
@@ -52,8 +62,16 @@ const NoticeDetailPage = () => {
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
   useEffect(() => {
-    setIsEmployer(false);
-  }, []);
+    const fetchPost = async () => {
+      const response = await axios.get(`/api/post/${noticeId}`);
+      const data = response.data;
+      setPostData(data);
+    };
+    if (noticeId) {
+      fetchPost();
+      setIsEmployer(postData?.author === userId);
+    }
+  }, [noticeId, userId]);
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
   useEffect(() => {
@@ -157,25 +175,44 @@ const NoticeDetailPage = () => {
             style={{ minHeight: contentHeight }}
           >
             <div className="flex flex-col gap-[4px] mb-[10px] px-layout">
-              <div className="flex gap-[4px] text-[12px] text-main-darkGray justify-end">
-                <span>작성일자 </span>
-                <span>2025-02-17</span>
-                <span>10:29:15</span>
+              <div className="flex gap-[4px] text-[12px] text-main-darkGray">
+                <span>
+                  {postData &&
+                    postData.createdAt &&
+                    `작성일자 ${new Date(postData.createdAt)
+                      .toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                      .replace(/. /g, "-")
+                      .replace(".", "")} ${new Date(
+                      postData.createdAt
+                    ).toLocaleTimeString("ko-KR", {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}`}
+                </span>
               </div>
-              <h1 className="font-bold text-[20px]">
-                [업무강도 상] 풀스택 프로젝트 보조 구인 / 중식 제공
-              </h1>
-              <div className="text-[14px] flex w-full justify-between">
-                <h3>한경 2기 풀스택반</h3>
-                <span className="text-main-darkGray">~ 25/03/04(월)</span>
-              </div>
-              <div className="text-main-darkGray flex gap-[4px] text-[14px]">
+              <h1 className="font-bold text-[20px]">{postData?.title}</h1>
+              {/* <div className="text-[14px] flex w-full justify-end"> */}
+              {/* <h3>한경 2기 풀스택반</h3> */}
+              {/* <span className="text-main-darkGray">
+                  {postData &&
+                    `~ ${new Date(
+                      postData.deadline.date
+                    ).toLocaleDateString()}`}
+                </span>
+              </div> */}
+              {/* <div className="text-main-darkGray flex gap-[4px] text-[14px]">
                 <span>설립 1년차</span>
                 <span>25년 2월부터 이용중</span>
-              </div>
+              </div> */}
             </div>
 
-            <div className="flex justify-between sticky top-0 bg-main-bg py-[10px]">
+            <div className="flex justify-between sticky top-0 bg-main-bg py-[10px] z-[5]">
               <button
                 className="flex-1 text-center"
                 onClick={() => scrollToSection("condition")}
@@ -184,15 +221,15 @@ const NoticeDetailPage = () => {
               </button>
               <button
                 className="flex-1 text-center"
-                onClick={() => scrollToSection("detail")}
+                onClick={() => scrollToSection("work-detail")}
               >
-                상세요강
+                근무상세
               </button>
               <button
                 className="flex-1 text-center"
-                onClick={() => scrollToSection("info")}
+                onClick={() => scrollToSection("post-detail")}
               >
-                기업정보
+                상세요강
               </button>
             </div>
 
@@ -205,56 +242,172 @@ const NoticeDetailPage = () => {
                   <span className="text-main-gray basis-[80px]">급여</span>
                   <p className="flex-1 flex gap-[10px]">
                     <span className="text-warn border border-warn px-2">
-                      시급
+                      {postData?.pay.type}
                     </span>
-                    10,030원
+                    {postData?.pay.value}원
                   </p>
                 </div>
-                {layout("협의기간", "2025년 2월 24일 ~ 2025년 3월 17일")}
-                {layout("근무일자", "연속 10일 | 1일")}
-                {layout("근무요일", "주 5일(월 ~ 금)")}
-                {layout("근무시간", "09:00 ~ 17:50")}
                 {layout(
+                  "고용형태",
+                  postData?.hireType.map((type) => `${type}고용`).join(", ")
+                )}
+                {layout(
+                  "근무기간",
+                  `${
+                    postData &&
+                    new Date(postData.period.start)
+                      .toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                      .replace(/. /g, "-")
+                      .replace(".", "")
+                  } ~ ${
+                    postData &&
+                    new Date(postData.period.end)
+                      .toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                      .replace(/. /g, "-")
+                      .replace(".", "")
+                  }`,
+                  <p className="bg-main-bg text-[12px] flex justify-center items-center px-2 rounded-[5px]">
+                    {postData?.period.discussion ? "협의가능" : "협의불가"}
+                  </p>
+                )}
+                {layout(
+                  "근무시간",
+                  `${
+                    postData &&
+                    new Date(postData.hour.start).toLocaleTimeString("ko-KR", {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  } ~ ${
+                    postData &&
+                    new Date(postData.hour.end).toLocaleTimeString("ko-KR", {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  }`,
+                  <p className="bg-main-bg text-[12px] flex justify-center items-center px-2 rounded-[5px]">
+                    {postData?.hour.discussion ? "협의가능" : "협의불가"}
+                  </p>
+                )}
+                {layout(
+                  "휴게시간",
+                  `${
+                    postData &&
+                    new Date(postData.restTime.start).toLocaleTimeString(
+                      "ko-KR",
+                      {
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )
+                  } ~ ${
+                    postData &&
+                    new Date(postData.restTime.end).toLocaleTimeString(
+                      "ko-KR",
+                      {
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )
+                  }`
+                )}
+                {layout(
+                  "근무요일",
+                  `${postData?.day.join(", ")} (주 ${postData?.day.length}일)`
+                )}
+
+                {/* {layout(
                   "업직종",
                   "풀스택 개발",
                   <p className="bg-main-bg text-[12px] flex justify-center items-center px-2 rounded-[5px]">
                     초보가능
                   </p>
-                )}
-                {layout("고용형태", "일일 단기 장기")}
-                {layout("복리후생", "중식 제공, 노트북 제공")}
+                )} */}
+
+                {layout("복리후생", postData?.welfare)}
               </div>
 
               <div className="flex flex-col gap-[10px]">
                 <h3 className="font-bold text-[20px]">모집조건</h3>
-                {layout("모집마감", "2025년 3월 3일")}
-                {layout("모집인원", "3명")}
-                {layout("학력", "학력 무관")}
-                {layout("우대사항", "관련 전공, 관련 프젝경험, 관련 자격증")}
+                {layout(
+                  "모집마감",
+                  postData &&
+                    `${new Date(postData.deadline.date)
+                      .toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                      .replace(/. /g, "-")
+                      .replace(".", "")}   ${new Date(
+                      postData.deadline.date
+                    ).toLocaleTimeString("ko-KR", {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                )}
+                {layout(
+                  "모집인원",
+                  postData && `${postData.person.toString()}명`
+                )}
+                {layout("우대사항", postData?.preferences)}
+                {layout(
+                  "학력",
+                  postData &&
+                    `${postData.education.school} [${postData.education.state}]`
+                )}
+              </div>
+
+              <div className="flex flex-col gap-[10px]">
+                <h3 className="font-bold text-[20px]" id="work-detail">
+                  근무상세
+                </h3>
+                <div className="w-full break-keep">
+                  {postData && postData.workDetail ? postData.workDetail : "-"}
+                </div>
               </div>
 
               <div className="flex flex-col gap-[10px]">
                 <h3 className="font-bold text-[20px]">근무지역</h3>
                 {layout(
                   "근무지역",
-                  "서울 중구 청파로 463 한국경제신문사 3층, WISDOM 강의실 123호"
+                  `(${postData?.address.zipcode}) ${postData?.address.street} ${postData?.address.detail}`
                 )}
+                <WorkPlaceMap
+                  address={`${postData?.address.street} ${postData?.address.detail}`}
+                />
               </div>
 
               <div className="flex flex-col gap-[10px]">
-                <h3 className="font-bold text-[20px]" id="detail">
+                <h3 className="font-bold text-[20px]" id="post-detail">
                   상세요강
                 </h3>
-                <div className="w-full h-[500px] bg-main-darkGray">이미지</div>
+                <div className="w-full break-keep">
+                  {postData && postData.postDetail ? postData.postDetail : "-"}
+                </div>
               </div>
 
               <div className="flex flex-col gap-[10px]">
                 <h3 className="font-bold text-[20px]">채용 담당자 정보</h3>
-                {layout("담당자", "채용 담당자")}
-                {layout("연락처", "비공개")}
+                {layout("담당자", postData?.recruiter?.name || "비공개")}
+                {layout("이메일", postData?.recruiter?.email || "비공개")}
+                {layout("연락처", postData?.recruiter?.phone || "비공개")}
               </div>
 
-              <div className="flex flex-col gap-[10px]">
+              {/* <div className="flex flex-col gap-[10px]">
                 <div className="flex w-full justify-between items-center">
                   <h3 className="font-bold text-[20px]" id="info">
                     기업 정보
@@ -269,9 +422,9 @@ const NoticeDetailPage = () => {
                 </div>
                 {layout("담당자", "채용 담당자")}
                 {layout("연락처", "비공개")}
-              </div>
+              </div> */}
 
-              <div className="flex flex-col gap-[10px]">
+              {/* <div className="flex flex-col gap-[10px]">
                 <div className="flex w-full justify-between">
                   <h3 className="font-bold text-[20px]">기업 리뷰</h3>
                   <div>별점</div>
@@ -279,7 +432,7 @@ const NoticeDetailPage = () => {
                 {layout("익명1", "어쩌구")}
                 {layout("익명2", "저쩌구")}
                 {layout("익명3", "머시기")}
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -504,13 +657,17 @@ const NoticeDetailPage = () => {
   );
 };
 
-const layout = (title: string, content: string, option?: JSX.Element) => {
+const layout = (
+  title: string,
+  content?: string | null,
+  option?: JSX.Element | null
+) => {
   return (
     <div>
       <div className="flex items-start">
         <span className="text-main-gray basis-[80px]">{title}</span>
         <p className="flex gap-[10px] items-center break-keep flex-1">
-          {content}
+          {content ? content : "-"}
           {option}
         </p>
       </div>

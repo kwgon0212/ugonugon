@@ -156,6 +156,7 @@ const { Schema } = mongoose;
 
 // 수정 된 공고 스키마 입니다. 이거 기반으로 사용하시면 됩니다.
 const JobPostingSchema = new Schema({
+  title: { type: String, required: true, default: "" },
   jobType: { type: String, required: true, default: "전체" },
   pay: {
     type: { type: String, required: true, default: "시급" },

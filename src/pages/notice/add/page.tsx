@@ -57,6 +57,7 @@ const NoticeAddPage = () => {
   console.log(userId);
   const navigate = useNavigate();
 
+  const [title, setTitle] = useState("");
   const [jobType, setJobType] = useState("전체");
   const [pay, setPay] = useState<Pay>({
     type: "시급",
@@ -125,7 +126,13 @@ const NoticeAddPage = () => {
 
   const handleSubmitNotice = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pay.value <= 0 || person <= 0 || !address.zipcode || !address.street) {
+    if (
+      !title ||
+      pay.value <= 0 ||
+      person <= 0 ||
+      !address.zipcode ||
+      !address.street
+    ) {
       alert("입력하지 않은 정보가 존재합니다");
       return;
     }
@@ -133,6 +140,7 @@ const NoticeAddPage = () => {
     if (userId) {
       try {
         const response = await axios.post("/api/post/notice", {
+          title,
           jobType,
           pay,
           hireType,
@@ -178,6 +186,21 @@ const NoticeAddPage = () => {
             className="w-full p-layout flex flex-col gap-layout divide-[#0b798b] relative"
             onSubmit={handleSubmitNotice}
           >
+            <div className="flex flex-col gap-[5px]">
+              <b>
+                공고제목 <b className="text-warn">*</b>
+              </b>
+              <input
+                type="text"
+                placeholder="공고 제목을 작성해주세요"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                className="w-full bg-transparent border-b border-main-gray h-[40px] px-[10px] outline-none text-xl"
+              />
+            </div>
+
             <div className="flex flex-col gap-[5px]">
               <b>
                 직종 <b className="text-warn">*</b>
