@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import usersRoutes from "./routes/users.ts";
 
 import testRoutes from "./routes/test.ts";
 import registerRoutes from "./routes/register.ts";
@@ -13,6 +14,7 @@ import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
+import { defaultMaxListeners } from "events";
 dotenv.config();
 
 const app: Express = express();
@@ -38,6 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 
+app.use("/api/users", usersRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/auth", authRoutes);

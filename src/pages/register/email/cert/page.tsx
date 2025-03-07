@@ -134,18 +134,32 @@ function RegisterEmailCertPage() {
           >
             <p className="font-semibold text-xl text-center">인증번호 확인</p>
             <div className="flex justify-center">
-              {nums.map((v, index) => (
-                <CertificationInput
-                  key={index}
-                  type="text"
-                  maxLength={1}
-                  pattern="\d"
-                  required
-                  onChange={(event) => handleNums(event, index)}
-                  onKeyUp={(event) => handleKeyUp(event, index)}
-                  onKeyDown={(event) => handleKeyDown(event, index)}
-                />
-              ))}
+              {nums.map((v, index) =>
+                !index ? (
+                  <CertificationInput
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    pattern="\d"
+                    required
+                    autoFocus
+                    onChange={(event) => handleNums(event, index)}
+                    onKeyUp={(event) => handleKeyUp(event, index)}
+                    onKeyDown={(event) => handleKeyDown(event, index)}
+                  />
+                ) : (
+                  <CertificationInput
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    pattern="\d"
+                    required
+                    onChange={(event) => handleNums(event, index)}
+                    onKeyUp={(event) => handleKeyUp(event, index)}
+                    onKeyDown={(event) => handleKeyDown(event, index)}
+                  />
+                )
+              )}
             </div>
             <div className="flex flex-col items-center gap-[5px] text-sm">
               <p className="text-center text-main-darkGray">
