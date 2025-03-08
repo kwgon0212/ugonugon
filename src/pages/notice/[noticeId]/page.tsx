@@ -395,9 +395,7 @@ const NoticeDetailPage = () => {
                   "근무지역",
                   `(${postData?.address.zipcode}) ${postData?.address.street} ${postData?.address.detail}`
                 )}
-                <WorkPlaceMap
-                  address={`${postData?.address.street} ${postData?.address.detail}`}
-                />
+                <WorkPlaceMap address={`${postData?.address.street}`} />
               </div>
 
               <div className="flex flex-col gap-[10px]">
