@@ -158,7 +158,7 @@ function MypageResumeAdd() {
     setSex(userData?.sex);
     if (userData?.residentId)
       setResidentId(
-        userData.residentId.slice(0, 7) +
+        userData.residentId.slice(0, 6) +
           "-" +
           userData.residentId[6] +
           "******"
@@ -393,6 +393,7 @@ function MypageResumeAdd() {
                   carrers,
                   introduction,
                 });
+                await postUser(userId, { resumeId: "" });
                 navigate("/mypage/resume/list");
               }}
             >
