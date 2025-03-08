@@ -15,6 +15,7 @@ import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./WorkPlaceMap";
+import NotFound from "@/NotFound";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -48,6 +49,7 @@ const NoticeDetailPage = () => {
   const [isAlreadyApply, setIsAlreadyApply] = useState(false);
   const [selectedResume, setSelectedResume] = useState<ResumeType | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -62,14 +64,21 @@ const NoticeDetailPage = () => {
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
   useEffect(() => {
-    const fetchPost = async () => {
-      const response = await axios.get(`/api/post/${noticeId}`);
-      const data = response.data;
-      setPostData(data);
-    };
     if (noticeId) {
+      const fetchPost = async () => {
+        try {
+          const response = await axios.get(`/api/post/${noticeId}`);
+          const data = response.data;
+          setPostData(data);
+          setIsNotFound(false);
+          setIsEmployer(data.author === userId);
+        } catch (error) {
+          console.error("Error fetching post:", error);
+          setIsNotFound(true); // ✅ 요청 실패 시 404 상태로 설정
+        }
+      };
+
       fetchPost();
-      setIsEmployer(postData?.author === userId);
     }
   }, [noticeId, userId]);
 
@@ -129,6 +138,10 @@ const NoticeDetailPage = () => {
   const handleDeleteNotice = () => {
     // 해당 공고 삭제
   };
+
+  if (isNotFound) {
+    return <NotFound />;
+  }
 
   return (
     <>

@@ -10,11 +10,11 @@ import {
   payOptions,
   schoolOptions,
   schoolStateOptions,
-} from "../options";
+} from "../../options";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import DaumPostcode from "react-daum-postcode";
 import Modal from "@/components/Modal";
-import CustomDatePicker from "../Calendar";
+import CustomDatePicker from "../../Calendar";
 import CalendarIcon from "@/components/icons/Calendar";
 import ClockIcon from "@/components/icons/Clock";
 import { useAppSelector } from "@/hooks/useRedux";
