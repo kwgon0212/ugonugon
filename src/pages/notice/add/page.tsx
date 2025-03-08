@@ -1,4 +1,3 @@
-import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
@@ -20,6 +19,7 @@ import ClockIcon from "@/components/icons/Clock";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useGeocode from "@/hooks/useGeocode";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -54,8 +54,8 @@ interface RestTime extends NoticeTime {}
 
 const NoticeAddPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  console.log(userId);
   const navigate = useNavigate();
+  const { getCoordinates } = useGeocode();
 
   const [title, setTitle] = useState("");
   const [jobType, setJobType] = useState("전체");
@@ -137,6 +137,8 @@ const NoticeAddPage = () => {
       return;
     }
 
+    const coords = await getCoordinates(address.street);
+
     if (userId) {
       try {
         const response = await axios.post("/api/post/notice", {
@@ -155,7 +157,11 @@ const NoticeAddPage = () => {
           person,
           preferences,
           education,
-          address,
+          address: {
+            ...address,
+            lat: coords?.lat,
+            lng: coords?.lng,
+          },
           recruiter,
           author: userId,
         });

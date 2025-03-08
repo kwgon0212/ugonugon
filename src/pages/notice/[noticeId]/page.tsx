@@ -1,10 +1,9 @@
 import Header from "@/components/Header";
 import Main from "@/components/Main";
 
-import React, { JSX, useEffect, useRef, useState } from "react";
+import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageSlider from "./ImageSlider";
-import { Link } from "react-router-dom";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import StarIcon from "@/components/icons/Star";
 import ShareIcon from "@/components/icons/Share";
@@ -32,11 +31,8 @@ const NoticeDetailPage = () => {
   const { noticeId } = useParams();
   const userId = useAppSelector((state) => state.auth.user?._id);
   const [postData, setPostData] = useState<Notice | null>(null);
-  console.log(userId);
-  console.log(postData);
 
   const [isEmployer, setIsEmployer] = useState(false);
-  console.log(isEmployer);
   const [isOpenApplyModal, setIsOpenApplyModal] = useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
@@ -63,24 +59,24 @@ const NoticeDetailPage = () => {
 
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
-  useEffect(() => {
-    if (noticeId) {
-      const fetchPost = async () => {
-        try {
-          const response = await axios.get(`/api/post/${noticeId}`);
-          const data = response.data;
-          setPostData(data);
-          setIsNotFound(false);
-          setIsEmployer(data.author === userId);
-        } catch (error) {
-          console.error("Error fetching post:", error);
-          setIsNotFound(true);
-        }
-      };
+  const fetchPost = useCallback(async () => {
+    if (!noticeId) return;
 
-      fetchPost();
+    try {
+      const response = await axios.get(`/api/post/${noticeId}`);
+      const data = response.data;
+      setPostData(data);
+      setIsNotFound(false);
+      setIsEmployer(data.author === userId);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      setIsNotFound(true);
     }
   }, [noticeId, userId]);
+
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
   useEffect(() => {

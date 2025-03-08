@@ -195,6 +195,8 @@ const JobPostingSchema = new Schema({
     zipcode: { type: String, required: true },
     street: { type: String, required: true },
     detail: { type: String },
+    lat: Number,
+    lng: Number,
   },
   recruiter: {
     name: { type: String },

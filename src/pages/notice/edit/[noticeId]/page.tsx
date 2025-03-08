@@ -1,4 +1,3 @@
-import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
@@ -20,6 +19,7 @@ import ClockIcon from "@/components/icons/Clock";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import useGeocode from "@/hooks/useGeocode";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -56,69 +56,7 @@ const NoticeEditPage = () => {
   const { noticeId } = useParams();
   const [isEmployer, setIsEmployer] = useState(true);
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [originalPost, setOriginalPost] = useState(null); // 원본 데이터 저장
-  const [postData, setPostData] = useState(null); // 수정할 데이터
-
-  useEffect(() => {
-    if (noticeId) {
-      const fetchPost = async () => {
-        try {
-          const response = await axios.get(`/api/post/${noticeId}`);
-          const data = response.data;
-          setOriginalPost(response.data); // ✅ 원본 데이터 저장
-          setPostData(response.data); // ✅ 상태 데이터 설정
-          setIsEmployer(data.author === userId);
-
-          if (data) {
-            setTitle(data.title || "");
-            setJobType(data.jobType || "전체");
-            setPay(data.pay || { type: "시급", value: 0 });
-            setHireType(data.hireType || ["일일"]);
-            setPeriod(
-              data.period || {
-                start: new Date(),
-                end: new Date(),
-                discussion: false,
-              }
-            );
-            setHour(
-              data.hour || {
-                start: new Date(),
-                end: new Date(),
-                discussion: false,
-              }
-            );
-            setRestTime(
-              data.restTime || { start: new Date(), end: new Date() }
-            );
-            setDay(data.day || ["월"]);
-            setWorkDetail(data.workDetail || "");
-            setWelfare(data.welfare || "");
-            setPostDetail(data.postDetail || "");
-            setDeadline(
-              data.deadline || { date: new Date(), time: new Date() }
-            );
-            setPerson(data.person || 0);
-            setPreferences(data.preferences || "");
-            setEducation(data.education || { school: "무관", state: "무관" });
-            setAddress(data.address || { zipcode: "", street: "", detail: "" });
-            setRecruiter(data.recruiter || { name: "", email: "", phone: "" });
-          }
-        } catch (error) {
-          console.error("Error fetching post:", error);
-        }
-      };
-
-      fetchPost();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isEmployer) {
-      navigate(`/notice/${noticeId}`);
-    }
-  }, [isEmployer]);
-
+  const { getCoordinates } = useGeocode();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -170,6 +108,65 @@ const NoticeEditPage = () => {
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
   const [postId, setPostId] = useState("");
 
+  useEffect(() => {
+    if (noticeId) {
+      const fetchPost = async () => {
+        try {
+          const response = await axios.get(`/api/post/${noticeId}`);
+          const data = response.data;
+
+          setIsEmployer(data.author === userId);
+
+          if (data) {
+            setTitle(data.title || "");
+            setJobType(data.jobType || "전체");
+            setPay(data.pay || { type: "시급", value: 0 });
+            setHireType(data.hireType || ["일일"]);
+            setPeriod(
+              data.period || {
+                start: new Date(),
+                end: new Date(),
+                discussion: false,
+              }
+            );
+            setHour(
+              data.hour || {
+                start: new Date(),
+                end: new Date(),
+                discussion: false,
+              }
+            );
+            setRestTime(
+              data.restTime || { start: new Date(), end: new Date() }
+            );
+            setDay(data.day || ["월"]);
+            setWorkDetail(data.workDetail || "");
+            setWelfare(data.welfare || "");
+            setPostDetail(data.postDetail || "");
+            setDeadline(
+              data.deadline || { date: new Date(), time: new Date() }
+            );
+            setPerson(data.person || 0);
+            setPreferences(data.preferences || "");
+            setEducation(data.education || { school: "무관", state: "무관" });
+            setAddress(data.address || { zipcode: "", street: "", detail: "" });
+            setRecruiter(data.recruiter || { name: "", email: "", phone: "" });
+          }
+        } catch (error) {
+          console.error("Error fetching post:", error);
+        }
+      };
+
+      fetchPost();
+    }
+  }, [noticeId, userId]);
+
+  useEffect(() => {
+    if (!isEmployer) {
+      navigate(`/notice/${noticeId}`);
+    }
+  }, [isEmployer, noticeId, navigate]);
+
   const handleSetType = (
     state: string[],
     setState: Function,
@@ -203,6 +200,8 @@ const NoticeEditPage = () => {
       return;
     }
 
+    const coords = await getCoordinates(address.street);
+
     try {
       const response = await axios.put(`/api/post/${noticeId}`, {
         title,
@@ -220,7 +219,11 @@ const NoticeEditPage = () => {
         person,
         preferences,
         education,
-        address,
+        address: {
+          ...address,
+          lat: coords?.lat,
+          lng: coords?.lng,
+        },
         recruiter,
         author: userId,
       });
