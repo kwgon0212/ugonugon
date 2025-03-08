@@ -15,6 +15,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./WorkPlaceMap";
 import NotFound from "@/NotFound";
+import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -109,6 +110,34 @@ const NoticeDetailPage = () => {
         setIsClickShare(false);
       }, 1500);
     });
+  };
+  // 2. 채팅하기 버튼 onClick 함수 추가 (component 내부에 추가)
+  const handleStartChat = async () => {
+    if (!userId || !postData?.author) {
+      alert("채팅을 시작할 수 없습니다. 로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      // 채팅방 생성 API 호출
+      const response = await axios.post("/api/chat-rooms", {
+        user1Id: userId,
+        user2Id: postData.author,
+      });
+
+      const roomId = response.data.roomId;
+
+      // 채팅방으로 이동
+      navigate(`/chat/chatting?roomId=${roomId}&userId=${userId}`, {
+        state: {
+          roomId: roomId,
+          otherName: postData.recruiter?.name || "공고 등록자",
+        },
+      });
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+      alert("채팅방 생성에 실패했습니다.");
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -646,7 +675,10 @@ const NoticeDetailPage = () => {
           </>
         ) : (
           <>
-            <button className="flex h-[50px] border border-main-gray justify-center items-center px-[40px] bg-white rounded-[10px]">
+            <button
+              onClick={handleStartChat}
+              className="flex h-[50px] border border-main-gray justify-center items-center px-[40px] bg-white rounded-[10px]"
+            >
               채팅하기
             </button>
             <button
