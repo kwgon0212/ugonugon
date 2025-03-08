@@ -1,10 +1,9 @@
 import Header from "@/components/Header";
 import Main from "@/components/Main";
 
-import React, { JSX, useEffect, useRef, useState } from "react";
+import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageSlider from "./ImageSlider";
-import { Link } from "react-router-dom";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import StarIcon from "@/components/icons/Star";
 import ShareIcon from "@/components/icons/Share";
@@ -15,6 +14,7 @@ import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./WorkPlaceMap";
+import NotFound from "@/NotFound";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -30,12 +30,10 @@ interface ResumeType {
 const NoticeDetailPage = () => {
   const { noticeId } = useParams();
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [postData, setPostData] = useState<Notice | null>(null);
   console.log(userId);
-  console.log(postData);
+  const [postData, setPostData] = useState<Notice | null>(null);
 
   const [isEmployer, setIsEmployer] = useState(false);
-  console.log(isEmployer);
   const [isOpenApplyModal, setIsOpenApplyModal] = useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
@@ -48,6 +46,7 @@ const NoticeDetailPage = () => {
   const [isAlreadyApply, setIsAlreadyApply] = useState(false);
   const [selectedResume, setSelectedResume] = useState<ResumeType | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -61,22 +60,35 @@ const NoticeDetailPage = () => {
 
   // useEffect -> post컬렉션에서 해당공고 도큐먼트를 찾고
   // 도큐먼트의 employerId와 로그인한 유저의 _id비교해서 작성자인지 비교
-  useEffect(() => {
-    const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
+    if (!noticeId) return;
+
+    try {
       const response = await axios.get(`/api/post/${noticeId}`);
       const data = response.data;
       setPostData(data);
-    };
-    if (noticeId) {
-      fetchPost();
-      setIsEmployer(postData?.author === userId);
+      setIsNotFound(false);
+      setIsEmployer(data.author === userId);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      setIsNotFound(true);
     }
   }, [noticeId, userId]);
 
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
+
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
   useEffect(() => {
-    setIsAlreadyApply(false);
-  }, []);
+    if (postData && postData.applies && userId) {
+      if (postData.applies.includes(userId)) {
+        setIsAlreadyApply(true);
+      } else {
+        setIsAlreadyApply(false);
+      }
+    }
+  }, [postData, userId]);
 
   // useEffect -> 로그인한 유저의 이력서를 resume컬렉션에서 찾기
   useEffect(() => {
@@ -126,9 +138,21 @@ const NoticeDetailPage = () => {
     setIsOpenApplyResultModal(true);
   };
 
-  const handleDeleteNotice = () => {
+  const [isDeletedNotice, setIsDeletedNotice] = useState(false);
+  const handleDeleteNotice = async () => {
     // 해당 공고 삭제
+    try {
+      await axios.delete(`/api/post/${noticeId}`);
+      setIsDeletedNotice(true);
+    } catch (error) {
+      alert("error");
+      setIsDeletedNotice(false);
+    }
   };
+
+  if (isNotFound) {
+    return <NotFound />;
+  }
 
   return (
     <>
@@ -386,9 +410,7 @@ const NoticeDetailPage = () => {
                   "근무지역",
                   `(${postData?.address.zipcode}) ${postData?.address.street} ${postData?.address.detail}`
                 )}
-                <WorkPlaceMap
-                  address={`${postData?.address.street} ${postData?.address.detail}`}
-                />
+                <WorkPlaceMap address={`${postData?.address.street}`} />
               </div>
 
               <div className="flex flex-col gap-[10px]">
@@ -593,22 +615,38 @@ const NoticeDetailPage = () => {
             clickOutsideClose={false}
           >
             <div className="w-full flex flex-col gap-[20px]">
-              <p className="text-xl font-bold">공고 삭제</p>
-              <p className="text-center">정말 해당 공고를 삭제하시겠습니까?</p>
-              <div className="flex gap-[20px]">
-                <button
-                  onClick={() => setIsOpenDeleteModal(false)}
-                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleDeleteNotice}
-                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                >
-                  삭제
-                </button>
-              </div>
+              {isDeletedNotice ? (
+                <>
+                  <p className="text-center">정상적으로 삭제되었습니다</p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                  >
+                    확인
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-bold">공고 삭제</p>
+                  <p className="text-center">
+                    정말 해당 공고를 삭제하시겠습니까?
+                  </p>
+                  <div className="flex gap-[20px]">
+                    <button
+                      onClick={() => setIsOpenDeleteModal(false)}
+                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleDeleteNotice}
+                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </DeleteModal>
         </div>
@@ -623,7 +661,7 @@ const NoticeDetailPage = () => {
               공고 삭제
             </button>
             <button
-              onClick={() => navigate("#")}
+              onClick={() => navigate(`/notice/edit/${noticeId}`)}
               className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-selected-text rounded-[10px]"
             >
               공고 수정

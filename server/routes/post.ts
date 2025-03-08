@@ -195,6 +195,8 @@ const JobPostingSchema = new Schema({
     zipcode: { type: String, required: true },
     street: { type: String, required: true },
     detail: { type: String },
+    lat: Number,
+    lng: Number,
   },
   recruiter: {
     name: { type: String },
@@ -264,7 +266,7 @@ router.post("/notice", async (req, res) => {
  *                     type: string
  *                     example: "post update success"
  */
-router.post("/update/:postId", async (req, res) => {
+router.put("/:postId", async (req, res) => {
   try {
     const { postId } = req.params;
     if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {

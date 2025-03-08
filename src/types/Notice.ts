@@ -46,4 +46,5 @@ export default interface Notice {
   };
   createdAt?: string;
   author: string;
+  applies?: string[];
 }

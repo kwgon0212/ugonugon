@@ -7,6 +7,7 @@ import testRoutes from "./routes/test.ts";
 import registerRoutes from "./routes/register.ts";
 import authRoutes from "./routes/auth.ts";
 import postRoutes from "./routes/post.ts";
+import contractRoutes from "./routes/contract.ts";
 import resumeRoutes from "./routes/resume.ts";
 
 import emailRoutes from "./routes/email.ts";
@@ -46,6 +47,7 @@ app.use("/api/test", testRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/contract", contractRoutes);
 app.use("/api/resume", resumeRoutes);
 
 app.use("/api/post", postRoutes);

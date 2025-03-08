@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   dayOptions,
   hireOptions,
@@ -9,16 +9,16 @@ import {
   payOptions,
   schoolOptions,
   schoolStateOptions,
-} from "../options";
+} from "../../options";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import DaumPostcode from "react-daum-postcode";
 import Modal from "@/components/Modal";
-import CustomDatePicker from "../Calendar";
+import CustomDatePicker from "../../Calendar";
 import CalendarIcon from "@/components/icons/Calendar";
 import ClockIcon from "@/components/icons/Clock";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useGeocode from "@/hooks/useGeocode";
 
 const AddressModal = Modal;
@@ -52,10 +52,12 @@ interface WorkTime extends NoticeTime {
 }
 interface RestTime extends NoticeTime {}
 
-const NoticeAddPage = () => {
+const NoticeEditPage = () => {
+  const { noticeId } = useParams();
+  const [isEmployer, setIsEmployer] = useState(true);
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const navigate = useNavigate();
   const { getCoordinates } = useGeocode();
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [jobType, setJobType] = useState("전체");
@@ -101,10 +103,69 @@ const NoticeAddPage = () => {
   });
 
   const [isOpenAddressModal, setIsOpenAddressModal] = useState(false);
-  const [isOpenAddNoticeResultModal, setIsOpenAddNoticeResultModal] =
+  const [isOpenEditNoticeResultModal, setIsOpenEditNoticeResultModal] =
     useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
   const [postId, setPostId] = useState("");
+
+  useEffect(() => {
+    if (noticeId) {
+      const fetchPost = async () => {
+        try {
+          const response = await axios.get(`/api/post/${noticeId}`);
+          const data = response.data;
+
+          setIsEmployer(data.author === userId);
+
+          if (data) {
+            setTitle(data.title || "");
+            setJobType(data.jobType || "전체");
+            setPay(data.pay || { type: "시급", value: 0 });
+            setHireType(data.hireType || ["일일"]);
+            setPeriod(
+              data.period || {
+                start: new Date(),
+                end: new Date(),
+                discussion: false,
+              }
+            );
+            setHour(
+              data.hour || {
+                start: new Date(),
+                end: new Date(),
+                discussion: false,
+              }
+            );
+            setRestTime(
+              data.restTime || { start: new Date(), end: new Date() }
+            );
+            setDay(data.day || ["월"]);
+            setWorkDetail(data.workDetail || "");
+            setWelfare(data.welfare || "");
+            setPostDetail(data.postDetail || "");
+            setDeadline(
+              data.deadline || { date: new Date(), time: new Date() }
+            );
+            setPerson(data.person || 0);
+            setPreferences(data.preferences || "");
+            setEducation(data.education || { school: "무관", state: "무관" });
+            setAddress(data.address || { zipcode: "", street: "", detail: "" });
+            setRecruiter(data.recruiter || { name: "", email: "", phone: "" });
+          }
+        } catch (error) {
+          console.error("Error fetching post:", error);
+        }
+      };
+
+      fetchPost();
+    }
+  }, [noticeId, userId]);
+
+  useEffect(() => {
+    if (!isEmployer) {
+      navigate(`/notice/${noticeId}`);
+    }
+  }, [isEmployer, noticeId, navigate]);
 
   const handleSetType = (
     state: string[],
@@ -124,7 +185,9 @@ const NoticeAddPage = () => {
     setIsPostcodeOpen(false);
   };
 
-  const handleSubmitNotice = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitEditNotice = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     if (
       !title ||
@@ -139,42 +202,38 @@ const NoticeAddPage = () => {
 
     const coords = await getCoordinates(address.street);
 
-    if (userId) {
-      try {
-        const response = await axios.post("/api/post/notice", {
-          title,
-          jobType,
-          pay,
-          hireType,
-          period,
-          hour,
-          restTime,
-          day,
-          workDetail,
-          welfare,
-          postDetail,
-          deadline,
-          person,
-          preferences,
-          education,
-          address: {
-            ...address,
-            lat: coords?.lat,
-            lng: coords?.lng,
-          },
-          recruiter,
-          author: userId,
-        });
-        const { postId } = response.data;
+    try {
+      const response = await axios.put(`/api/post/${noticeId}`, {
+        title,
+        jobType,
+        pay,
+        hireType,
+        period,
+        hour,
+        restTime,
+        day,
+        workDetail,
+        welfare,
+        postDetail,
+        deadline,
+        person,
+        preferences,
+        education,
+        address: {
+          ...address,
+          lat: coords?.lat,
+          lng: coords?.lng,
+        },
+        recruiter,
+        author: userId,
+      });
+      const { post } = response.data;
 
-        setIsOpenAddNoticeResultModal(true);
-        setPostId(postId.toString());
-      } catch (error) {
-        alert("error");
-        console.log(error);
-      }
-    } else {
-      alert("잠시 후에 시도해주세요");
+      setIsOpenEditNoticeResultModal(true);
+      setPostId(post._id.toString());
+    } catch (error) {
+      alert("error");
+      console.log(error);
     }
   };
 
@@ -190,7 +249,7 @@ const NoticeAddPage = () => {
         <div className="w-full flex flex-col relative">
           <form
             className="w-full p-layout flex flex-col gap-layout divide-[#0b798b] relative"
-            onSubmit={handleSubmitNotice}
+            onSubmit={handleSubmitEditNotice}
           >
             <div className="flex flex-col gap-[5px]">
               <b>
@@ -688,7 +747,7 @@ const NoticeAddPage = () => {
             </div>
 
             <button className="w-full h-[50px] bg-main-color rounded-[10px] text-white">
-              공고 등록
+              공고 수정
             </button>
           </form>
 
@@ -705,17 +764,17 @@ const NoticeAddPage = () => {
           </AddressModal>
 
           <AddNoticeResultModal
-            isOpen={isOpenAddNoticeResultModal}
-            setIsOpen={setIsOpenAddNoticeResultModal}
+            isOpen={isOpenEditNoticeResultModal}
+            setIsOpen={setIsOpenEditNoticeResultModal}
           >
             <div className="size-full flex flex-col items-center gap-[20px]">
               <div className="text-center">
                 <p>정상적으로</p>
-                <p>공고가 등록됐어요</p>
+                <p>공고가 수정됐어요</p>
               </div>
               <button
                 onClick={() => {
-                  setIsOpenAddNoticeResultModal(false);
+                  setIsOpenEditNoticeResultModal(false);
                   postId && navigate(`/notice/${postId}`);
                 }}
                 className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
@@ -730,4 +789,4 @@ const NoticeAddPage = () => {
   );
 };
 
-export default NoticeAddPage;
+export default NoticeEditPage;
