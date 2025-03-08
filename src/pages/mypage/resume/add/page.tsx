@@ -117,7 +117,7 @@ function MypageResumeAdd() {
   const [schoolState, setSchoolState] = useState("");
   const stateTypes = ["졸업", "재학", "휴학", "중퇴"];
   const [introduction, setIntroduction] = useState("");
-  const [carrers, setCarrers] = useState<
+  const [careers, setcareers] = useState<
     {
       [key: string]: string | null | undefined;
     }[]
@@ -126,7 +126,7 @@ function MypageResumeAdd() {
     {
       company: "회사",
       dates: "25.01-25.02",
-      carrerDetail: "사무",
+      careerDetail: "사무",
     },
   ]);
   const [modal, setModal] = useState(false);
@@ -136,7 +136,7 @@ function MypageResumeAdd() {
     new Date()
   );
   const [endDate, setEndDate] = useState<Date | null | undefined>(new Date());
-  const [carrerDetail, setCarrerDetail] = useState("");
+  const [careerDetail, setcareerDetail] = useState("");
   const userId = useAppSelector((state) => state.auth.user?._id);
   const [userData, setUserData] = useState<User | null>(null);
   const [name, setName] = useState<string | undefined>("");
@@ -150,9 +150,13 @@ function MypageResumeAdd() {
 
   useEffect(() => {
     if (userId) {
-      getUser(userId, setUserData);
+      const fetchData = async () => {
+        setUserData(await getUser(userId));
+      };
+      fetchData();
     }
-  }, [userId]); // userId가 변경될 때마다 호출
+  }, [userId]);
+
   useEffect(() => {
     setName(userData?.name);
     setSex(userData?.sex);
@@ -340,7 +344,7 @@ function MypageResumeAdd() {
                     width="100%"
                     height="100%"
                     placeholder="근무 시 담당했던 업무에 대해 작성해주세요"
-                    onBlur={(e) => setCarrerDetail(e.target.value)}
+                    onBlur={(e) => setcareerDetail(e.target.value)}
                     required
                   ></InsertTextarea>
                 </div>
@@ -348,25 +352,25 @@ function MypageResumeAdd() {
                   className="absolute bottom-[38px]"
                   type="button"
                   onClick={(e) => {
-                    if (company && startDate && endDate && carrerDetail) {
+                    if (company && startDate && endDate && careerDetail) {
                       if (startDate > endDate) {
                         alert("근무 기간이 잘못되었습니다.");
                       } else {
-                        setCarrers([
-                          ...carrers,
+                        setcareers([
+                          ...careers,
                           {
                             company,
                             dates:
                               format(startDate, "yy.MM") +
                               "-" +
                               format(endDate, "yy.MM"),
-                            carrerDetail: carrerDetail,
+                            careerDetail: careerDetail,
                           },
                         ]);
                         setCompany("");
                         setStartDate(null);
                         setEndDate(null);
-                        setCarrerDetail("");
+                        setcareerDetail("");
                         setModal(!modal);
                       }
                     } else {
@@ -382,7 +386,7 @@ function MypageResumeAdd() {
               className="w-full px-5 pt-5 flex flex-col gap-layout"
               onSubmit={async (e) => {
                 e.preventDefault();
-                await postResume({
+                const resumeId = await postResume({
                   userId,
                   title: resumeTitle,
                   phone,
@@ -390,10 +394,17 @@ function MypageResumeAdd() {
                   address,
                   school,
                   schoolState,
-                  carrers,
+                  careers,
                   introduction,
                 });
-                await postUser(userId, { resumeId: "" });
+                await postUser(userId, {
+                  resumeIds: [
+                    ...(Array.isArray(userData.resumeIds)
+                      ? userData.resumeIds
+                      : []),
+                    resumeId,
+                  ],
+                });
                 navigate("/mypage/resume/list");
               }}
             >
@@ -544,7 +555,7 @@ function MypageResumeAdd() {
                 <div className="w-full flex flex-col gap-[10px]">
                   <p className="basis-full font-bold">경력 사항</p>
                   <ul className="list-none">
-                    {carrers.map(({ company, dates }, index) => {
+                    {careers.map(({ company, dates }, index) => {
                       return (
                         <li
                           key={index}
@@ -559,7 +570,7 @@ function MypageResumeAdd() {
                           <span
                             className="absolute right-0"
                             onClick={() =>
-                              setCarrers(carrers.filter((v, i) => i !== index))
+                              setcareers(careers.filter((v, i) => i !== index))
                             }
                           >
                             <MinusIcon />
