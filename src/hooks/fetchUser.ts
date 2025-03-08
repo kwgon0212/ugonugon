@@ -10,23 +10,20 @@ export interface User {
   phone?: string;
   signature?: string;
   email?: string;
+  resumeIds?: (null | undefined | string)[];
 }
 
-const getUser = async (
-  userId: string | undefined,
-  setState: React.Dispatch<any>
-) => {
+const getUser = async (userId: string | undefined) => {
   try {
     const res = await fetch(`/api/users?userId=${userId}`);
-    const data = await res.json();
-    setState(data); // data를 반환
+    return res.json();
   } catch (error) {
     console.error("Failed to fetch user data:", error);
     throw error; // 오류 발생 시 오류를 던짐
   }
 };
 
-export const postUser = async (userId: string | undefined, data: any) => {
+export const postUser = async (userId: string | undefined, data: object) => {
   try {
     await fetch("/api/users", {
       method: "POST",

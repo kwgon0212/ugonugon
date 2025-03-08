@@ -13,14 +13,10 @@ export interface Resume {
   apply?: string[];
 }
 
-const getResume = async (
-  resumeId: string | undefined,
-  setState: React.Dispatch<any>
-) => {
+const getResume = async (resumeId: string | undefined) => {
   try {
     const res = await fetch(`/api/resume?resumeId=${resumeId}`);
-    const data = await res.json();
-    setState(data); // data를 반환
+    return await res.json();
   } catch (error) {
     console.error("Failed to fetch resume data:", error);
     throw error; // 오류 발생 시 오류를 던짐
@@ -29,13 +25,14 @@ const getResume = async (
 
 export const postResume = async (data: any) => {
   try {
-    await fetch("/api/resume", {
+    const res = await fetch("/api/resume", {
       method: "POST",
       body: JSON.stringify({ data }),
       headers: {
         "Content-Type": "application/json",
       },
     });
+    return res.json();
   } catch (err: any) {
     console.log(err, err?.messages);
   }

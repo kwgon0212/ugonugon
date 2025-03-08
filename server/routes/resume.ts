@@ -37,7 +37,6 @@ const router = express.Router();
  */
 
 const ResumesSchema = new mongoose.Schema({
-  // userId: { type: String, required: true },
   userId: { type: mongoose.Types.ObjectId, ref: "users" },
   title: { type: String, required: true },
   phone: { type: String, required: true },
@@ -45,29 +44,24 @@ const ResumesSchema = new mongoose.Schema({
   address: { type: String, required: true },
   school: { type: String, required: true },
   schoolState: { type: String, required: true },
-  careers: {
-    type: Array,
-    required: false,
-    comapny: { type: String, required: true },
-    dates: { type: String, required: true },
-    carrerDetail: { type: String, required: true },
-  },
+  careers: [
+    {
+      company: { type: String, required: true },
+      dates: { type: String, required: true },
+      careerDetail: { type: String, required: true },
+    },
+  ],
   introduction: { type: String, required: true },
-  apply: {
-    type: Array,
-    required: false,
-    postId: { type: mongoose.Types.ObjectId, ref: "posts" },
-  },
+  applys: [{ type: String, require: false }],
+  // applys: [{type: mongoose.Types.ObjectId, ref: "posts", require: false}],
 });
 const Resumes = mongoose.model("resumes", ResumesSchema);
 
 router.post("/", async (req, res) => {
   try {
     const resume = new Resumes(req.body.data);
-    await resume.save();
-    console.log("req.body.data");
-    console.log(req.body.data);
-    res.status(201).end();
+    const newResume = await resume.save();
+    res.status(200).json(newResume._id);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
