@@ -138,8 +138,16 @@ const NoticeDetailPage = () => {
     setIsOpenApplyResultModal(true);
   };
 
-  const handleDeleteNotice = () => {
+  const [isDeletedNotice, setIsDeletedNotice] = useState(false);
+  const handleDeleteNotice = async () => {
     // 해당 공고 삭제
+    try {
+      await axios.delete(`/api/post/${noticeId}`);
+      setIsDeletedNotice(true);
+    } catch (error) {
+      alert("error");
+      setIsDeletedNotice(false);
+    }
   };
 
   if (isNotFound) {
@@ -607,22 +615,38 @@ const NoticeDetailPage = () => {
             clickOutsideClose={false}
           >
             <div className="w-full flex flex-col gap-[20px]">
-              <p className="text-xl font-bold">공고 삭제</p>
-              <p className="text-center">정말 해당 공고를 삭제하시겠습니까?</p>
-              <div className="flex gap-[20px]">
-                <button
-                  onClick={() => setIsOpenDeleteModal(false)}
-                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleDeleteNotice}
-                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                >
-                  삭제
-                </button>
-              </div>
+              {isDeletedNotice ? (
+                <>
+                  <p className="text-center">정상적으로 삭제되었습니다</p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                  >
+                    확인
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-bold">공고 삭제</p>
+                  <p className="text-center">
+                    정말 해당 공고를 삭제하시겠습니까?
+                  </p>
+                  <div className="flex gap-[20px]">
+                    <button
+                      onClick={() => setIsOpenDeleteModal(false)}
+                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleDeleteNotice}
+                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </DeleteModal>
         </div>
