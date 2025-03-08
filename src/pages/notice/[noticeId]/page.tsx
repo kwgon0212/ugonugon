@@ -30,6 +30,7 @@ interface ResumeType {
 const NoticeDetailPage = () => {
   const { noticeId } = useParams();
   const userId = useAppSelector((state) => state.auth.user?._id);
+  console.log(userId);
   const [postData, setPostData] = useState<Notice | null>(null);
 
   const [isEmployer, setIsEmployer] = useState(false);
@@ -80,8 +81,14 @@ const NoticeDetailPage = () => {
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
   useEffect(() => {
-    setIsAlreadyApply(false);
-  }, []);
+    if (postData && postData.applies && userId) {
+      if (postData.applies.includes(userId)) {
+        setIsAlreadyApply(true);
+      } else {
+        setIsAlreadyApply(false);
+      }
+    }
+  }, [postData, userId]);
 
   // useEffect -> 로그인한 유저의 이력서를 resume컬렉션에서 찾기
   useEffect(() => {
