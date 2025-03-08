@@ -73,6 +73,15 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.put("/", async (req, res) => {
+  try {
+    await Users.findByIdAndUpdate(req.body.userId, req.body.data);
+    res.status(201).end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const user = await Users.findById(req.query.userId).select(

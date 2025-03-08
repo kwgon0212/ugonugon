@@ -22,8 +22,10 @@
   padding: 0 0 0 50px;
   color: #717171;
 }
+
 .react-datepicker__month-text.react-datepicker__month-text--in-range,
-.react-datepicker__day.react-datepicker__day--in-range {
+.react-datepicker__day.react-datepicker__day--in-range,
+.react-datepicker__day--selected {
   background-color: #0b798b;
 }
 
