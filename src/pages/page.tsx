@@ -5,6 +5,7 @@ import Main from "../components/Main";
 import HelpCircleIcon from "../components/icons/HelpCircle";
 import SearchIcon from "../components/icons/Search";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -22,6 +23,8 @@ const RootPage = () => {
 
   const [currentKeyword, setCurrentKeyword] = useState(searchKeywords[0]);
   const [isVisible, setIsVisible] = useState(true);
+
+  const userName = useAppSelector((state) => state.auth.user?.name);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,14 +45,16 @@ const RootPage = () => {
   return (
     <>
       <Header>
-        <></>
+        <div className="size-full px-[20px] flex items-center">
+          <img src="https://placehold.co/200x50" alt="logo" />
+        </div>
       </Header>
       <Main hasBottomNav={true}>
         {/* 인사 문구 */}
         <div className="bg-white size-full">
-          <div className="p-4">
+          <div className="px-[20px] py-[20px]">
             <h1 className="text-[16px] font-regular">
-              안녕하세요! 의문의 계정님
+              안녕하세요! {userName}님
             </h1>
             <p className="text-[24px] font-bold tracking-tight ">
               오늘은 <span className="text-main-color">이런 알바</span> 어때요?
@@ -74,14 +79,14 @@ const RootPage = () => {
               </div>
             </div>
           </Link>
-          <div className="bg-main-bg rounded-[30px] pb-14">
+          <div className="bg-main-bg rounded-[30px] pb-[20px]">
             {/* 맞춤형 추천 공고 */}
-            <div className="p-4">
+            <div className="p-[20px]">
               <div className="flex gap-2 items-center mb-3 text-main-darkGray">
                 <span className="text-[16px] font-medium ">
                   맞춤형 추천공고
                 </span>
-                <HelpCircleIcon color="#717171" />
+                <HelpCircleIcon color="#717171" width={14} height={14} />
               </div>
               <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
