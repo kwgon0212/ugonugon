@@ -74,7 +74,7 @@ const NoticeDetailPage = () => {
           setIsEmployer(data.author === userId);
         } catch (error) {
           console.error("Error fetching post:", error);
-          setIsNotFound(true); // ✅ 요청 실패 시 404 상태로 설정
+          setIsNotFound(true);
         }
       };
 
@@ -636,7 +636,7 @@ const NoticeDetailPage = () => {
               공고 삭제
             </button>
             <button
-              onClick={() => navigate("#")}
+              onClick={() => navigate(`/notice/edit/${noticeId}`)}
               className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-selected-text rounded-[10px]"
             >
               공고 수정

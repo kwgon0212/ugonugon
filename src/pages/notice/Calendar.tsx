@@ -24,14 +24,17 @@ const CustomDatePicker = ({
   setSelectedDate,
   mode = "date", // 기본값은 날짜 선택 모드
 }: Props) => {
-  const formattedValue = value
-    ? mode === "date"
-      ? value.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
-      : value.toLocaleTimeString("ko-KR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }) // HH:mm 형식
-    : "";
+  const formattedValue =
+    value instanceof Date
+      ? mode === "date"
+        ? value.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
+        : value.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }) // HH:mm 형식
+      : value
+      ? new Date(value).toLocaleDateString("ko-KR") // `string`일 경우 Date 변환 후 표시
+      : "";
 
   return (
     <DatePicker

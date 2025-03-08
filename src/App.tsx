@@ -34,6 +34,7 @@ import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
 import ChattingPage from "./pages/chat/chatting/page";
 import PostDataTest from "./pages/notice/post/page";
 import NoticeAddPage from "./pages/notice/add/page";
+import NoticeEditPage from "./pages/notice/edit/[noticeId]/page";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
                 <Route path="post" element={<PostDataTest />} />
                 <Route path="search" element={<NoticeSearchPage />} />
                 <Route path="add" element={<NoticeAddPage />} />
+                <Route path="edit/:noticeId" element={<NoticeEditPage />} />
                 <Route path=":noticeId">
                   <Route index element={<NoticeDetailPage />} />
                   <Route path="apply">

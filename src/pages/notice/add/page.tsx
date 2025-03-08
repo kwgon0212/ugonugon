@@ -180,7 +180,7 @@ const NoticeAddPage = () => {
           <span>공고 등록</span>
         </div>
       </Header>
-      <Main hasBottomNav={true}>
+      <Main hasBottomNav={false}>
         <div className="w-full flex flex-col relative">
           <form
             className="w-full p-layout flex flex-col gap-layout divide-[#0b798b] relative"
@@ -554,6 +554,7 @@ const NoticeAddPage = () => {
                     onChange={(e) =>
                       setEducation({ ...education, school: e.target.value })
                     }
+                    value={education.school}
                   >
                     {schoolOptions.map((schoolOption, index) => (
                       <option key={schoolOption} value={schoolOption}>
@@ -571,6 +572,7 @@ const NoticeAddPage = () => {
                     onChange={(e) =>
                       setEducation({ ...education, state: e.target.value })
                     }
+                    value={education.state}
                   >
                     {education.school === "무관" ? (
                       <option key="무관" value="무관">
@@ -718,7 +720,6 @@ const NoticeAddPage = () => {
           </AddNoticeResultModal>
         </div>
       </Main>
-      <BottomNav />
     </>
   );
 };
