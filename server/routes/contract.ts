@@ -15,10 +15,7 @@ router.get("/", async (req: Request, res: Response) => {
               <head>
                 <title>표준근로계약서</title>
                 <style>
-                  body {
-                    margin: 0;
-                    padding: 40px;
-                  }
+                  body { margin: 0; padding: 40px; }
                   p,h1 { margin: 0; }
                   .wrapper {
                     width: 794px;
@@ -41,11 +38,9 @@ router.get("/", async (req: Request, res: Response) => {
               </head>
               <body>
                 <div class="wrapper">
-                  <h1 style="border: 1px solid lightgray; padding: 0 100px">
-                    표준근로계약서
-                  </h1>
+                  <h1 style="border: 1px solid lightgray; padding: 0 100px">표준근로계약서</h1>
                   <p style="padding: 50px 0; font-size: 20px">
-                    <u style="padding: 0 20px">${"고용주"}</u>(이하 "갑"이라 함)과(와) <u style="padding: 0 20px">${"근로자"}</u>(이하 "을"이라 함)은 다음과
+                    <span style="padding: 0 20px; border-bottom: 1px solid black">${"고용주"}</span>(이하 "갑"이라 함)과(와) <span style="padding: 0 20px; border-bottom: 1px solid black">${"근로자"}</span>(이하 "을"이라 함)은 다음과
                     같이 근로계약을 체결한다.
                   </p>
                   <div class="wrap" style="font-size: 18px">
@@ -80,7 +75,9 @@ router.get("/", async (req: Request, res: Response) => {
                       </div>
                       <div style="display: flex; justify-content: space-between">
                         <p>대 표 자 : ${"대표자명"}</p>
-                        <p>(서명)</p>
+                        <p style="position: relative">(서명)
+                          <img src="https://placehold.co/70" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;"/>
+                        </p>
                       </div>
                     </div>
                     <div style="width: 100%;padding: 20px 0;display: flex;flex-direction: column;gap: 10px;">
@@ -92,7 +89,9 @@ router.get("/", async (req: Request, res: Response) => {
                       </div>
                       <div style="display: flex; justify-content: space-between">
                         <p>성 명 : ${"성명"}</p>
-                        <p>(서명)</p>
+                        <p style="position: relative">(서명)
+                          <img src="https://placehold.co/70" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;"/>
+                        </p>
                       </div>
                     </div>
                   </div>
