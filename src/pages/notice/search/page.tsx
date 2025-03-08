@@ -242,7 +242,7 @@ function NoticeSearchPage() {
             ))}
           </ul>
           <SubTitle>근무 기간</SubTitle>
-          <div className="w-full h-10 flex relative">
+          <div className="w-full h-10 flex relative datepicker-css">
             <DatePicker
               locale={ko}
               showIcon

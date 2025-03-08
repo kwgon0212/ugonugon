@@ -167,7 +167,7 @@ function MypageResumeAdd() {
                   <span className="text-[#ff0000]">*</span>
                 </p>
               </div>
-              <div className="w-full h-10 flex gap-[16px] items-center">
+              <div className="w-full h-10 flex gap-[16px] items-center datepicker-css">
                 <DatePicker
                   locale={ko}
                   showIcon
