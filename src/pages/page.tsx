@@ -6,7 +6,7 @@ import HelpCircleIcon from "../components/icons/HelpCircle";
 import SearchIcon from "../components/icons/Search";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
-import NoticeSlider from "./CustomNoticeSlider";
+import CustomNoticeSlider from "./CustomNoticeSlider";
 import dummy from "./DummyNotices";
 import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
@@ -90,8 +90,8 @@ const RootPage = () => {
           </Link>
           <div className="bg-main-bg rounded-[30px] pb-[20px]">
             {/* 맞춤형 추천 공고 */}
-            <div className="py-[20px] flex flex-col gap-[10px]">
-              <div className="flex gap-2 items-center px-[20px] text-main-darkGray">
+            <div className="p-[20px] flex flex-col gap-[10px]">
+              <div className="flex gap-2 items-center text-main-darkGray">
                 <span className="text-[16px] font-medium ">
                   맞춤형 추천공고
                 </span>
@@ -120,7 +120,7 @@ const RootPage = () => {
                   </div>
                 ))}
               </div> */}
-              <NoticeSlider notices={customNotices} />
+              <CustomNoticeSlider notices={customNotices} />
             </div>
             {/* 긴급 공고 */}
             <div className="flex flex-col gap-[10px] pb-[10px]">

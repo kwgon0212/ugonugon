@@ -31,8 +31,8 @@
   font-size: 10px;
 }
 
-.slick-track {
+/* .slick-track {
   display: flex;
-  gap: 10px; /* 카드 간 간격 조정 */
+  gap: 10px;
   row-gap: 20px;
-}
+} */

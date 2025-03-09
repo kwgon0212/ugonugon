@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Notice from "@/types/Notice";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
 interface Props {
   notices: Notice[];
@@ -17,16 +18,18 @@ const NewNoticeSlider = ({ notices }: Props) => {
     slidesToScroll: 1,
     arrows: false,
     infinite: true,
-    slidesToShow: 2,
+    slidesToShow: 1,
     speed: 300,
+    centerMode: true,
+    centerPadding: "100px",
   };
 
   return (
     <div className="slider-container">
-      <Slider {...settings}>
+      <StyledSlider {...settings}>
         {notices.map((notice, idx) => {
           return (
-            <div>
+            <div key={notice._id}>
               <button
                 onClick={() => navigate(`/notice/${notice._id}`)}
                 key={notice._id}
@@ -43,7 +46,7 @@ const NewNoticeSlider = ({ notices }: Props) => {
                     </p>
                   </div>
                   <div>
-                    <p className="text-[12px] text-main-darkGray">
+                    <p className="text-[12px] text-main-darkGray overflow-hidden truncate whitespace-nowrap w-full">
                       {notice.address.street}
                     </p>
                     <p className="flex gap-[4px] text-sm">
@@ -60,9 +63,22 @@ const NewNoticeSlider = ({ notices }: Props) => {
             </div>
           );
         })}
-      </Slider>
+      </StyledSlider>
     </div>
   );
 };
+
+const StyledSlider = styled(Slider)`
+  .slick-list {
+    display: flex !important; /* Slick 기본 스타일 덮어쓰기 */
+    gap: 10px; /* 카드 사이 간격 */
+  }
+
+  .slick-track {
+    display: flex;
+    gap: 10px;
+    row-gap: 20px;
+  }
+`;
 
 export default NewNoticeSlider;
