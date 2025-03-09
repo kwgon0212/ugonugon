@@ -30,3 +30,9 @@
   opacity: 1;
   font-size: 10px;
 }
+
+.slick-track {
+  display: flex;
+  gap: 10px; /* 카드 간 간격 조정 */
+  row-gap: 20px;
+}

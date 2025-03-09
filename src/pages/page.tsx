@@ -6,6 +6,10 @@ import HelpCircleIcon from "../components/icons/HelpCircle";
 import SearchIcon from "../components/icons/Search";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
+import NoticeSlider from "./CustomNoticeSlider";
+import dummy from "./DummyNotices";
+import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
+import NewNoticeSlider from "./NewNoticeSlider";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -41,6 +45,11 @@ const RootPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const [customNotices, setCustomNotices] = useState(dummy);
+  const [emergencyNotices, setEmergencyNotices] = useState(dummy);
+  const [newNotices, setNewNotices] = useState(dummy);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -81,14 +90,14 @@ const RootPage = () => {
           </Link>
           <div className="bg-main-bg rounded-[30px] pb-[20px]">
             {/* 맞춤형 추천 공고 */}
-            <div className="p-[20px]">
-              <div className="flex gap-2 items-center mb-3 text-main-darkGray">
+            <div className="py-[20px] flex flex-col gap-[10px]">
+              <div className="flex gap-2 items-center px-[20px] text-main-darkGray">
                 <span className="text-[16px] font-medium ">
                   맞춤형 추천공고
                 </span>
                 <HelpCircleIcon color="#717171" width={14} height={14} />
               </div>
-              <div className="flex space-x-4 overflow-x-auto pb-2">
+              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
                   <div
                     key={index}
@@ -110,11 +119,12 @@ const RootPage = () => {
                     </p>
                   </div>
                 ))}
-              </div>
+              </div> */}
+              <NoticeSlider notices={customNotices} />
             </div>
             {/* 긴급 공고 */}
-            <div className="p-4">
-              <div className="flex justify-between items-center mb-3">
+            <div className="flex flex-col gap-[10px] pb-[10px]">
+              <div className="flex justify-between items-center px-[20px]">
                 <span className="text-[16px] font-medium text-red-500">
                   긴급 공고 🚨
                 </span>
@@ -122,7 +132,7 @@ const RootPage = () => {
                   전체보기
                 </span>
               </div>
-              <div className="flex space-x-4 overflow-x-auto pb-2">
+              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
                   <div
                     key={index}
@@ -144,11 +154,12 @@ const RootPage = () => {
                     </p>
                   </div>
                 ))}
-              </div>
+              </div> */}
+              <EmergencyNoticeSlider notices={emergencyNotices} />
             </div>
             {/* 방금 올라온 공고 */}
-            <div className="p-4">
-              <div className="flex gap-2 justify-between items-center mb-3 text-main-darkGray">
+            <div className="py-[20px] flex flex-col gap-[10px]">
+              <div className="flex gap-2 justify-between items-center px-[20px] text-main-darkGray">
                 <span className="text-[16px] font-medium">
                   방금 올라온 공고
                 </span>
@@ -156,7 +167,7 @@ const RootPage = () => {
                   전체보기
                 </span>
               </div>
-              <div className="flex space-x-4 overflow-x-auto pb-2">
+              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
                   <div
                     key={index}
@@ -178,7 +189,8 @@ const RootPage = () => {
                     </p>
                   </div>
                 ))}
-              </div>
+              </div> */}
+              <NewNoticeSlider notices={newNotices} />
             </div>
             {/* 하단 정보 */}
             <div className=" text-center text-[12px] text-main-darkGray">

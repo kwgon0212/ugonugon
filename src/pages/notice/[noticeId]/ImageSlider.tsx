@@ -2,7 +2,7 @@ import React from "react";
 import Slider, { Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "./slick.css";
+import "@/css/slick.css";
 import styled from "styled-components";
 
 interface Props {
