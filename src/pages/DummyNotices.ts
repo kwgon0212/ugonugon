@@ -156,7 +156,7 @@ const dummyNotice: Notice[] = [
   },
   {
     _id: "12345678945gv0",
-    title: "대학생 단기 행사 스태프 모집 모집 모집",
+    title: "대학생 단기 행사 스태프 모집 모집 모집 모집 모집",
     jobType: "행사 진행",
     pay: {
       type: "일급",
