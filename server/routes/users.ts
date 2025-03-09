@@ -82,14 +82,14 @@ const Users = mongoose.model("users", UsersSchema);
 //   }
 // });
 
-router.post("/", async (req, res) => {
-  try {
-    await Users.findByIdAndUpdate(req.body.userId, req.body.data);
-    res.status(201).end();
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// router.post("/", async (req, res) => {
+//   try {
+//     await Users.findByIdAndUpdate(req.body.userId, req.body.data);
+//     res.status(201).end();
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 router.put("/", async (req, res) => {
   try {

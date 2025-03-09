@@ -7,8 +7,8 @@ import CameraIcon from "@/components/icons/Camera";
 import ProfileIcon from "@/components/icons/Profile";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
-import getUser, { postUser } from "@/hooks/fetchUser";
-// import getUser, {type User, postUser } from "@/hooks/fetchUser";
+import getUser, { putUser } from "@/hooks/fetchUser";
+// import getUser, {type User, putUser } from "@/hooks/fetchUser";
 
 function MyPageEditInfoPage() {
   const userId = useAppSelector((state) => state.auth.user?._id);
@@ -135,7 +135,7 @@ function MyPageEditInfoPage() {
                 type="button"
                 className="w-full h-[50px] mt-28 bg-main-color rounded-[10px] font-semibold text-white"
                 onClick={() => {
-                  postUser(userId, {
+                  putUser(userId, {
                     phone,
                     address: {
                       zipcode,

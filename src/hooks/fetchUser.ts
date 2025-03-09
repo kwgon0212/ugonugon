@@ -26,7 +26,7 @@ const getUser = async (userId: string | undefined) => {
   }
 };
 
-export const postUser = async (userId: string | undefined, data: object) => {
+export const putUser = async (userId: string | undefined, data: object) => {
   try {
     await fetch("/api/users", {
       method: "POST",

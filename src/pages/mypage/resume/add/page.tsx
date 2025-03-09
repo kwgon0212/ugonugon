@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import getUser, { type User, postUser } from "@/hooks/fetchUser";
+import getUser, { type User, putUser } from "@/hooks/fetchUser";
 import { postResume } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import Modal from "@/components/Modal";
@@ -398,7 +398,7 @@ function MypageResumeAdd() {
                   introduction,
                   writtenDay: new Date().toLocaleDateString(),
                 });
-                await postUser(userId, {
+                await putUser(userId, {
                   resumeIds: [
                     ...(Array.isArray(userData.resumeIds)
                       ? userData.resumeIds
