@@ -1,3 +1,5 @@
+// routes/chatServer.ts
+
 import express, { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { io } from "../server.ts";
@@ -35,6 +37,9 @@ const chatRoomSchema = new mongoose.Schema({
 
 const ChatRoom = mongoose.model("ChatRoom", chatRoomSchema);
 
+// 소켓 클라이언트 ID와 사용자 ID, 방 ID 매핑을 위한 객체
+const userSockets = new Map();
+
 // 초기 사용자 데이터 저장 함수
 export const ensureUsersExist = async () => {
   try {
@@ -61,6 +66,39 @@ export const ensureUsersExist = async () => {
 // 소켓 이벤트 핸들러 설정
 const setupSocketHandlers = () => {
   io.on("connection", (socket) => {
+    console.log("새로운 소켓 연결:", socket.id);
+
+    // 사용자 연결 시 사용자 ID와 소켓 ID 매핑
+    socket.on("join_user", ({ userId }) => {
+      console.log(`사용자 ${userId}가 소켓 ${socket.id}로 연결됨`);
+      userSockets.set(userId, socket.id);
+
+      // 사용자가 참여하고 있는 모든 채팅방 조회해서 자동 join
+      ChatRoom.find({ participants: userId })
+        .then((rooms) => {
+          rooms.forEach((room) => {
+            socket.join(room.roomId);
+            console.log(
+              `사용자 ${userId}가 채팅방 ${room.roomId}에 자동 참여함`
+            );
+          });
+        })
+        .catch((err) => console.error("채팅방 조회 오류:", err));
+    });
+
+    // 특정 채팅방에 입장
+    socket.on("join_room", ({ roomId }) => {
+      socket.join(roomId);
+      console.log(`소켓 ${socket.id}가 채팅방 ${roomId}에 참여함`);
+    });
+
+    // 특정 채팅방 퇴장
+    socket.on("leave_room", ({ roomId }) => {
+      socket.leave(roomId);
+      console.log(`소켓 ${socket.id}가 채팅방 ${roomId}에서 퇴장함`);
+    });
+
+    // 채팅 메시지 처리
     socket.on("chat message", (msg) => {
       console.log("메시지 수신:", msg);
 
@@ -78,12 +116,32 @@ const setupSocketHandlers = () => {
         .then(async (savedMessage) => {
           console.log("메시지 저장 성공:", savedMessage);
 
-          // 브로드캐스트 대신 발신자를 제외한 다른 클라이언트들에게만 메시지 전송
-          socket.broadcast.emit("chat message", msg);
+          // 해당 채팅방에 있는 모든 소켓에게 메시지 전송 (1:1 통신 보장)
+          io.to(msg.roomId).emit("chat message", msg);
+
+          // 채팅방 마지막 활동 시간 업데이트
+          await ChatRoom.findOneAndUpdate(
+            { roomId: msg.roomId },
+            { lastActivity: new Date() }
+          );
         })
         .catch((err) => {
           console.error("메시지 저장 오류:", err);
         });
+    });
+
+    // 연결 해제 시 처리
+    socket.on("disconnect", () => {
+      console.log("소켓 연결 해제:", socket.id);
+
+      // userId-socket 매핑에서 제거
+      for (const [userId, socketId] of userSockets.entries()) {
+        if (socketId === socket.id) {
+          userSockets.delete(userId);
+          console.log(`사용자 ${userId}의 연결이 해제됨`);
+          break;
+        }
+      }
     });
   });
 };

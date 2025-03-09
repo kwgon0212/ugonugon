@@ -1,7 +1,9 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { io } from "socket.io-client";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const MainWrap = styled.div`
   position: absolute;
@@ -50,26 +52,18 @@ interface AlertModalProps {
 
 export function AlertModal({ handleClose, roomId }: AlertModalProps) {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // URL에서 userId 파라미터 가져오기
-  const searchParams = new URLSearchParams(location.search);
-  const userId = searchParams.get("userId") || "";
-
-  // 채팅방 ID에서 상대방 ID 추출
-  const getOtherUserId = (roomId: string, myId: string): string => {
-    // 채팅방 ID 형식: chat_user1Id_user2Id
-    const parts = roomId.split("_");
-    if (parts.length === 3) {
-      const id1 = parts[1];
-      const id2 = parts[2];
-      return id1 === myId ? id2 : id1;
-    }
-    return "";
-  };
+  // Redux에서 사용자 ID 가져오기
+  const user = useAppSelector((state) => state.auth.user);
+  const userId = user?._id || "";
 
   const handleExit = async () => {
     try {
+      if (!userId) {
+        alert("로그인이 필요한 서비스입니다.");
+        return;
+      }
+
       // 1. 로컬 스토리지에서 채팅방 나감 정보 가져오기
       const leftRooms = JSON.parse(
         localStorage.getItem("leftChatRooms") || "{}"
@@ -96,16 +90,24 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
       // 스토리지에 저장
       localStorage.setItem("leftChatRooms", JSON.stringify(leftRooms));
 
-      // 2. 메시지 삭제 API 호출
+      // 소켓을 통해 채팅방 나가기 이벤트 전송
+      const socket = io("http://localhost:8080", {
+        transports: ["websocket"],
+        withCredentials: true,
+      });
+
+      socket.emit("leave_room", { roomId });
+      socket.disconnect();
+
+      // 메시지 삭제 API 호출
       await axios.delete("/api/messages/clear", {
         data: { roomId },
       });
 
-      // 3. 채팅 목록 페이지로 이동 (userId 유지)
+      // 채팅 목록 페이지로 이동
       navigate(`/chat?userId=${userId}`);
     } catch (error) {
       console.error("메시지 삭제 중 오류 발생:", error);
-      // 에러 처리 (선택적)
       alert("채팅 기록 삭제 중 문제가 발생했습니다.");
     }
   };

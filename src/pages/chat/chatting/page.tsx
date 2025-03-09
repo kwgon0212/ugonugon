@@ -3,14 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { useAppSelector } from "@/hooks/useRedux";
 
 import Header from "@/components/Header";
 import Main from "@/components/Main";
-import AlertModal from "./AlertMocal";
-
+import AlertModal from "./AlertModal";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import SendIcon from "@/components/icons/Send";
+import { formatMessageTime, getOtherUserId } from "@/util/chatUtils";
 
 const HeaderWrap = styled.div`
   position: relative;
@@ -48,6 +49,7 @@ const OtherChatWrap = styled.div`
   justify-content: center;
   align-items: start;
   width: 100%;
+  margin-bottom: 16px;
 `;
 
 const UserChatWrap = styled.div`
@@ -56,6 +58,7 @@ const UserChatWrap = styled.div`
   justify-content: center;
   align-items: end;
   width: 100%;
+  margin-bottom: 16px;
 `;
 
 const ChatBox = styled.div`
@@ -115,7 +118,13 @@ interface Message {
   roomId?: string;
   _id?: string;
   createdAt?: string;
-  isRead?: boolean; // 읽음 상태 추가
+  isRead?: boolean;
+}
+
+// 사용자 정보 인터페이스
+interface User {
+  _id: string;
+  name: string;
 }
 
 export function ChattingPage() {
@@ -123,43 +132,116 @@ export function ChattingPage() {
   const location = useLocation();
   const chattingAreaRef = useRef<HTMLDivElement>(null);
 
+  // 리덕스에서 로그인한 사용자 정보 가져오기
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const reduxUserId = currentUser?._id;
+
   // URL에서 userId와 roomId 파라미터 가져오기
   const searchParams = new URLSearchParams(location.search);
-  const currentUserId =
-    searchParams.get("userId") || "67c7d6bf38fe53ff868e3880"; // 기본값은 홍길동의 ID
+  const urlUserId = searchParams.get("userId");
   const roomId = searchParams.get("roomId") || location.state?.roomId || "";
-  const otherName = location.state?.otherName || "상대방";
+
+  // 실제 사용할 유저 ID (로그인된 사용자 우선, URL 파라미터는 백업)
+  const currentUserId = reduxUserId || urlUserId || "";
+
+  // 상대방 이름 (state에서 가져오거나 API로 조회 예정)
+  const [otherName, setOtherName] = useState(
+    location.state?.otherName || "상대방"
+  );
 
   const [chat, setChat] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [socket, setSocket] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-
-  // 채팅방 ID에서 상대방 ID 추출
-  const getOtherUserId = (roomId: string, myId: string): string => {
-    // 채팅방 ID 형식: chat_user1Id_user2Id
-    const parts = roomId.split("_");
-    if (parts.length === 3) {
-      const id1 = parts[1];
-      const id2 = parts[2];
-      return id1 === myId ? id2 : id1;
-    }
-    return "";
-  };
+  const [receivedMessageIds, setReceivedMessageIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // 채팅방 입장 시 메시지를 읽음 상태로 변경
   const markMessagesAsRead = async () => {
     try {
       if (roomId && currentUserId) {
         await axios.put(`/api/messages/read/${roomId}/${currentUserId}`);
+        console.log("메시지를 읽음 상태로 업데이트했습니다.");
       }
     } catch (error) {
       console.error("메시지 읽음 상태 업데이트 실패:", error);
     }
   };
 
+  // 상대방 정보 가져오기
+  useEffect(() => {
+    const fetchOtherUserInfo = async () => {
+      if (!roomId || !currentUserId) return;
+
+      try {
+        // roomId에서 상대방 ID 추출
+        const otherId = getOtherUserId(roomId, currentUserId);
+        console.log("상대방 ID:", otherId);
+
+        if (otherId) {
+          try {
+            // 일반 사용자 정보 API 시도
+            const response = await axios.get(`/api/users/${otherId}`);
+            const otherUser = response.data;
+
+            // 디버깅 로그
+            console.log("상대방 정보 (사용자 API):", otherUser);
+
+            if (otherUser && otherUser.name && otherUser.name !== "사용자") {
+              setOtherName(otherUser.name);
+              return;
+            }
+          } catch (userError) {
+            console.log("일반 사용자 정보 로드 실패:", userError);
+          }
+
+          try {
+            // 공고 작성자 정보 API 시도
+            const authorResponse = await axios.get(
+              `/api/post/author/${otherId}`
+            );
+            console.log("작성자 정보 응답:", authorResponse.data);
+
+            if (
+              authorResponse.data &&
+              authorResponse.data.recruiter &&
+              authorResponse.data.recruiter.name
+            ) {
+              setOtherName(authorResponse.data.recruiter.name);
+              return;
+            }
+          } catch (authorError) {
+            console.error("공고 작성자 정보 로드 실패:", authorError);
+          }
+
+          // location.state에서 이름 가져오기 시도
+          if (location.state?.otherName) {
+            setOtherName(location.state.otherName);
+          } else {
+            setOtherName("상대방");
+          }
+        }
+      } catch (error) {
+        console.error("상대방 정보 로드 실패:", error);
+
+        // 로컬 상태의 이름이 있으면 사용, 없으면 기본값 설정
+        if (!otherName || otherName === "상대방") {
+          setOtherName(location.state?.otherName || "상대방");
+        }
+      }
+    };
+
+    // 상대방 이름이 기본값이면 정보 가져오기
+    if (otherName === "상대방") {
+      fetchOtherUserInfo();
+    }
+  }, [roomId, currentUserId, otherName, location.state]);
+
   // 페이지 로드 시 상대방이 나간 채팅방인지 확인
   useEffect(() => {
+    if (!roomId || !currentUserId) return;
+
     // 로컬 스토리지에서 나간 채팅방 정보 가져오기
     const leftRooms = JSON.parse(localStorage.getItem("leftChatRooms") || "{}");
 
@@ -197,13 +279,6 @@ export function ChattingPage() {
     }
   }, [roomId, currentUserId, navigate]);
 
-  const formatTime = () => {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
-  };
-
   // 스크롤을 항상 맨 아래로 유지하는 함수
   const scrollToBottom = () => {
     if (chattingAreaRef.current) {
@@ -218,10 +293,23 @@ export function ChattingPage() {
 
   // 페이지 로드 시 기존 메시지 불러오기
   useEffect(() => {
+    if (!roomId || !currentUserId) return;
+
     // 기존 메시지 로드
     const fetchMessages = async () => {
       try {
         const response = await axios.get(`/api/messages/${roomId}`);
+        console.log("기존 메시지 로드:", response.data);
+
+        // 메시지 ID 기록
+        const messageIds = new Set<string>();
+        response.data.forEach((msg: any) => {
+          if (msg._id) {
+            messageIds.add(msg._id);
+          }
+        });
+
+        setReceivedMessageIds(messageIds);
         setMessages(response.data);
         setTimeout(scrollToBottom, 100);
 
@@ -232,9 +320,21 @@ export function ChattingPage() {
       }
     };
 
-    if (roomId) {
-      fetchMessages();
-    }
+    fetchMessages();
+
+    // 기존 소켓 연결 정리
+    return () => {
+      if (socket) {
+        socket.off("chat message");
+        socket.emit("leave_room", { roomId });
+        socket.disconnect();
+      }
+    };
+  }, [roomId, currentUserId]);
+
+  // 소켓 연결 설정
+  useEffect(() => {
+    if (!roomId || !currentUserId) return;
 
     // 소켓 연결
     const newSocket = io("http://localhost:8080", {
@@ -244,27 +344,55 @@ export function ChattingPage() {
 
     newSocket.on("connect", () => {
       console.log("서버에 연결됨:", newSocket.id);
+
+      // 사용자 ID 전송
+      newSocket.emit("join_user", { userId: currentUserId });
+
+      // 해당 채팅방 참여
+      newSocket.emit("join_room", { roomId });
     });
 
-    newSocket.on("chat message", async (msg) => {
+    // 메시지 핸들러 함수
+    const handleChatMessage = async (msg: any) => {
+      console.log("메시지 수신:", msg);
+
       // 받은 메시지가 현재 방의 메시지인지 확인
-      if (msg.roomId === roomId) {
-        setMessages((prevMessages) => [...prevMessages, msg]);
-        setTimeout(scrollToBottom, 100);
+      if (msg.roomId !== roomId) return;
 
-        // 상대방의 메시지가 수신되면 바로 읽음 상태로 업데이트
-        if (msg.senderId !== currentUserId) {
-          await markMessagesAsRead();
-        }
+      // 이미 받은 메시지인지 확인 (중복 방지)
+      if (msg._id && receivedMessageIds.has(msg._id)) {
+        console.log("중복 메시지 무시:", msg._id);
+        return;
       }
-    });
+
+      // 메시지 추가
+      setMessages((prevMessages) => [...prevMessages, msg]);
+
+      // ID 있는 메시지는 수신 목록에 추가
+      if (msg._id) {
+        setReceivedMessageIds((prev) => new Set(prev).add(msg._id!));
+      }
+
+      setTimeout(scrollToBottom, 100);
+
+      // 상대방의 메시지가 수신되면 바로 읽음 상태로 업데이트
+      if (msg.senderId !== currentUserId) {
+        await markMessagesAsRead();
+      }
+    };
+
+    // 메시지 수신 이벤트 등록
+    newSocket.on("chat message", handleChatMessage);
 
     setSocket(newSocket);
 
+    // 정리 함수
     return () => {
+      newSocket.off("chat message", handleChatMessage);
+      newSocket.emit("leave_room", { roomId });
       newSocket.disconnect();
     };
-  }, [roomId, currentUserId]);
+  }, [roomId, currentUserId, receivedMessageIds]);
 
   // 메시지가 변경될 때마다 스크롤 맨 아래로
   useEffect(() => {
@@ -285,20 +413,20 @@ export function ChattingPage() {
   };
 
   const handleSendChat = () => {
-    if (chat.trim() === "" || !socket || !roomId) return;
+    if (chat.trim() === "" || !socket || !roomId || !currentUserId) return;
 
-    const currentTime = formatTime();
+    const currentTime = formatMessageTime();
     const messageToSend = {
       text: chat,
       roomId: roomId,
-      senderId: currentUserId, // 발신자 ID 추가
+      senderId: currentUserId,
       time: currentTime,
     };
 
     // 소켓으로 메시지 전송
     socket.emit("chat message", messageToSend);
 
-    // 로컬 상태에 메시지 추가
+    // 로컬 상태에 메시지 추가 (UI 즉시 업데이트)
     setMessages((prevMessages) => [...prevMessages, messageToSend]);
 
     setChat("");
@@ -311,6 +439,30 @@ export function ChattingPage() {
       handleSendChat();
     }
   };
+
+  // 사용자가 로그인하지 않은 경우 처리
+  if (!currentUserId) {
+    return (
+      <>
+        <Header>
+          <HeaderWrap>
+            <div className="flex font-bold text-[16px]">채팅</div>
+          </HeaderWrap>
+        </Header>
+        <Main hasBottomNav={false}>
+          <div className="p-5 text-center">
+            <p>로그인이 필요합니다.</p>
+            <button
+              onClick={() => navigate("/login")}
+              className="mt-4 bg-main-color text-white py-2 px-4 rounded-[10px]"
+            >
+              로그인하러 가기
+            </button>
+          </div>
+        </Main>
+      </>
+    );
+  }
 
   return (
     <>
