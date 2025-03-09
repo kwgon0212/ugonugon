@@ -77,7 +77,7 @@ const NoticeDetailPage = () => {
     checkScrapStatus();
   }, [userId, noticeId]);
 
-  // 추가된 부분: 스크랩 토글 함수
+  // 스크랩 토글 함수 수정
   const handleToggleScrap = async () => {
     if (isScrapLoading || !userId || !noticeId) return;
 
@@ -90,8 +90,16 @@ const NoticeDetailPage = () => {
       });
 
       setIsScraped(response.data.isScraped);
+
+      // 스크랩 상태에 따라 다른 메시지 표시
+      if (response.data.isScraped) {
+        alert("공고가 스크랩 되었습니다.");
+      } else {
+        alert("공고 스크랩이 취소되었습니다.");
+      }
     } catch (error) {
       console.error("스크랩 토글 오류:", error);
+      alert("스크랩 처리 중 오류가 발생했습니다.");
     } finally {
       setIsScrapLoading(false);
     }

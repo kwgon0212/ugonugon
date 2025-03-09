@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import Header from "../../../components/Header";
@@ -114,6 +114,7 @@ interface GetNoticeInfo {
 }
 
 export function MypageScrabPage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [hasNotice, setNotice] = useState(true);
   const [isOpen, setOpen] = useState(false); // 드롭다운 메뉴 열림 상태
@@ -317,52 +318,52 @@ export function MypageScrabPage() {
                       </div>
                     </div>
                   </div>
-                  {/* 현재 페이지의 공고 아이템 렌더링 */}
                   {currentNotices.map((notice) => (
                     <ListContainer key={notice.id}>
-                      <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray relative">
-                        <img
-                          src="/logo192.png"
-                          alt="공고 이미지"
-                          className="w-full h-full object-cover rounded-lg"
-                        />
+                      {/* 공고 카드 전체를 클릭하면 상세 페이지로 이동 */}
+                      <div
+                        className="flex w-full cursor-pointer"
+                        onClick={() => navigate(`/notice/${notice._id}`)} // 상세 페이지로 이동
+                      >
+                        <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray relative">
+                          <img
+                            src="/logo192.png"
+                            alt="공고 이미지"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
 
-                        {/* 수정된 부분: 스크랩 아이콘에 토글 기능 추가 */}
-                        <div
-                          className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full cursor-pointer"
-                          onClick={() => handleToggleScrap(notice._id)}
-                        >
-                          <div>
-                            {/* 스크랩 페이지에서는 항상 채워진 별 */}
-                            <StarIcon color="#FFD700" />{" "}
-                            {/* 또는 StarIcon에 지원되는 속성 사용 */}
+                          {/* 스크랩 아이콘 - 이제 클릭해도 상세 페이지로 이동됨 */}
+                          <div className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full">
+                            <div>
+                              <StarIcon color="#FFD700" />
+                            </div>
                           </div>
                         </div>
+
+                        <ListInfo>
+                          <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
+                            <span>{notice.companyName}</span>
+                            <div>
+                              <span>마감일 </span>
+                              <span>{notice.endDate}</span>
+                              <span>({notice.day})</span>
+                            </div>
+                          </div>
+                          <div className="w-[95%] text-[12px] font-bold flex-wrap">
+                            {notice.title}
+                          </div>
+                          <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
+                            <div>{notice.address}</div>
+                            <div>
+                              <span className="font-bold text-[#1D8738]">
+                                시급{" "}
+                              </span>
+                              <span>{notice.pay.toLocaleString()} 원</span>
+                            </div>
+                            <div>{notice.period}</div>
+                          </div>
+                        </ListInfo>
                       </div>
-
-                      <ListInfo>
-                        <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
-                          <span>{notice.companyName}</span>
-                          <div>
-                            <span>마감일 </span>
-                            <span>{notice.endDate}</span>
-                            <span>({notice.day})</span>
-                          </div>
-                        </div>
-                        <div className="w-[95%] text-[12px] font-bold flex-wrap">
-                          {notice.title}
-                        </div>
-                        <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
-                          <div>{notice.address}</div>
-                          <div>
-                            <span className="font-bold text-[#1D8738]">
-                              시급{" "}
-                            </span>
-                            <span>{notice.pay.toLocaleString()} 원</span>
-                          </div>
-                          <div>{notice.period}</div>
-                        </div>
-                      </ListInfo>
                     </ListContainer>
                   ))}
                 </ListScrollWrapper>
