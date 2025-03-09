@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../../../components/Header";
 import Main from "../../../../components/Main";
 import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
+import { useAppSelector } from "@/hooks/useRedux";
+import getUser, { type User } from "@/hooks/fetchUser";
+import getResume, { type Resume } from "@/hooks/fetchResume";
 
 interface Props {
   width?: string;
@@ -99,12 +102,31 @@ const BottomButton = styled.button<Props>`
 `;
 
 function MypageResumeList() {
-  const [userId, setUserId] = useState("의문의 계정");
-  // const [resumes, setResumes] = useState<{ [key: string]: string }[]>([]);
-  const [resumes, setResumes] = useState<{ [key: string]: string }[]>([
-    { date: "2025.01.02", title: "내 이력서" },
-    { date: "2025.01.03", title: "우곤은 존재 자체가 커리어" },
-  ]);
+  const userId = useAppSelector((state) => state.auth.user?._id);
+  const [userData, setUserData] = useState<User | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchData = async () => {
+        const user = await getUser(userId);
+        setUserData(user);
+        if (user?.resumeIds && Array.isArray(user?.resumeIds)) {
+          const newResumes = await Promise.all(
+            user.resumeIds.map(async (resumeId: string) => {
+              if (typeof resumeId === "string") {
+                return await getResume(resumeId);
+              }
+              return null;
+            })
+          );
+          setResumes(newResumes);
+        }
+      };
+      fetchData();
+    }
+  }, [userId]);
+
   return (
     <>
       <Header>
@@ -117,51 +139,59 @@ function MypageResumeList() {
         </Link>
       </Header>
 
-      <Main hasBottomNav={false}>
-        {resumes.length === 0 ? (
-          <CenterDiv className="text-main-darkGray">
-            <div className="text-base text-center">
-              <span>현재&nbsp;</span>
-              <span className="text-main-color font-bold">{userId}</span>
-              <span>
-                님의
-                <br />
-                이력서가 존재하지 않아요
-                <br />
-              </span>
-              <div className="m-[10px] text-sm">
-                <Link to="/mypage/resume/add">
-                  <span className="text-main-color">이력서 등록</span>
-                  &nbsp;페이지로 이동
-                </Link>
+      {userData && (
+        <Main hasBottomNav={false}>
+          {resumes?.length === 0 || resumes === null ? (
+            <CenterDiv className="text-main-darkGray">
+              <div className="text-base text-center">
+                <span>현재&nbsp;</span>
+                <span className="text-main-color font-bold">
+                  {userData?.name}
+                </span>
+                <span>
+                  님의
+                  <br />
+                  이력서가 존재하지 않아요
+                  <br />
+                </span>
+                <div className="m-[10px] text-sm">
+                  <Link to="/mypage/resume/add">
+                    <span className="text-main-color">이력서 등록</span>
+                    &nbsp;페이지로 이동
+                  </Link>
+                </div>
               </div>
-            </div>
-          </CenterDiv>
-        ) : (
-          <ul className="w-full px-5 pt-[22px] flex flex-col gap-[10px] list-none">
-            {resumes.map(({ date, title }, index) => (
-              <li
-                key={index}
-                className="h-20 w-full rounded-[10px] bg-white flex flex-col p-[15px] gap-[10px] border border-main-gray"
-              >
-                <p className="p-0 flex gap-1">
-                  <span className="w-[49px] text-main-darkGray text-xs">
-                    작성일자
-                  </span>
-                  <span className="text-main-darkGray text-xs">{date}</span>
-                </p>
-                <p className="text-lg font-semibold relative">
-                  {title}
+            </CenterDiv>
+          ) : (
+            <ul className="w-full px-5 pt-[22px] flex flex-col gap-[10px] list-none">
+              {Array.isArray(resumes)
+                ? resumes.map(({ writtenDay, title }, index) => (
+                    <li
+                      key={index}
+                      className="h-20 w-full rounded-[10px] bg-white flex flex-col p-[15px] gap-[10px] border border-main-gray"
+                    >
+                      <span className="p-0 flex gap-1">
+                        <span className="w-[49px] text-main-darkGray text-xs">
+                          작성일자
+                        </span>
+                        <span className="text-main-darkGray text-xs">
+                          {writtenDay}
+                        </span>
+                      </span>
+                      <span className="text-lg font-semibold relative">
+                        {title}
 
-                  <p className="absolute right-0 bottom-0">
-                    <ArrowRightIcon color="#717171" />
-                  </p>
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Main>
+                        <span className="absolute right-0 bottom-0">
+                          <ArrowRightIcon color="#717171" />
+                        </span>
+                      </span>
+                    </li>
+                  ))
+                : ""}
+            </ul>
+          )}
+        </Main>
+      )}
     </>
   );
 }

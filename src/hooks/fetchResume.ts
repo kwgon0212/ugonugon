@@ -10,6 +10,7 @@ export interface Resume {
   schoolState?: string;
   careers?: string[];
   introduction?: string;
+  writtenDay?: string;
   apply?: string[];
 }
 
@@ -19,11 +20,11 @@ const getResume = async (resumeId: string | undefined) => {
     return await res.json();
   } catch (error) {
     console.error("Failed to fetch resume data:", error);
-    throw error; // 오류 발생 시 오류를 던짐
+    throw error;
   }
 };
 
-export const postResume = async (data: any) => {
+export const postResume = async (data: object) => {
   try {
     const res = await fetch("/api/resume", {
       method: "POST",
