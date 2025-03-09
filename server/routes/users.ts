@@ -24,7 +24,7 @@ const router = express.Router();
 const UsersSchema = new mongoose.Schema({
   name: { type: String, required: true },
   businessNumber: { type: Array, required: false },
-  sex: { type: String, required: true, enum: ["male", "female"] },
+  sex: { type: String, required: true, enum: ["남성", "여성"] },
   residentId: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
   address: {
