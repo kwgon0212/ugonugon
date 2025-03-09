@@ -295,5 +295,5 @@ export function MypageScrabPage() {
     </>
   );
 }
-
+// 주석추가
 export default MypageScrabPage;
