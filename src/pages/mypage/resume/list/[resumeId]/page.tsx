@@ -14,11 +14,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import getUser, { type User, postUser } from "@/hooks/fetchUser";
+import getUser, { type User, putUser } from "@/hooks/fetchUser";
 import getResume, {
   type Resume,
   type Career,
-  postResume,
+  putResume,
+  deleteResume,
 } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import Modal from "@/components/Modal";
@@ -125,7 +126,7 @@ function MypageResumeListId() {
   const [introduction, setIntroduction] = useState("");
   const [careers, setcareers] = useState<Career[]>();
   const [modal, setModal] = useState(false);
-  const [resumeTitle, setResumeDataTitle] = useState("");
+  const [resumeTitle, setResumeTitle] = useState("");
   const [company, setCompany] = useState("");
   const [startDate, setStartDate] = useState<Date | null | undefined>(
     new Date()
@@ -173,6 +174,8 @@ function MypageResumeListId() {
     setSchool(resumeData?.school as string);
     setSchoolState(resumeData?.schoolState as string);
     setcareers(resumeData?.careers as Career[]);
+    setResumeTitle(resumeData?.title as string);
+    setIntroduction(resumeData?.introduction as string);
   }, [resumeData]);
 
   return (
@@ -392,7 +395,7 @@ function MypageResumeListId() {
               className="w-full px-5 pt-5 flex flex-col gap-layout"
               onSubmit={async (e) => {
                 e.preventDefault();
-                const resumeId = await postResume({
+                await putResume(resumeData?._id as string, {
                   userId,
                   title: resumeTitle,
                   phone,
@@ -404,14 +407,6 @@ function MypageResumeListId() {
                   introduction,
                   writtenDay: new Date().toLocaleDateString(),
                 });
-                await postUser(userId, {
-                  resumeIds: [
-                    ...(Array.isArray(userData.resumeIds)
-                      ? userData.resumeIds
-                      : []),
-                    resumeId,
-                  ],
-                });
                 navigate("/mypage/resume/list");
               }}
             >
@@ -420,7 +415,7 @@ function MypageResumeListId() {
                   className="w-full h-[22px] text-lg placeholder:underline bg-main-bg text-main-color"
                   type="text"
                   value={resumeTitle}
-                  onChange={(e) => setResumeDataTitle(e.target.value)}
+                  onChange={(e) => setResumeTitle(e.target.value)}
                   placeholder="이력서 제목을 등록해주세요"
                   required
                 />
@@ -607,6 +602,7 @@ function MypageResumeListId() {
                     width="100%"
                     height="100%"
                     radius="5px"
+                    defaultValue={introduction}
                     onBlur={(e) => setIntroduction(e.target.value)}
                     required
                   ></InsertTextarea>
@@ -618,10 +614,18 @@ function MypageResumeListId() {
                     color="#0b798b"
                     className="border border-main-color"
                     type="button"
+                    onClick={async () => {
+                      await deleteResume(
+                        resumeData?._id as string,
+                        userId as string,
+                        resumeData?.applyIds as string[]
+                      );
+                      navigate("/mypage/resume/list");
+                    }}
                   >
                     이력서 삭제
                   </BottomButton>
-                  <BottomButton width="50%">이력서 등록</BottomButton>
+                  <BottomButton width="50%">이력서 수정</BottomButton>
                 </div>
               </div>
             </form>

@@ -139,7 +139,6 @@ function MypageResumeList() {
           <Title>이력서 관리</Title>
         </Link>
       </Header>
-
       {userData && (
         <Main hasBottomNav={false}>
           {resumes?.length === 0 || resumes === null ? (
