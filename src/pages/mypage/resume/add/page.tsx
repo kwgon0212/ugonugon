@@ -115,7 +115,7 @@ function MypageResumeAdd() {
     "초등학교",
   ];
   const [schoolState, setSchoolState] = useState("");
-  const stateTypes = ["졸업", "재학", "휴학", "중퇴"];
+  const schoolStateTypes = ["졸업", "재학", "휴학", "중퇴"];
   const [introduction, setIntroduction] = useState("");
   const [careers, setcareers] = useState<
     {
@@ -512,7 +512,7 @@ function MypageResumeAdd() {
                     >
                       <option
                         className="text-main-darkGray"
-                        key={school.length + 1}
+                        key={schoolTypes.length + 1}
                         value=""
                         disabled
                         hidden
@@ -538,14 +538,14 @@ function MypageResumeAdd() {
                     >
                       <option
                         className="text-main-darkGray"
-                        key={schoolState.length + 1}
+                        key={schoolStateTypes.length + 1}
                         value=""
                         disabled
                         hidden
                       >
                         상태
                       </option>
-                      {stateTypes.map((value, index) => (
+                      {schoolStateTypes.map((value, index) => (
                         <option key={index} value={value}>
                           {value}
                         </option>

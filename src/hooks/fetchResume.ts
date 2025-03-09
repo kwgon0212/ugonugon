@@ -18,7 +18,7 @@ export interface Resume extends Document {
   careers?: Career[];
   introduction?: string;
   writtenDay?: string;
-  applyIds?: string[];
+  applyIds?: (null | undefined | string)[];
 }
 
 const getResume = async (resumeId: string | undefined) => {
