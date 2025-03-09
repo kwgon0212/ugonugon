@@ -29,7 +29,7 @@ const getUser = async (userId: string | undefined) => {
 export const putUser = async (userId: string | undefined, data: object) => {
   try {
     await fetch("/api/users", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({ userId, data }),
       headers: {
         "Content-Type": "application/json",
