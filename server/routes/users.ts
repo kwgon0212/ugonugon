@@ -50,6 +50,18 @@ const UsersSchema = new mongoose.Schema({
       ref: "resumes",
     },
   ],
+  scrabIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
+  applyIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
 });
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
 const Users = mongoose.model("users", UsersSchema);
@@ -91,7 +103,7 @@ router.put("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const user = await Users.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds"
+      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scrabIds applyIds"
     );
     if (user) user["residentId"] = user.residentId.slice(0, 7);
     res.status(201).json(user);

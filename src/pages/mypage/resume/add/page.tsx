@@ -15,7 +15,7 @@ import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import getUser, { type User, postUser } from "@/hooks/fetchUser";
-import { type Resume, postResume } from "@/hooks/fetchResume";
+import { postResume } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import Modal from "@/components/Modal";
 import DaumPostcode from "react-daum-postcode";

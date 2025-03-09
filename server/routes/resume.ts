@@ -50,11 +50,17 @@ const ResumesSchema = new mongoose.Schema({
       dates: { type: String, required: true },
       careerDetail: { type: String, required: true },
     },
+    { _id: false },
   ],
   introduction: { type: String, required: true },
   writtenDay: { type: String, require: true },
   // writtenDay: { type: Date, require: true },
-  applys: [{ type: String, require: false }],
+  applyIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
   // applys: [{type: mongoose.Types.ObjectId, ref: "posts", require: false}],
 });
 const Resumes = mongoose.model("resumes", ResumesSchema);
@@ -89,9 +95,8 @@ router.get("/", async (req, res) => {
 
 router.get("/:resumeId", async (req, res) => {
   try {
-    console.log("req.params");
-    console.log(req.params);
-    const resume = await Resumes.findById(req.query.resumeId);
+    // const resume = await Resumes.findById(req.query.resumeId);
+    const resume = await Resumes.findById(req.params.resumeId);
     return res.status(200).json(resume);
   } catch (err) {
     res.status(500).json({ error: err.message });

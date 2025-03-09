@@ -1,6 +1,12 @@
 import React from "react";
 import { Document } from "mongoose";
 
+export interface Career {
+  company: string;
+  dates: string;
+  careerDetail: string;
+}
+
 export interface Resume extends Document {
   userId?: string;
   title?: string;
@@ -9,10 +15,10 @@ export interface Resume extends Document {
   address?: string;
   school?: string;
   schoolState?: string;
-  careers?: string[];
+  careers?: Career[];
   introduction?: string;
   writtenDay?: string;
-  apply?: string[];
+  applyIds?: string[];
 }
 
 const getResume = async (resumeId: string | undefined) => {

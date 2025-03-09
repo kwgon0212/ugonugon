@@ -12,6 +12,8 @@ export interface User extends Document {
   signature?: string;
   email?: string;
   resumeIds?: (null | undefined | string)[];
+  scrabIds?: (null | undefined | string)[];
+  applyIds?: (null | undefined | string)[];
 }
 
 const getUser = async (userId: string | undefined) => {
