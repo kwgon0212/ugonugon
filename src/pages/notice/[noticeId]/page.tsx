@@ -15,6 +15,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./WorkPlaceMap";
 import NotFound from "@/NotFound";
+import Resume from "@/types/Resume";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -22,15 +23,9 @@ const AcceptModal = Modal;
 const ApplyResultModal = Modal;
 const AlreadyApplyModal = Modal;
 
-interface ResumeType {
-  title: string;
-  createdAt: Date;
-}
-
 const NoticeDetailPage = () => {
   const { noticeId } = useParams();
   const userId = useAppSelector((state) => state.auth.user?._id);
-  console.log(userId);
   const [postData, setPostData] = useState<Notice | null>(null);
 
   const [isEmployer, setIsEmployer] = useState(false);
@@ -39,12 +34,12 @@ const NoticeDetailPage = () => {
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
   const [isOpenApplyResultModal, setIsOpenApplyResultModal] = useState(false);
   const [isOpenAlreadyApplyModal, setIsOpenAlreadyApplyModal] = useState(false);
-  const [resumes, setResumes] = useState<ResumeType[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
 
   const [isClickShare, setIsClickShare] = useState(false);
 
   const [isAlreadyApply, setIsAlreadyApply] = useState(false);
-  const [selectedResume, setSelectedResume] = useState<ResumeType | null>(null);
+  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
 
@@ -90,14 +85,39 @@ const NoticeDetailPage = () => {
     }
   }, [postData, userId]);
 
-  // useEffect -> 로그인한 유저의 이력서를 resume컬렉션에서 찾기
+  // useEffect -> 로그인한 유저의 이력서 찾기
   useEffect(() => {
-    setResumes([
-      { title: "내 이력서1", createdAt: new Date() },
-      { title: "내 이력서2", createdAt: new Date() },
-      { title: "내 이력서3", createdAt: new Date() },
-    ]);
-  }, []);
+    if (userId) {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`/api/users?userId=${userId}`);
+          const resumeIds = response.data.resumeIds;
+
+          const userResumeArr = [];
+          for (const resumeId of resumeIds) {
+            const response = await axios.get(
+              `/api/resume?resumeId=${resumeId}`
+            );
+            userResumeArr.push(response.data);
+          }
+
+          const arr = userResumeArr.map((resume) => {
+            return {
+              ...resume,
+              createdAt: new Date(),
+            };
+          });
+          setResumes(arr);
+        } catch (error) {
+          alert("error");
+          console.log(error);
+        }
+      };
+      fetchData();
+    }
+  }, [userId]);
+  console.log(resumes);
+  // console.log(selectedResume)
 
   const imageArr = [
     "https://placehold.co/500",
@@ -126,13 +146,15 @@ const NoticeDetailPage = () => {
   };
 
   const handleResumeNext = () => {
-    console.log(selectedResume);
     setIsOpenApplyModal(false);
     setIsOpenAcceptModal(true);
   };
 
   const handleAcceptNext = async () => {
     // 해당 공고에 이력서 제출 로직
+    // const data = { resumeId: selectedResume?._id.toString(), userId}
+    // await axios.post(`/api/post/${noticeId}/apply`, data)
+
     // 해당 로직이 완료되면 아래코드 실행
     setIsOpenAcceptModal(false);
     setIsOpenApplyResultModal(true);
@@ -481,7 +503,7 @@ const NoticeDetailPage = () => {
             <div className="size-full flex flex-col gap-[20px]">
               <p className="text-xl font-bold">이력서 선택</p>
               <div className="flex flex-col gap-[10px] max-h-[200px] overflow-y-scroll">
-                {resumes ? (
+                {resumes.length > 0 ? (
                   resumes.map((resume) => {
                     return (
                       <button
