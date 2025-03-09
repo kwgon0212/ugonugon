@@ -52,6 +52,8 @@ const ResumesSchema = new mongoose.Schema({
     },
   ],
   introduction: { type: String, required: true },
+  writtenDay: { type: String, require: true },
+  // writtenDay: { type: Date, require: true },
   applys: [{ type: String, require: false }],
   // applys: [{type: mongoose.Types.ObjectId, ref: "posts", require: false}],
 });
@@ -78,10 +80,10 @@ router.put("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const user = await Resumes.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId profile"
+    const resume = await Resumes.findById(req.query.userId).select(
+      "title phone email address school schoolState careers introduction applys"
     );
-    res.status(201).json(user);
+    res.status(201).json(resume);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

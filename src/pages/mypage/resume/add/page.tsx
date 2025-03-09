@@ -396,6 +396,7 @@ function MypageResumeAdd() {
                   schoolState,
                   careers,
                   introduction,
+                  writtenDay: new Date().toLocaleDateString(),
                 });
                 await postUser(userId, {
                   resumeIds: [
