@@ -10,17 +10,27 @@ import axios from "axios";
  */
 export function getOtherUserId(roomId: string, currentUserId: string): string {
   if (!roomId || !roomId.startsWith("chat_") || !currentUserId) {
+    console.warn("getOtherUserId: 유효하지 않은 인자", {
+      roomId,
+      currentUserId,
+    });
     return "";
   }
 
   // roomId 형식: chat_userId1_userId2
   const parts = roomId.split("_");
   if (parts.length !== 3) {
+    console.warn("getOtherUserId: 잘못된 roomId 형식", roomId);
     return "";
   }
 
   // 사용자 ID가 첫 번째 ID와 같으면 두 번째 ID 반환, 아니면 첫 번째 ID 반환
-  return parts[1] === currentUserId ? parts[2] : parts[1];
+  const userId1 = parts[1];
+  const userId2 = parts[2];
+
+  console.log("getOtherUserId:", { roomId, currentUserId, userId1, userId2 });
+
+  return userId1 === currentUserId ? userId2 : userId1;
 }
 
 /**
@@ -45,12 +55,15 @@ export async function createChatRoom(
   userId2: string
 ): Promise<string> {
   try {
+    console.log("채팅방 생성 시도:", { userId1, userId2 });
+
     // 채팅방 생성 API 호출
     const response = await axios.post("/api/chat-rooms", {
       user1Id: userId1,
       user2Id: userId2,
     });
 
+    console.log("채팅방 생성 성공:", response.data);
     return response.data.roomId;
   } catch (error) {
     console.error("채팅방 생성 실패:", error);

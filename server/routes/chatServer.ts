@@ -1,5 +1,3 @@
-// routes/chatServer.ts
-
 import express, { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { io } from "../server.ts";
@@ -10,10 +8,12 @@ const router = Router();
 const messageSchema = new mongoose.Schema({
   roomId: { type: String, required: true },
   text: { type: String, required: true },
-  senderId: { type: String, required: true }, // 발신자 ID
+  senderId: { type: String, required: true }, // 발신자 ID 또는 'system'
   time: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  isRead: { type: Boolean, default: false }, // 읽음 상태 추가
+  isRead: { type: Boolean, default: false },
+  localId: { type: String }, // 클라이언트에서 생성한 메시지 ID
+  isSystemMessage: { type: Boolean, default: false }, // 시스템 메시지 여부
 });
 
 const Message = mongoose.model("Message", messageSchema);
@@ -98,17 +98,55 @@ const setupSocketHandlers = () => {
       console.log(`소켓 ${socket.id}가 채팅방 ${roomId}에서 퇴장함`);
     });
 
-    // 채팅 메시지 처리
+    // 채팅 메시지 처리 - 메시지 중복 문제 해결
     socket.on("chat message", (msg) => {
       console.log("메시지 수신:", msg);
 
-      // 메시지 저장
+      // 시스템 메시지인 경우 별도 처리
+      if (msg.isSystemMessage) {
+        // 시스템 메시지 저장
+        const systemMessage = new Message({
+          roomId: msg.roomId,
+          text: msg.text,
+          senderId: "system",
+          time: msg.time,
+          isRead: true, // 시스템 메시지는 기본적으로 읽음 상태
+          isSystemMessage: true,
+          localId: msg.localId,
+        });
+
+        systemMessage
+          .save()
+          .then(async (savedMessage) => {
+            console.log("시스템 메시지 저장 성공:", savedMessage);
+
+            // 해당 채팅방에 시스템 메시지 전송
+            io.to(msg.roomId).emit("chat message", {
+              ...msg,
+              _id: savedMessage._id.toString(),
+              createdAt: savedMessage.createdAt,
+            });
+
+            // 채팅방 마지막 활동 시간 업데이트
+            await ChatRoom.findOneAndUpdate(
+              { roomId: msg.roomId },
+              { lastActivity: new Date() }
+            );
+          })
+          .catch((err) => {
+            console.error("시스템 메시지 저장 오류:", err);
+          });
+        return;
+      }
+
+      // 일반 메시지 처리
       const newMessage = new Message({
         roomId: msg.roomId,
         text: msg.text,
         senderId: msg.senderId,
         time: msg.time,
-        isRead: false, // 기본적으로 메시지는 안 읽음 상태로 저장
+        isRead: false,
+        localId: msg.localId,
       });
 
       newMessage
@@ -116,8 +154,15 @@ const setupSocketHandlers = () => {
         .then(async (savedMessage) => {
           console.log("메시지 저장 성공:", savedMessage);
 
-          // 해당 채팅방에 있는 모든 소켓에게 메시지 전송 (1:1 통신 보장)
-          io.to(msg.roomId).emit("chat message", msg);
+          // 클라이언트에게 전달할 메시지 객체에 서버 ID와 로컬 ID 모두 포함
+          const messageToSend = {
+            ...msg,
+            _id: savedMessage._id.toString(),
+            createdAt: savedMessage.createdAt,
+          };
+
+          // 해당 채팅방에 있는 모든 소켓에게 메시지 전송
+          io.to(msg.roomId).emit("chat message", messageToSend);
 
           // 채팅방 마지막 활동 시간 업데이트
           await ChatRoom.findOneAndUpdate(
@@ -159,6 +204,13 @@ export const initializeChatServer = async () => {
 router.get("/users/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+
+    // API 호출 전 유효성 검사
+    if (!userId || userId === "undefined" || userId === "null") {
+      console.warn("유효하지 않은 사용자 ID:", userId);
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
     const user = await Useree.findById(userId);
 
     if (!user) {

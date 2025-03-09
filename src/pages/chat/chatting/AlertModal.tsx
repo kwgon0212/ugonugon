@@ -4,6 +4,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { useAppSelector } from "@/hooks/useRedux";
+import { formatMessageTime, getOtherUserId } from "@/util/chatUtils";
 
 const MainWrap = styled.div`
   position: absolute;
@@ -64,10 +65,15 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
         return;
       }
 
-      // 1. 로컬 스토리지에서 채팅방 나감 정보 가져오기
+      console.log(`채팅방 나가기 시작: ${roomId}, 사용자: ${userId}`);
+
+      // 1. 로컬 스토리지에서 나간 채팅방 정보 가져오기
       const leftRooms = JSON.parse(
         localStorage.getItem("leftChatRooms") || "{}"
       );
+
+      // 디버깅 로그
+      console.log("채팅방 나가기 전 leftRooms:", leftRooms);
 
       // 채팅방 정보 있는지 확인
       if (!leftRooms[roomId]) {
@@ -76,19 +82,30 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
           leftBy: userId,
           leftAt: new Date().toISOString(),
         };
+        console.log(`첫 번째 퇴장: ${userId}`);
       } else {
         // 이미 누군가 나간 경우, 두 번째 나가는 사람인지 확인
-        if (leftRooms[roomId].leftBy && leftRooms[roomId].leftBy !== userId) {
+        const roomInfo = leftRooms[roomId];
+        console.log("기존 채팅방 나가기 정보:", roomInfo);
+
+        if (roomInfo.leftBy && roomInfo.leftBy !== userId) {
           leftRooms[roomId].leftBy2 = userId;
           leftRooms[roomId].leftAt2 = new Date().toISOString();
-        } else if (!leftRooms[roomId].leftBy) {
+          console.log(`두 번째 퇴장: ${userId}`);
+        } else if (!roomInfo.leftBy) {
           leftRooms[roomId].leftBy = userId;
+          leftRooms[roomId].leftAt = new Date().toISOString();
+          console.log(`첫 번째 퇴장(null 이후): ${userId}`);
+        } else {
+          // 이미 내가 나간 채팅방인 경우 정보 갱신
+          console.log(`이미 퇴장한 사용자의 재퇴장: ${userId}`);
           leftRooms[roomId].leftAt = new Date().toISOString();
         }
       }
 
       // 스토리지에 저장
       localStorage.setItem("leftChatRooms", JSON.stringify(leftRooms));
+      console.log("업데이트된 leftRooms:", leftRooms);
 
       // 소켓을 통해 채팅방 나가기 이벤트 전송
       const socket = io("http://localhost:8080", {
@@ -96,19 +113,38 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
         withCredentials: true,
       });
 
+      // 상대방에게 나간 알림 메시지 보내기
+      try {
+        // 상대방 ID 가져오기
+        const otherId = getOtherUserId(roomId, userId);
+
+        // 채팅방 나가기 시스템 메시지 전송 (상대방에게 알림)
+        const systemMessage = {
+          roomId: roomId,
+          text: "상대방이 채팅방을 나갔습니다. 더 이상 메시지를 보낼 수 없습니다.",
+          senderId: "system", // 시스템 메시지로 표시
+          time: formatMessageTime(),
+          isSystemMessage: true, // 시스템 메시지 플래그
+        };
+
+        // 시스템 메시지 전송
+        socket.emit("chat message", systemMessage);
+        console.log("상대방에게 채팅방 나가기 알림 메시지 전송");
+      } catch (msgError) {
+        console.error("알림 메시지 전송 실패:", msgError);
+      }
+
       socket.emit("leave_room", { roomId });
       socket.disconnect();
+      console.log("소켓 연결 종료 및 채팅방 퇴장 이벤트 전송 완료");
 
-      // 메시지 삭제 API 호출
-      await axios.delete("/api/messages/clear", {
-        data: { roomId },
-      });
-
+      // 메시지 삭제 API 호출은 하지 않음 - 대화 내용은 유지하되 더 이상 메시지 전송 불가능하게 함
       // 채팅 목록 페이지로 이동
+      console.log("채팅 목록으로 이동");
       navigate(`/chat?userId=${userId}`);
     } catch (error) {
-      console.error("메시지 삭제 중 오류 발생:", error);
-      alert("채팅 기록 삭제 중 문제가 발생했습니다.");
+      console.error("채팅방 나가기 중 오류 발생:", error);
+      alert("채팅방 나가기 처리 중 문제가 발생했습니다.");
     }
   };
 

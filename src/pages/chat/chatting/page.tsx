@@ -110,6 +110,30 @@ const SendIconWrap = styled.button`
   width: 45px;
 `;
 
+// 시스템 메시지 스타일 추가
+const SystemMessageWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 16px 0;
+`;
+
+const SystemMessageBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  max-width: 80%;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 12px;
+  text-align: center;
+`;
+
 // 메시지 인터페이스 정의
 interface Message {
   text: string;
@@ -119,6 +143,9 @@ interface Message {
   _id?: string;
   createdAt?: string;
   isRead?: boolean;
+  // 클라이언트에서 메시지 추적을 위한 로컬 ID 추가
+  localId?: string;
+  isSystemMessage?: boolean;
 }
 
 // 사용자 정보 인터페이스
@@ -153,9 +180,17 @@ export function ChattingPage() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [socket, setSocket] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [receivedMessageIds, setReceivedMessageIds] = useState<Set<string>>(
+
+  // 메시지 중복 방지를 위한 ID 세트
+  const [receivedMessages, setReceivedMessages] = useState<Set<string>>(
     new Set()
   );
+  // 로컬에서 생성한 메시지 ID 추적
+  const [localMessageIds, setLocalMessageIds] = useState<Set<string>>(
+    new Set()
+  );
+  // 상대방이 나갔는지 여부
+  const [isPartnerLeft, setIsPartnerLeft] = useState(false);
 
   // 채팅방 입장 시 메시지를 읽음 상태로 변경
   const markMessagesAsRead = async () => {
@@ -180,6 +215,13 @@ export function ChattingPage() {
         console.log("상대방 ID:", otherId);
 
         if (otherId) {
+          // API 호출 전 유효성 검사
+          if (!otherId || otherId === "undefined" || otherId === "null") {
+            console.warn("유효하지 않은 사용자 ID:", otherId);
+            setOtherName("알 수 없음");
+            return;
+          }
+
           try {
             // 일반 사용자 정보 API 시도
             const response = await axios.get(`/api/users/${otherId}`);
@@ -193,7 +235,14 @@ export function ChattingPage() {
               return;
             }
           } catch (userError) {
-            console.log("일반 사용자 정보 로드 실패:", userError);
+            if (
+              axios.isAxiosError(userError) &&
+              userError.response?.status === 404
+            ) {
+              console.warn(`사용자 ${otherId}를 찾을 수 없음`);
+            } else {
+              console.log("일반 사용자 정보 로드 실패:", userError);
+            }
           }
 
           try {
@@ -253,28 +302,26 @@ export function ChattingPage() {
       const otherUserId = getOtherUserId(roomId, currentUserId);
 
       // 상대방이 나갔는지 확인 (leftBy나 leftBy2에 상대방 ID가 있는지)
-      if (
-        (roomInfo.leftBy === otherUserId || roomInfo.leftBy2 === otherUserId) &&
-        roomInfo.leftBy !== currentUserId &&
-        roomInfo.leftBy2 !== currentUserId
-      ) {
-        // 알림창 표시
-        alert("상대방이 나간 채팅방입니다.");
+      if (roomInfo.leftBy === otherUserId || roomInfo.leftBy2 === otherUserId) {
+        console.log("상대방이 나간 채팅방입니다.");
 
-        // 현재 사용자도 이 채팅방을 나간 것으로 표시
-        if (roomInfo.leftBy && roomInfo.leftBy !== currentUserId) {
-          leftRooms[roomId].leftBy2 = currentUserId;
-          leftRooms[roomId].leftAt2 = new Date().toISOString();
-        } else {
-          leftRooms[roomId].leftBy = currentUserId;
-          leftRooms[roomId].leftAt = new Date().toISOString();
+        // 사용자에게 메시지는 표시하되 채팅 입력은 비활성화
+        setIsPartnerLeft(true);
+
+        // 현재 사용자가 이미 나갔는지 확인
+        const currentUserLeft =
+          roomInfo.leftBy === currentUserId ||
+          roomInfo.leftBy2 === currentUserId;
+
+        // 현재 사용자도 이미 나간 상태라면 목록으로 돌아가기
+        if (currentUserLeft) {
+          // 알림창 표시
+          alert("상대방이 나간 채팅방입니다.");
+
+          // 채팅 목록으로 돌아가기
+          navigate(`/chat?userId=${currentUserId}`, { replace: true });
+          return; // 이후 코드 실행 중단
         }
-
-        localStorage.setItem("leftChatRooms", JSON.stringify(leftRooms));
-
-        // 채팅 목록으로 돌아가기
-        navigate(`/chat?userId=${currentUserId}`, { replace: true });
-        return; // 이후 코드 실행 중단
       }
     }
   }, [roomId, currentUserId, navigate]);
@@ -302,14 +349,14 @@ export function ChattingPage() {
         console.log("기존 메시지 로드:", response.data);
 
         // 메시지 ID 기록
-        const messageIds = new Set<string>();
+        const msgIds = new Set<string>();
         response.data.forEach((msg: any) => {
           if (msg._id) {
-            messageIds.add(msg._id);
+            msgIds.add(msg._id);
           }
         });
 
-        setReceivedMessageIds(messageIds);
+        setReceivedMessages(msgIds);
         setMessages(response.data);
         setTimeout(scrollToBottom, 100);
 
@@ -360,25 +407,49 @@ export function ChattingPage() {
       if (msg.roomId !== roomId) return;
 
       // 이미 받은 메시지인지 확인 (중복 방지)
-      if (msg._id && receivedMessageIds.has(msg._id)) {
-        console.log("중복 메시지 무시:", msg._id);
+      if (msg._id && receivedMessages.has(msg._id)) {
+        console.log("서버 ID 기준 중복 메시지 무시:", msg._id);
         return;
       }
 
-      // 메시지 추가
+      // 로컬에서 생성한 메시지인지 확인 (자신이 보낸 메시지의 중복 방지)
+      if (msg.localId && localMessageIds.has(msg.localId)) {
+        console.log("로컬 ID 기준 중복 메시지 무시:", msg.localId);
+        return;
+      }
+
+      // 시스템 메시지 확인
+      if (msg.isSystemMessage || msg.senderId === "system") {
+        // 시스템 메시지는 항상 추가
+        setMessages((prevMessages) => [...prevMessages, msg]);
+        if (msg.text && msg.text.includes("상대방이 채팅방을 나갔습니다")) {
+          setIsPartnerLeft(true);
+        }
+        setTimeout(scrollToBottom, 100);
+        return;
+      }
+
+      // 자신이 보낸 메시지인지 확인 (내가 보낸 메시지는 이미 UI에 표시되어 있음)
+      if (msg.senderId === currentUserId) {
+        // 서버에서 생성된 ID가 있으면 기록 (추후 중복 방지용)
+        if (msg._id) {
+          setReceivedMessages((prev) => new Set(prev).add(msg._id!));
+        }
+        return;
+      }
+
+      // 메시지 추가 (상대방이 보낸 메시지)
       setMessages((prevMessages) => [...prevMessages, msg]);
 
-      // ID 있는 메시지는 수신 목록에 추가
+      // ID 있는 메시지는 수신 목록에 추가 (중복 방지용)
       if (msg._id) {
-        setReceivedMessageIds((prev) => new Set(prev).add(msg._id!));
+        setReceivedMessages((prev) => new Set(prev).add(msg._id!));
       }
 
       setTimeout(scrollToBottom, 100);
 
       // 상대방의 메시지가 수신되면 바로 읽음 상태로 업데이트
-      if (msg.senderId !== currentUserId) {
-        await markMessagesAsRead();
-      }
+      await markMessagesAsRead();
     };
 
     // 메시지 수신 이벤트 등록
@@ -392,7 +463,7 @@ export function ChattingPage() {
       newSocket.emit("leave_room", { roomId });
       newSocket.disconnect();
     };
-  }, [roomId, currentUserId, receivedMessageIds]);
+  }, [roomId, currentUserId, receivedMessages, localMessageIds]);
 
   // 메시지가 변경될 때마다 스크롤 맨 아래로
   useEffect(() => {
@@ -413,7 +484,19 @@ export function ChattingPage() {
   };
 
   const handleSendChat = () => {
-    if (chat.trim() === "" || !socket || !roomId || !currentUserId) return;
+    if (
+      chat.trim() === "" ||
+      !socket ||
+      !roomId ||
+      !currentUserId ||
+      isPartnerLeft
+    )
+      return;
+
+    // 로컬 메시지 ID 생성 (중복 방지용)
+    const localId = `local_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
 
     const currentTime = formatMessageTime();
     const messageToSend = {
@@ -421,7 +504,11 @@ export function ChattingPage() {
       roomId: roomId,
       senderId: currentUserId,
       time: currentTime,
+      localId: localId, // 로컬 ID 추가
     };
+
+    // 로컬 메시지 ID 기록 (중복 방지용)
+    setLocalMessageIds((prev) => new Set(prev).add(localId));
 
     // 소켓으로 메시지 전송
     socket.emit("chat message", messageToSend);
@@ -438,6 +525,38 @@ export function ChattingPage() {
       e.preventDefault();
       handleSendChat();
     }
+  };
+
+  // 채팅 입력부 UI 렌더링
+  const renderInputBar = () => {
+    if (isPartnerLeft) {
+      return (
+        <InputBar className="bg-main-bg">
+          <div className="w-full flex justify-center items-center h-[45px] border-2 border-main-gray rounded-[10px] bg-gray-100 text-gray-500">
+            상대방이 채팅방을 나갔습니다
+          </div>
+        </InputBar>
+      );
+    }
+
+    return (
+      <InputBar className="bg-main-bg">
+        <div className="flex flex-[80%] h-fit">
+          <ChatInput
+            placeholder="채팅 입력"
+            onChange={handleChangeChat}
+            onKeyPress={handleKeyPress}
+            value={chat}
+            className="border-2 border-main-gray"
+          ></ChatInput>
+        </div>
+        <div className="flex flex-[20%] justify-center w-full h-fit">
+          <SendIconWrap className="bg-selected-box" onClick={handleSendChat}>
+            <SendIcon />
+          </SendIconWrap>
+        </div>
+      </InputBar>
+    );
   };
 
   // 사용자가 로그인하지 않은 경우 처리
@@ -483,45 +602,42 @@ export function ChattingPage() {
       <Main hasBottomNav={false}>
         <MainWrap>
           <ChattingAreaWrap ref={chattingAreaRef}>
-            {messages.map((message, index) =>
-              message.senderId === currentUserId ? (
-                <UserChatWrap key={index}>
-                  <div className="text-[12px] text-main-darkGray mb-[5px]">
-                    {message.time}
-                  </div>
-                  <ChatBox className="bg-selected-box text-selected-text text-[12px]">
-                    {message.text}
-                  </ChatBox>
-                </UserChatWrap>
-              ) : (
+            {messages.map((message, index) => {
+              // 시스템 메시지인 경우
+              if (message.isSystemMessage || message.senderId === "system") {
+                return (
+                  <SystemMessageWrap key={index}>
+                    <SystemMessageBox>{message.text}</SystemMessageBox>
+                  </SystemMessageWrap>
+                );
+              }
+
+              // 내가 보낸 메시지
+              if (message.senderId === currentUserId) {
+                return (
+                  <UserChatWrap key={index}>
+                    <div className="text-[12px] text-main-darkGray mb-[5px]">
+                      {message.time}
+                    </div>
+                    <ChatBox className="bg-selected-box text-selected-text text-[12px]">
+                      {message.text}
+                    </ChatBox>
+                  </UserChatWrap>
+                );
+              }
+
+              // 상대방이 보낸 메시지
+              return (
                 <OtherChatWrap key={index}>
                   <div className="text-[12px] text-main-darkGray mb-[5px]">
                     {message.time}
                   </div>
                   <ChatBox className="bg-white">{message.text}</ChatBox>
                 </OtherChatWrap>
-              )
-            )}
+              );
+            })}
           </ChattingAreaWrap>
-          <InputBar className="bg-main-bg">
-            <div className="flex flex-[80%] h-fit">
-              <ChatInput
-                placeholder="채팅 입력"
-                onChange={handleChangeChat}
-                onKeyPress={handleKeyPress}
-                value={chat}
-                className="border-2 border-main-gray"
-              ></ChatInput>
-            </div>
-            <div className="flex flex-[20%] justify-center w-full h-fit">
-              <SendIconWrap
-                className="bg-selected-box"
-                onClick={handleSendChat}
-              >
-                <SendIcon />
-              </SendIconWrap>
-            </div>
-          </InputBar>
+          {renderInputBar()}
         </MainWrap>
       </Main>
     </>
