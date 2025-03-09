@@ -80,9 +80,7 @@ router.put("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const resume = await Resumes.findById(req.query.userId).select(
-      "title phone email address school schoolState careers introduction applys"
-    );
+    const resume = await Resumes.findById(req.query.resumeId);
     res.status(201).json(resume);
   } catch (err) {
     res.status(500).json({ error: err.message });
