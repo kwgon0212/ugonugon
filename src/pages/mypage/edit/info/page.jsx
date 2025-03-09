@@ -16,9 +16,12 @@ function MyPageEditInfoPage() {
 
   useEffect(() => {
     if (userId) {
-      getUser(userId, setUserData);
+      const fetchData = async () => {
+        setUserData(await getUser(userId));
+      };
+      fetchData();
     }
-  }, [userId]); // userId가 변경될 때마다 호출
+  }, [userId]);
 
   const [phone, setPhone] = useState("");
   const [zipcode, setZipcode] = useState("");
