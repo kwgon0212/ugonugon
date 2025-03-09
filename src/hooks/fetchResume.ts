@@ -1,6 +1,7 @@
 import React from "react";
+import { Document } from "mongoose";
 
-export interface Resume {
+export interface Resume extends Document {
   userId?: string;
   title?: string;
   phone?: string;

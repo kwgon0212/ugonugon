@@ -1,6 +1,7 @@
 import React from "react";
+import { Document } from "mongoose";
 
-export interface User {
+export interface User extends Document {
   businessNumber?: string[];
   address?: { zipcode: string; street: string; detail: string };
   bankAccount?: { bank: string; account: string };
