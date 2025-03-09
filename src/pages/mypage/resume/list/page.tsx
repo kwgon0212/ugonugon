@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../../../../components/Header";
 import Main from "../../../../components/Main";
@@ -105,6 +105,7 @@ function MypageResumeList() {
   const userId = useAppSelector((state) => state.auth.user?._id);
   const [userData, setUserData] = useState<User | null>(null);
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userId) {
@@ -165,10 +166,11 @@ function MypageResumeList() {
           ) : (
             <ul className="w-full px-5 pt-[22px] flex flex-col gap-[10px] list-none">
               {Array.isArray(resumes)
-                ? resumes.map(({ writtenDay, title }, index) => (
+                ? resumes.map(({ _id, writtenDay, title }, index) => (
                     <li
                       key={index}
                       className="h-20 w-full rounded-[10px] bg-white flex flex-col p-[15px] gap-[10px] border border-main-gray"
+                      onClick={() => navigate(`/mypage/resume/list/${_id}`)}
                     >
                       <span className="p-0 flex gap-1">
                         <span className="w-[49px] text-main-darkGray text-xs">
