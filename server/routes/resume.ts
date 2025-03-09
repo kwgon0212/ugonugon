@@ -69,19 +69,30 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/", async (req, res) => {
-  try {
-    await Resumes.findByIdAndUpdate(req.body.userId, req.body.data);
-    res.status(201).end();
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// router.put("/", async (req, res) => {
+//   try {
+//     await Resumes.findByIdAndUpdate(req.body.userId, req.body.data);
+//     res.status(201).end();
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 router.get("/", async (req, res) => {
   try {
     const resume = await Resumes.findById(req.query.resumeId);
     res.status(201).json(resume);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:resumeId", async (req, res) => {
+  try {
+    console.log("req.params");
+    console.log(req.params);
+    const resume = await Resumes.findById(req.query.resumeId);
+    return res.status(200).json(resume);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
