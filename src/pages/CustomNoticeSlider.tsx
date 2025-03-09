@@ -13,7 +13,7 @@ interface Props {
 const CustomNoticeSlider = ({ notices }: Props) => {
   const settings: Settings = {
     waitForAnimate: false,
-    // autoplay: true,
+    autoplay: true,
     slidesToScroll: 1,
     arrows: false,
     infinite: true,

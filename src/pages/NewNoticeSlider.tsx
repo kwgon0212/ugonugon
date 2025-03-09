@@ -19,7 +19,7 @@ const NewNoticeSlider = ({ notices }: Props) => {
     arrows: false,
     infinite: true,
     slidesToShow: 1,
-    speed: 300,
+    speed: 1000,
     centerMode: true,
     centerPadding: "100px",
   };
