@@ -208,6 +208,27 @@ const JobPostingSchema = new Schema({
     required: true,
   },
   createdAt: { type: Date, default: Date.now },
+  applies: [
+    {
+      _id: false,
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      resumeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Resume",
+        required: true,
+      },
+      postId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+        required: true,
+      },
+      appliedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 // 모델 생성
@@ -422,5 +443,65 @@ router.get("/:postId", async (req, res) => {
   }
 });
 // get("/:postId" 로 바꾸기
+
+router.post("/:postId/apply", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { resumeId, userId } = req.body;
+
+    // 유효한 ObjectId인지 확인
+    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "유효하지 않은 공고 ID입니다." });
+    }
+
+    if (!userId || !resumeId) {
+      return res
+        .status(400)
+        .json({ message: "userId 및 resumeId가 필요합니다." });
+    }
+
+    // 문자열을 ObjectId로 변환
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const resumeObjectId = new mongoose.Types.ObjectId(resumeId);
+    const postObjectId = new mongoose.Types.ObjectId(postId);
+
+    // 해당 공고 찾기
+    const post = await JobPosting.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "해당 공고를 찾을 수 없습니다." });
+    }
+
+    // applies 필드가 없으면 추가
+    if (!post.applies || !Array.isArray(post.applies)) {
+      post.set("applies", []);
+    }
+
+    // 중복 지원 방지 (이미 지원한 경우)
+    const isAlreadyApplied = post.applies.some(
+      (apply) => apply.userId.toString() === userId
+    );
+
+    if (isAlreadyApplied) {
+      return res.status(400).json({ message: "이미 지원한 공고입니다." });
+    }
+
+    // 지원 정보 추가 (ObjectId 변환 후 저장)
+    post.applies.push({
+      userId: userObjectId,
+      resumeId: resumeObjectId,
+      postId: postObjectId,
+      appliedAt: new Date(),
+    });
+
+    // DB 업데이트
+    await post.save();
+
+    res.status(200).json({ message: "공고 지원 완료", applies: post.applies });
+  } catch (err) {
+    console.error("공고 지원 중 오류 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;

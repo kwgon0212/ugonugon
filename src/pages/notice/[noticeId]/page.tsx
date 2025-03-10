@@ -128,12 +128,15 @@ const NoticeDetailPage = () => {
 
   // 로그인한 유저의 _id를 통해 이미 지원한 공고인지 확인
   useEffect(() => {
-    if (postData && postData.applies && userId) {
-      if (postData.applies.includes(userId)) {
-        setIsAlreadyApply(true);
-      } else {
-        setIsAlreadyApply(false);
-      }
+    if (!postData) return;
+    if (postData.applies) {
+      const isAlreadyApplied = postData.applies.some(
+        (apply) => apply.userId.toString() === userId
+      );
+
+      isAlreadyApplied && setIsAlreadyApply(true);
+    } else {
+      setIsAlreadyApply(false);
     }
   }, [postData, userId]);
 
@@ -168,8 +171,6 @@ const NoticeDetailPage = () => {
       fetchData();
     }
   }, [userId]);
-  console.log(resumes);
-  // console.log(selectedResume)
 
   const imageArr = [
     "https://placehold.co/500",
@@ -204,8 +205,8 @@ const NoticeDetailPage = () => {
 
   const handleAcceptNext = async () => {
     // 해당 공고에 이력서 제출 로직
-    // const data = { resumeId: selectedResume?._id.toString(), userId}
-    // await axios.post(`/api/post/${noticeId}/apply`, data)
+    const data = { resumeId: selectedResume?._id.toString(), userId };
+    await axios.post(`/api/post/${noticeId}/apply`, data);
 
     // 해당 로직이 완료되면 아래코드 실행
     setIsOpenAcceptModal(false);
@@ -562,7 +563,7 @@ const NoticeDetailPage = () => {
           >
             <div className="size-full flex flex-col gap-[20px]">
               <p className="text-xl font-bold">이력서 선택</p>
-              <div className="flex flex-col gap-[10px] max-h-[200px] overflow-y-scroll">
+              <div className="w-full flex flex-col gap-[10px] max-h-[200px] overflow-y-scroll">
                 {resumes.length > 0 ? (
                   resumes.map((resume) => {
                     return (
@@ -586,7 +587,18 @@ const NoticeDetailPage = () => {
                     );
                   })
                 ) : (
-                  <p>이력서가 존재하지 않습니다</p>
+                  <>
+                    <p className="w-full text-center">
+                      이력서가 존재하지 않습니다
+                    </p>
+                    <p
+                      className="w-full text-center"
+                      onClick={() => navigate("/mypage/resume/add")}
+                    >
+                      <b className="text-main-color">이력서 등록페이지</b>로
+                      이동
+                    </p>
+                  </>
                 )}
               </div>
               <div className="flex gap-[20px]">
@@ -671,6 +683,7 @@ const NoticeDetailPage = () => {
           <ApplyResultModal
             isOpen={isOpenApplyResultModal}
             setIsOpen={setIsOpenApplyResultModal}
+            clickOutsideClose={false}
           >
             <div className="size-full flex flex-col items-center gap-[20px] pt-[20px]">
               <img
@@ -683,7 +696,10 @@ const NoticeDetailPage = () => {
                 <p>공고에 지원했어요</p>
               </div>
               <button
-                onClick={() => setIsOpenApplyResultModal(false)}
+                onClick={() => {
+                  setIsOpenApplyResultModal(false);
+                  navigate(0);
+                }}
                 className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
               >
                 확인

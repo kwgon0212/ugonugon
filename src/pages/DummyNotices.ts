@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import Notice from "@/types/Notice";
 
 const dummyNotice: Notice[] = [
@@ -50,7 +51,20 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_123456",
-    applies: ["user123", "user456"],
+    img: ["https://placehold.co/600x400", "https://placehold.co/600x400"],
+    company: "스타벅스 코리아",
+    applies: [
+      {
+        userId: new Types.ObjectId(),
+        resumeId: new Types.ObjectId(),
+        appliedAt: new Date(),
+      },
+      {
+        userId: new Types.ObjectId(),
+        resumeId: new Types.ObjectId(),
+        appliedAt: new Date(),
+      },
+    ],
   },
   {
     _id: "123456789dd0",
@@ -101,7 +115,15 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_789101",
-    applies: ["user789"],
+    img: ["https://placehold.co/600x400"],
+    company: "GS25 테헤란점",
+    applies: [
+      {
+        userId: new Types.ObjectId(),
+        resumeId: new Types.ObjectId(),
+        appliedAt: new Date(),
+      },
+    ],
   },
   {
     _id: "123456789012231d",
@@ -152,58 +174,9 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_555666",
-    applies: ["user321"],
-  },
-  {
-    _id: "12345678945gv0",
-    title: "대학생 단기 행사 스태프 모집 모집 모집 모집 모집",
-    jobType: "행사 진행",
-    pay: {
-      type: "일급",
-      value: 80000,
-    },
-    hireType: ["단기"],
-    period: {
-      start: "2025-05-01",
-      end: "2025-05-05",
-      discussion: false,
-    },
-    hour: {
-      start: "10:00",
-      end: "18:00",
-      discussion: false,
-    },
-    restTime: {
-      start: "13:00",
-      end: "14:00",
-    },
-    day: ["금", "토", "일"],
-    workDetail: "행사 안내, 고객 응대, 현장 관리",
-    welfare: "식비 지원, 행사 종료 후 기념품 지급",
-    postDetail: "밝고 친절한 분을 모집합니다.",
-    deadline: {
-      date: "2025-04-20",
-      time: "20:00",
-    },
-    person: 5,
-    preferences: "서비스직 경험자 우대",
-    education: {
-      school: "무관",
-      state: "무관",
-    },
-    address: {
-      zipcode: "06061",
-      street: "서울특별시 강남구 영동대로 513",
-      detail: "코엑스 컨벤션홀",
-    },
-    recruiter: {
-      name: "조이벤트",
-      email: "event@joyevent.com",
-      phone: "010-1111-2222",
-    },
-    createdAt: new Date().toISOString(),
-    author: "기업ID_888999",
-    applies: ["user654", "user777"],
+    img: [],
+    company: "쿠팡",
+    applies: [],
   },
 ];
 
