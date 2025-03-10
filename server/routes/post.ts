@@ -226,6 +226,7 @@ const JobPostingSchema = new Schema({
         ref: "Post",
         required: true,
       },
+      status: { type: String, enum: ["pending", "accepted", "rejected"] },
       appliedAt: { type: Date, default: Date.now },
     },
   ],
@@ -491,6 +492,7 @@ router.post("/:postId/apply", async (req, res) => {
       userId: userObjectId,
       resumeId: resumeObjectId,
       postId: postObjectId,
+      status: "pending",
       appliedAt: new Date(),
     });
 
@@ -501,6 +503,35 @@ router.post("/:postId/apply", async (req, res) => {
   } catch (err) {
     console.error("공고 지원 중 오류 발생:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/:postId/apply/status", async (req, res) => {
+  const { postId } = req.params;
+  const { userId, status } = req.body;
+
+  try {
+    const post = await JobPosting.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "공고를 찾을 수 없습니다." });
+    }
+
+    // 특정 지원 내역 찾기
+    const apply = post.applies.find((app) => app.userId.toString() === userId);
+    if (!apply) {
+      return res.status(404).json({ error: "지원 내역을 찾을 수 없습니다." });
+    }
+
+    // 지원 상태 업데이트
+    apply.status = status;
+    await post.save(); // 변경 사항 저장
+
+    res
+      .status(200)
+      .json({ message: `지원 상태가 ${status}로 변경되었습니다.` });
+  } catch (error) {
+    console.error("지원 상태 업데이트 실패:", error);
+    res.status(500).json({ error: "서버 오류" });
   }
 });
 

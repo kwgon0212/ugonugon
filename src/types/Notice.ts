@@ -54,6 +54,7 @@ export default interface Notice {
   applies?: {
     userId: Types.ObjectId;
     resumeId: Types.ObjectId;
+    status: "pending" | "accepted" | "rejected";
     appliedAt: Date;
   }[];
 }

@@ -9,17 +9,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import PlaceMap from "../../PlaceMap";
 
 const RejectModal = Modal;
-const ApproveModal = Modal;
+const AcceptModal = Modal;
 
 const NoticeApplyResumePage = () => {
   const { noticeId, resumeId } = useParams();
-  console.log(noticeId, resumeId);
 
   const navigate = useNavigate();
   const [isOpenRejectModal, setIsOpenRejectModal] = useState(false);
-  const [isOpenApproveModal, setIsOpenApproveModal] = useState(false);
+  const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
 
   const [resume, setResume] = useState<Resume | null>(null);
+
+  const [isFetchStatus, setIsFetchStatus] = useState(false);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -37,9 +38,35 @@ const NoticeApplyResumePage = () => {
 
   const handleClickChat = () => {};
 
-  const handleReject = () => {};
+  const handleReject = async () => {
+    if (!resume) return;
 
-  const handleApprove = () => {};
+    try {
+      const response = await axios.post(`/api/post/${noticeId}/apply/status`, {
+        userId: resume.userId,
+        status: "rejected",
+      });
+      setIsFetchStatus(true);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAccept = async () => {
+    if (!resume) return;
+
+    try {
+      const response = await axios.post(`/api/post/${noticeId}/apply/status`, {
+        userId: resume.userId,
+        status: "accepted",
+      });
+      console.log(response.data);
+      setIsFetchStatus(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -164,54 +191,82 @@ const NoticeApplyResumePage = () => {
           <RejectModal
             isOpen={isOpenRejectModal}
             setIsOpen={setIsOpenRejectModal}
+            clickOutsideClose={!isFetchStatus}
           >
             <div className="w-full flex flex-col gap-[20px]">
               <p className="text-xl font-bold">고용 거절</p>
               <p className="text-center">
-                정말 해당 지원자를 고용하지 않으시겠습니까?
+                {isFetchStatus
+                  ? "거절 되었습니다"
+                  : "정말 해당 지원자를 고용하지 않으시겠습니까?"}
               </p>
               <div className="flex gap-[20px]">
-                <button
-                  onClick={handleReject}
-                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={() => {}}
-                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                >
-                  승인
-                </button>
+                {!isFetchStatus ? (
+                  <>
+                    <button
+                      onClick={() => setIsOpenRejectModal(false)}
+                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleReject}
+                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      확인
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/notice/${noticeId}/apply`)}
+                    className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                  >
+                    확인
+                  </button>
+                )}
               </div>
             </div>
           </RejectModal>
 
-          <ApproveModal
-            isOpen={isOpenApproveModal}
-            setIsOpen={setIsOpenApproveModal}
+          <AcceptModal
+            isOpen={isOpenAcceptModal}
+            setIsOpen={setIsOpenAcceptModal}
+            clickOutsideClose={!isFetchStatus}
           >
             <div className="w-full flex flex-col gap-[20px]">
               <p className="text-xl font-bold">고용 승인</p>
               <p className="text-center">
-                정말 해당 지원자를 고용하시겠습니까?
+                {isFetchStatus
+                  ? "승인되었습니다"
+                  : "정말 해당 지원자를 고용하시겠습니까?"}
               </p>
               <div className="flex gap-[20px]">
-                <button
-                  onClick={() => setIsOpenApproveModal(false)}
-                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleApprove}
-                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                >
-                  승인
-                </button>
+                {!isFetchStatus ? (
+                  <>
+                    <button
+                      onClick={() => setIsOpenAcceptModal(false)}
+                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleAccept}
+                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      확인
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/notice/${noticeId}/apply`)}
+                    className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                  >
+                    확인
+                  </button>
+                )}
               </div>
             </div>
-          </ApproveModal>
+          </AcceptModal>
         </div>
       </Main>
       <div className="absolute bottom-0 left-0 w-full flex gap-[10px] bg-white p-[10px] border-t border-gray-200">
@@ -228,7 +283,7 @@ const NoticeApplyResumePage = () => {
           고용 거절
         </button>
         <button
-          onClick={() => setIsOpenApproveModal(true)}
+          onClick={() => setIsOpenAcceptModal(true)}
           className="flex flex-grow h-[50px] justify-center items-center bg-main-color text-white rounded-[10px]"
         >
           고용 승인

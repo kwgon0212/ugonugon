@@ -13,6 +13,7 @@ interface Apply {
   userId: Types.ObjectId;
   resumeId: Types.ObjectId;
   postId: Types.ObjectId;
+  status: "pending" | "accepted" | "rejected";
   appliedAt: Date;
 }
 
@@ -31,12 +32,15 @@ const NoticeApplyPage = () => {
     const fetchPost = async () => {
       try {
         const response = await axios.get(`/api/post/${noticeId}`);
-        const post: Notice = response.data;
+        const post = response.data;
         setPostData(post);
         if (!post.applies) {
           setApplies([]);
         } else {
-          setApplies(response.data.applies);
+          const filteredApplies = post.applies.filter((item: Apply) => {
+            return item.status === "pending";
+          });
+          setApplies(filteredApplies);
         }
       } catch (error) {
         console.log(error);
@@ -68,8 +72,6 @@ const NoticeApplyPage = () => {
   const handleClickUser = (resumeId: string) => {
     navigate(`/notice/${noticeId}/apply/${resumeId}`);
   };
-
-  console.log(resumes);
 
   return (
     <>
@@ -141,7 +143,7 @@ const NoticeApplyPage = () => {
                     );
                   })
                 ) : (
-                  <p>아직 지원자가 존재하지 않습니다</p>
+                  <p>지원자가 존재하지 않습니다</p>
                 )}
               </div>
             </div>

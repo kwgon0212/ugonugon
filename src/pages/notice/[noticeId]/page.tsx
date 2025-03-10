@@ -15,7 +15,7 @@ import Notice from "@/types/Notice";
 import WorkPlaceMap from "./PlaceMap";
 import NotFound from "@/NotFound";
 // import type Resume from "@/types/Resume";
-import getResume, { type Resume } from "@/hooks/fetchResume";
+import { type Resume } from "@/hooks/fetchResume";
 
 import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
 import { io } from "socket.io-client";
@@ -152,14 +152,16 @@ const NoticeDetailPage = () => {
 
           const userResumeArr = [];
           for (const resumeId of resumeIds) {
-            const response = await getResume(resumeId);
+            const response = await axios.get(
+              `/api/resume?resumeId=${resumeId}`
+            );
             userResumeArr.push(response.data);
           }
 
           const arr = userResumeArr.map((resume) => {
             return {
               ...resume,
-              createdAt: new Date(),
+              createdAt: new Date(), // 임시 날짜
             };
           });
           setResumes(arr);
@@ -249,7 +251,8 @@ const NoticeDetailPage = () => {
 
   const handleAcceptNext = async () => {
     // 해당 공고에 이력서 제출 로직
-    const data = { resumeId: selectedResume?._id, userId };
+    if (!selectedResume) return;
+    const data = { resumeId: selectedResume._id, userId };
     await axios.post(`/api/post/${noticeId}/apply`, data);
 
     // 해당 로직이 완료되면 아래코드 실행
@@ -264,7 +267,6 @@ const NoticeDetailPage = () => {
   if (isNotFound) {
     return <NotFound />;
   }
-
   return (
     <>
       <Header>
@@ -618,7 +620,7 @@ const NoticeDetailPage = () => {
                           작성일자 {resume?.writtenDay}
                         </p>
                         <p className="font-bold flex justify-between items-center">
-                          {resume.title}
+                          {resume?.title}
                           <ArrowRightIcon color="#717171" />
                         </p>
                       </button>
