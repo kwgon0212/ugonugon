@@ -1,4 +1,5 @@
 export default interface Notice {
+  _id: string;
   title: string;
   jobType: string;
   pay: {
@@ -47,4 +48,6 @@ export default interface Notice {
   createdAt?: string;
   author: string;
   applies?: string[];
+  img?: string[];
+  company?: string;
 }
