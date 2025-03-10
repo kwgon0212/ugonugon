@@ -48,7 +48,7 @@ const ExitBtn = styled.button`
 
 interface AlertModalProps {
   handleClose: () => void;
-  roomId: string; // 채팅방 ID 추가
+  roomId: string;
 }
 
 export function AlertModal({ handleClose, roomId }: AlertModalProps) {
@@ -57,6 +57,33 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
   // Redux에서 사용자 ID 가져오기
   const user = useAppSelector((state) => state.auth.user);
   const userId = user?._id || "";
+
+  // 상대방이 이미 나갔는지 확인하는 함수
+  const checkIfPartnerAlreadyLeft = async () => {
+    try {
+      // 로컬 스토리지에서 나간 채팅방 정보 가져오기
+      const leftRooms = JSON.parse(
+        localStorage.getItem("leftChatRooms") || "{}"
+      );
+
+      // 채팅방 정보 없으면 아무도 나가지 않은 상태
+      if (!leftRooms[roomId]) {
+        return false;
+      }
+
+      // 상대방 ID 가져오기
+      const otherId = getOtherUserId(roomId, userId);
+
+      // 상대방이 나갔는지 확인
+      return (
+        leftRooms[roomId].leftBy === otherId ||
+        leftRooms[roomId].leftBy2 === otherId
+      );
+    } catch (error) {
+      console.error("상대방 나감 확인 중 오류:", error);
+      return false;
+    }
+  };
 
   const handleExit = async () => {
     try {
@@ -67,6 +94,10 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
 
       console.log(`채팅방 나가기 시작: ${roomId}, 사용자: ${userId}`);
 
+      // 상대방이 이미 나갔는지 확인
+      const isPartnerAlreadyLeft = await checkIfPartnerAlreadyLeft();
+      console.log("상대방 이미 나감 여부:", isPartnerAlreadyLeft);
+
       // 1. 로컬 스토리지에서 나간 채팅방 정보 가져오기
       const leftRooms = JSON.parse(
         localStorage.getItem("leftChatRooms") || "{}"
@@ -75,7 +106,10 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
       // 디버깅 로그
       console.log("채팅방 나가기 전 leftRooms:", leftRooms);
 
-      // 채팅방 정보 있는지 확인
+      // 상대방 ID 가져오기
+      const otherId = getOtherUserId(roomId, userId);
+
+      // 2. 채팅방 정보 있는지 확인
       if (!leftRooms[roomId]) {
         // 처음 나가는 사람인 경우
         leftRooms[roomId] = {
@@ -107,44 +141,57 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
       localStorage.setItem("leftChatRooms", JSON.stringify(leftRooms));
       console.log("업데이트된 leftRooms:", leftRooms);
 
-      // 소켓을 통해 채팅방 나가기 이벤트 전송
-      const socket = io("http://localhost:8080", {
-        transports: ["websocket"],
-        withCredentials: true,
-      });
+      // 3. 상대방이 이미 나갔거나 두 번째 사람이 나가는 경우
+      // DB에서 메시지 및 채팅방 삭제
+      if (isPartnerAlreadyLeft) {
+        try {
+          console.log(
+            "상대방이 이미 나갔거나 두 번째 사람이 나가는 경우 - 채팅방 및 메시지 삭제"
+          );
 
-      // 상대방에게 나간 알림 메시지 보내기
-      try {
-        // 상대방 ID 가져오기
-        const otherId = getOtherUserId(roomId, userId);
+          // 채팅방의 모든 메시지 삭제
+          await axios.delete("/api/messages/clear", { data: { roomId } });
+          console.log(`채팅방 ${roomId}의 모든 메시지 삭제 완료`);
 
-        // 채팅방 나가기 시스템 메시지 전송 (상대방에게 알림)
-        const systemMessage = {
-          roomId: roomId,
-          text: "상대방이 채팅방을 나갔습니다. 더 이상 메시지를 보낼 수 없습니다.",
-          senderId: "system", // 시스템 메시지로 표시
-          time: formatMessageTime(),
-          isSystemMessage: true, // 시스템 메시지 플래그
-        };
+          // 채팅방 자체 삭제
+          await axios.delete(`/api/chat-rooms/${roomId}`);
+          console.log(`채팅방 ${roomId} 삭제 완료`);
 
-        // 시스템 메시지 전송
-        socket.emit("chat message", systemMessage);
-        console.log("상대방에게 채팅방 나가기 알림 메시지 전송");
-      } catch (msgError) {
-        console.error("알림 메시지 전송 실패:", msgError);
+          // 채팅 목록으로 이동
+          navigate(`/chat?userId=${userId}`);
+          return;
+        } catch (deleteError) {
+          console.error("채팅방 및 메시지 삭제 중 오류:", deleteError);
+          navigate(`/chat?userId=${userId}`);
+          return;
+        }
       }
 
-      socket.emit("leave_room", { roomId });
-      socket.disconnect();
-      console.log("소켓 연결 종료 및 채팅방 퇴장 이벤트 전송 완료");
+      // 4. 첫 번째 사람이 나가고 상대방이 아직 나가지 않은 경우
+      // 직접 DB에 시스템 메시지 저장 (소켓 이벤트 사용하지 않음)
+      try {
+        // 시간 포맷팅
+        const currentTime = formatMessageTime();
 
-      // 메시지 삭제 API 호출은 하지 않음 - 대화 내용은 유지하되 더 이상 메시지 전송 불가능하게 함
-      // 채팅 목록 페이지로 이동
-      console.log("채팅 목록으로 이동");
-      navigate(`/chat?userId=${userId}`);
+        // 메시지 생성 및 DB에 직접 저장
+        await axios.post("/api/system-message", {
+          roomId: roomId,
+          text: "상대방이 채팅방을 나갔습니다. 더 이상 메시지를 보낼 수 없습니다.",
+          time: currentTime, // 클라이언트에서 포맷팅한 시간 전달
+        });
+
+        console.log("상대방에게 채팅방 나가기 알림 메시지 저장");
+
+        // 채팅 목록으로 이동
+        navigate(`/chat?userId=${userId}`);
+      } catch (error) {
+        console.error("시스템 메시지 저장 중 오류:", error);
+        navigate(`/chat?userId=${userId}`);
+      }
     } catch (error) {
       console.error("채팅방 나가기 중 오류 발생:", error);
       alert("채팅방 나가기 처리 중 문제가 발생했습니다.");
+      navigate(`/chat?userId=${userId}`);
     }
   };
 

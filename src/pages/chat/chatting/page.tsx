@@ -291,15 +291,20 @@ export function ChattingPage() {
   useEffect(() => {
     if (!roomId || !currentUserId) return;
 
+    console.log("채팅방 상태 확인 중:", roomId);
+
     // 로컬 스토리지에서 나간 채팅방 정보 가져오기
     const leftRooms = JSON.parse(localStorage.getItem("leftChatRooms") || "{}");
+    console.log("나간 채팅방 정보:", leftRooms);
 
     // 채팅방이 존재하고, 누군가 나갔는지 확인
     if (roomId && leftRooms[roomId]) {
       const roomInfo = leftRooms[roomId];
+      console.log("현재 채팅방 나가기 정보:", roomInfo);
 
       // 상대방 ID 가져오기
       const otherUserId = getOtherUserId(roomId, currentUserId);
+      console.log("상대방 ID:", otherUserId, "현재 사용자 ID:", currentUserId);
 
       // 상대방이 나갔는지 확인 (leftBy나 leftBy2에 상대방 ID가 있는지)
       if (roomInfo.leftBy === otherUserId || roomInfo.leftBy2 === otherUserId) {
@@ -315,8 +320,10 @@ export function ChattingPage() {
 
         // 현재 사용자도 이미 나간 상태라면 목록으로 돌아가기
         if (currentUserLeft) {
+          console.log("현재 사용자도 이미 나간 상태입니다.");
+
           // 알림창 표시
-          alert("상대방이 나간 채팅방입니다.");
+          alert("이미 나간 채팅방입니다.");
 
           // 채팅 목록으로 돌아가기
           navigate(`/chat?userId=${currentUserId}`, { replace: true });
@@ -324,6 +331,31 @@ export function ChattingPage() {
         }
       }
     }
+
+    // 추가: 메시지 내용에서 상대방 나감 확인
+    const checkMessagesForPartnerLeft = async () => {
+      try {
+        const response = await axios.get(`/api/messages/${roomId}`);
+        const messages = response.data;
+
+        // 시스템 메시지를 찾아서 상대방이 나갔는지 확인
+        const partnerLeftMessage = messages.find(
+          (msg: any) =>
+            (msg.isSystemMessage || msg.senderId === "system") &&
+            msg.text &&
+            msg.text.includes("상대방이 채팅방을 나갔습니다")
+        );
+
+        if (partnerLeftMessage) {
+          console.log("상대방 나감 메시지 발견:", partnerLeftMessage);
+          setIsPartnerLeft(true);
+        }
+      } catch (error) {
+        console.error("메시지 확인 중 오류:", error);
+      }
+    };
+
+    checkMessagesForPartnerLeft();
   }, [roomId, currentUserId, navigate]);
 
   // 스크롤을 항상 맨 아래로 유지하는 함수
@@ -406,6 +438,23 @@ export function ChattingPage() {
       // 받은 메시지가 현재 방의 메시지인지 확인
       if (msg.roomId !== roomId) return;
 
+      // 시스템 메시지 먼저 처리 (중요: 다른 검사보다 우선)
+      if (msg.isSystemMessage || msg.senderId === "system") {
+        console.log("시스템 메시지 수신:", msg.text);
+
+        // 시스템 메시지 추가
+        setMessages((prevMessages) => [...prevMessages, msg]);
+
+        // 상대방이 채팅방을 나갔다는 메시지인 경우
+        if (msg.text && msg.text.includes("상대방이 채팅방을 나갔습니다")) {
+          console.log("상대방 퇴장 감지, 입력창 비활성화");
+          setIsPartnerLeft(true);
+        }
+
+        setTimeout(scrollToBottom, 100);
+        return;
+      }
+
       // 이미 받은 메시지인지 확인 (중복 방지)
       if (msg._id && receivedMessages.has(msg._id)) {
         console.log("서버 ID 기준 중복 메시지 무시:", msg._id);
@@ -415,17 +464,6 @@ export function ChattingPage() {
       // 로컬에서 생성한 메시지인지 확인 (자신이 보낸 메시지의 중복 방지)
       if (msg.localId && localMessageIds.has(msg.localId)) {
         console.log("로컬 ID 기준 중복 메시지 무시:", msg.localId);
-        return;
-      }
-
-      // 시스템 메시지 확인
-      if (msg.isSystemMessage || msg.senderId === "system") {
-        // 시스템 메시지는 항상 추가
-        setMessages((prevMessages) => [...prevMessages, msg]);
-        if (msg.text && msg.text.includes("상대방이 채팅방을 나갔습니다")) {
-          setIsPartnerLeft(true);
-        }
-        setTimeout(scrollToBottom, 100);
         return;
       }
 
@@ -484,14 +522,20 @@ export function ChattingPage() {
   };
 
   const handleSendChat = () => {
+    // 입력 텍스트가 비어있거나, 소켓 연결이 없거나, 방 ID가 없거나, 사용자 ID가 없거나, 상대방이 나간 경우 메시지 전송하지 않음
     if (
       chat.trim() === "" ||
       !socket ||
       !roomId ||
       !currentUserId ||
-      isPartnerLeft
-    )
+      isPartnerLeft // 상대방이 나갔는지 확인
+    ) {
+      if (isPartnerLeft) {
+        // 상대방이 나간 경우 알림 표시
+        alert("상대방이 채팅방을 나갔습니다. 메시지를 보낼 수 없습니다.");
+      }
       return;
+    }
 
     // 로컬 메시지 ID 생성 (중복 방지용)
     const localId = `local_${Date.now()}_${Math.random()

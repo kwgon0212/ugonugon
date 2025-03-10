@@ -92,12 +92,14 @@ const setupSocketHandlers = () => {
       console.log(`소켓 ${socket.id}가 채팅방 ${roomId}에서 퇴장함`);
     });
 
-    // 채팅 메시지 처리 - 메시지 중복 문제 해결
+    // 채팅 메시지 처리 - 시스템 메시지 처리 개선
     socket.on("chat message", (msg) => {
       console.log("메시지 수신:", msg);
 
       // 시스템 메시지인 경우 별도 처리
-      if (msg.isSystemMessage) {
+      if (msg.isSystemMessage || msg.senderId === "system") {
+        console.log("시스템 메시지 처리:", msg.text);
+
         // 시스템 메시지 저장
         const systemMessage = new Message({
           roomId: msg.roomId,
@@ -106,7 +108,7 @@ const setupSocketHandlers = () => {
           time: msg.time,
           isRead: true, // 시스템 메시지는 기본적으로 읽음 상태
           isSystemMessage: true,
-          localId: msg.localId,
+          localId: msg.localId || `system_${Date.now()}`, // 로컬 ID가 없으면 생성
         });
 
         systemMessage
@@ -114,7 +116,7 @@ const setupSocketHandlers = () => {
           .then(async (savedMessage) => {
             console.log("시스템 메시지 저장 성공:", savedMessage);
 
-            // 해당 채팅방에 시스템 메시지 전송
+            // 해당 채팅방에 시스템 메시지 전송 (중요: 저장 후 즉시 전송)
             io.to(msg.roomId).emit("chat message", {
               ...msg,
               _id: savedMessage._id.toString(),
@@ -576,6 +578,76 @@ router.get("/chat-rooms/:userId", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching chat rooms:", error);
     res.status(500).json({ message: "Failed to fetch chat rooms" });
+  }
+});
+
+// 채팅방 삭제 API
+router.delete("/chat-rooms/:roomId", async (req: Request, res: Response) => {
+  try {
+    const { roomId } = req.params;
+
+    if (!roomId) {
+      return res.status(400).json({ message: "Room ID is required" });
+    }
+
+    // 채팅방 찾기
+    const room = await ChatRoom.findOne({ roomId });
+
+    if (!room) {
+      return res.status(404).json({ message: "Chat room not found" });
+    }
+
+    // 채팅방 삭제
+    await ChatRoom.deleteOne({ roomId });
+    console.log(`채팅방 삭제 완료: ${roomId}`);
+
+    res.status(200).json({ message: "Chat room deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting chat room:", error);
+    res.status(500).json({ message: "Failed to delete chat room" });
+  }
+});
+// chatServer.ts 파일에 다음 함수와 API 엔드포인트를 추가합니다
+
+// 메시지 시간 포맷팅 함수 (서버 측에서 사용)
+const formatServerMessageTime = (): string => {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
+// 시스템 메시지 저장 API
+router.post("/system-message", async (req: Request, res: Response) => {
+  try {
+    const { roomId, text, time } = req.body;
+
+    if (!roomId || !text) {
+      return res.status(400).json({ message: "Required fields are missing" });
+    }
+
+    // 시스템 메시지 생성
+    const systemMessage = new Message({
+      roomId,
+      text,
+      senderId: "system",
+      time: time || formatServerMessageTime(), // 서버 측 함수 사용
+      isRead: true,
+      isSystemMessage: true,
+      localId: `system_${Date.now()}`,
+    });
+
+    // 메시지 저장
+    const savedMessage = await systemMessage.save();
+    console.log("시스템 메시지 직접 저장 성공:", savedMessage);
+
+    // 채팅방 마지막 활동 시간 업데이트
+    await ChatRoom.findOneAndUpdate({ roomId }, { lastActivity: new Date() });
+
+    res.status(201).json(savedMessage);
+  } catch (error) {
+    console.error("시스템 메시지 저장 중 오류:", error);
+    res.status(500).json({ message: "Failed to save system message" });
   }
 });
 

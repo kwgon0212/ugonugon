@@ -112,6 +112,8 @@ function ChatPage() {
     }
   };
 
+  // ChatPage.tsx의 useEffect 부분 수정 (채팅방 목록 필터링 강화)
+
   useEffect(() => {
     // 사용자가 로그인되어 있지 않으면 처리하지 않음
     if (!userId) {
@@ -126,6 +128,7 @@ function ChatPage() {
         // 1. 사용자의 채팅방 목록 가져오기
         const response = await axios.get(`/api/chat-rooms/${userId}`);
         const roomIds = response.data;
+        console.log("서버에서 받은 채팅방 목록:", roomIds);
 
         // 2. 각 채팅방의 마지막 메시지 가져오기
         const latestMessagesResponse = await axios.get<LatestMessage[]>(
@@ -133,7 +136,7 @@ function ChatPage() {
         );
         const latestMessages = latestMessagesResponse.data;
 
-        // 3. 채팅방과 관련된 모든 사용자 정보 가져오기
+        // 3. 사용자 정보 가져오기
         const userIds = new Set<string>();
         roomIds.forEach((roomId: string) => {
           const otherId = getOtherUserId(roomId, userId);
@@ -154,6 +157,7 @@ function ChatPage() {
         const leftRooms = JSON.parse(
           localStorage.getItem("leftChatRooms") || "{}"
         );
+        console.log("로컬에 저장된 나간 채팅방 정보:", leftRooms);
 
         // 5. 채팅방 목록 구성 (내가 나간 채팅방 필터링)
         const roomsPromises = roomIds
@@ -162,8 +166,11 @@ function ChatPage() {
             const roomInfo = leftRooms[roomId];
             if (!roomInfo) return true; // 나간 정보 없으면 표시
 
-            // 내가 나갔거나, 상대방도 나가고 내가 나갔으면 표시 안 함
-            return !(roomInfo.leftBy === userId || roomInfo.leftBy2 === userId);
+            // 내가 나간 채팅방이면 표시하지 않음
+            const iLeftRoom =
+              roomInfo.leftBy === userId || roomInfo.leftBy2 === userId;
+            console.log(`채팅방 ${roomId} 필터링 결과:`, { iLeftRoom });
+            return !iLeftRoom;
           })
           .map(async (roomId: string) => {
             const otherId = getOtherUserId(roomId, userId);
@@ -192,6 +199,7 @@ function ChatPage() {
 
         const rooms = await Promise.all(roomsPromises);
         setChatRooms(rooms);
+        console.log("필터링 후 표시될 채팅방 목록:", rooms);
       } catch (error) {
         console.error("채팅방 로드 실패:", error);
       } finally {
