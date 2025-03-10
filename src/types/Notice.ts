@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export default interface Notice {
   _id: string;
   title: string;
@@ -47,7 +49,11 @@ export default interface Notice {
   };
   createdAt?: string;
   author: string;
-  applies?: string[];
   img?: string[];
   company?: string;
+  applies?: {
+    userId: Types.ObjectId;
+    resumeId: Types.ObjectId;
+    appliedAt: Date;
+  }[];
 }
