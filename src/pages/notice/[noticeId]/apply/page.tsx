@@ -2,8 +2,8 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Main from "@/components/Main";
+import { Resume } from "@/hooks/fetchResume";
 import Notice from "@/types/Notice";
-import Resume from "@/types/Resume";
 import axios from "axios";
 import mongoose, { Types } from "mongoose";
 import React, { useEffect, useState } from "react";
@@ -16,12 +16,16 @@ interface Apply {
   appliedAt: Date;
 }
 
+interface CustomResume extends Resume {
+  _id: Types.ObjectId;
+}
+
 const NoticeApplyPage = () => {
   const navigate = useNavigate();
   const { noticeId } = useParams();
   const [postData, setPostData] = useState<Notice | null>(null);
   const [applies, setApplies] = useState<Apply[]>([]);
-  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [resumes, setResumes] = useState<CustomResume[]>([]);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -126,12 +130,12 @@ const NoticeApplyPage = () => {
                           </p>
                           <span>생년월일</span>
                           <span>
-                            {resume.phone.replace(
+                            {resume?.phone?.replace(
                               /(\d{3})(\d{4})(\d{4})/,
                               "$1-$2-$3"
                             )}
                           </span>
-                          <span>{resume.address.street}</span>
+                          <span>{resume?.address}</span>
                         </div>
                       </button>
                     );
