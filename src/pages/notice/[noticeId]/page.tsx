@@ -203,7 +203,7 @@ const NoticeDetailPage = () => {
 
   const handleAcceptNext = async () => {
     // 해당 공고에 이력서 제출 로직
-    const data = { resumeId: selectedResume?._id.toString(), userId };
+    const data = { resumeId: selectedResume?._id, userId };
     await axios.post(`/api/post/${noticeId}/apply`, data);
 
     // 해당 로직이 완료되면 아래코드 실행
