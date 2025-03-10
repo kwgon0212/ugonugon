@@ -35,12 +35,12 @@ interface Pay {
 }
 
 interface DeadLineTime {
-  date: Date;
-  time: Date;
+  date: Date | null;
+  time: Date | null;
 }
 interface NoticeTime {
-  start: Date;
-  end: Date;
+  start: Date | null;
+  end: Date | null;
 }
 
 interface PeriodTime extends NoticeTime {
@@ -65,26 +65,26 @@ const NoticeAddPage = () => {
   });
   const [hireType, setHireType] = useState<string[]>(["일일"]);
   const [period, setPeriod] = useState<PeriodTime | null>({
-    start: new Date(),
-    end: new Date(),
+    start: null,
+    end: null,
     discussion: false,
   });
   const [hour, setHour] = useState<WorkTime | null>({
-    start: new Date(),
-    end: new Date(),
+    start: null,
+    end: null,
     discussion: false,
   });
   const [restTime, setRestTime] = useState<RestTime | null>({
-    start: new Date(),
-    end: new Date(),
+    start: null,
+    end: null,
   });
   const [day, setDay] = useState<string[]>(["월"]);
   const [workDetail, setWorkDetail] = useState("");
   const [welfare, setWelfare] = useState("");
   const [postDetail, setPostDetail] = useState("");
   const [deadline, setDeadline] = useState<DeadLineTime | null>({
-    date: new Date(),
-    time: new Date(),
+    date: null,
+    time: null,
   });
   const [person, setPerson] = useState(0);
   const [preferences, setPreferences] = useState("");
@@ -183,7 +183,9 @@ const NoticeAddPage = () => {
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
           <ArrowLeftIcon width={24} height={24} />
-          <span>공고 등록</span>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-base">
+            공고 등록
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
