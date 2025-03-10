@@ -14,7 +14,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import getUser, { type User, putUser } from "@/hooks/fetchUser";
 import getResume, {
   type Resume,
   type Career,
@@ -134,14 +133,11 @@ function MypageResumeListId() {
   const [endDate, setEndDate] = useState<Date | null | undefined>(new Date());
   const [careerDetail, setcareerDetail] = useState("");
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [userData, setUserData] = useState<User | null>(null);
   const [resumeData, setResumeData] = useState<Resume>();
 
   useEffect(() => {
     if (userId) {
       const fetchData = async () => {
-        const user = await getUser(userId);
-        setUserData(user);
         const resume = await getResume(window.location.pathname.slice(20));
         setResumeData(resume);
       };
@@ -159,15 +155,9 @@ function MypageResumeListId() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setName(userData?.name);
-    setSex(userData?.sex);
-    if (userData?.residentId)
-      setResidentId(
-        userData.residentId.slice(0, 6) +
-          "-" +
-          userData.residentId[6] +
-          "******"
-      );
+    setName(resumeData?.name);
+    setSex(resumeData?.sex);
+    setResidentId(resumeData?.residentId);
     setPhone(resumeData?.phone);
     setEmail(resumeData?.email);
     setAddress(resumeData?.address);
@@ -195,7 +185,7 @@ function MypageResumeListId() {
           <Title>이력서 등록</Title>
         </Link>
       </Header>
-      {userData && (
+      {resumeData && (
         <Main hasBottomNav={false}>
           <>
             {isPostcodeOpen && (
@@ -398,6 +388,9 @@ function MypageResumeListId() {
                 await putResume(resumeData?._id as string, {
                   userId,
                   title: resumeTitle,
+                  name,
+                  sex,
+                  residentId,
                   phone,
                   email,
                   address,
@@ -443,9 +436,9 @@ function MypageResumeListId() {
                   className="text-main-color text-xs underline -mb-[10px]"
                   type="button"
                   onClick={() => {
-                    setPhone(userData.phone);
-                    setEmail(userData.email);
-                    setAddress(userData.address?.street);
+                    setPhone(resumeData.phone);
+                    setEmail(resumeData.email);
+                    setAddress(resumeData.address);
                   }}
                 >
                   내 정보 불러오기

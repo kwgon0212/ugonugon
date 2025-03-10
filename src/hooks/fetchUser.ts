@@ -2,18 +2,18 @@ import React from "react";
 import { Document } from "mongoose";
 
 export interface User extends Document {
-  businessNumber?: string[];
-  address?: { zipcode: string; street: string; detail: string };
-  bankAccount?: { bank: string; account: string };
-  name?: string;
-  sex?: string;
-  residentId?: string;
-  phone?: string;
-  signature?: string;
-  email?: string;
-  resumeIds?: (null | undefined | string)[];
-  scraps?: (null | undefined | string)[];
-  applyIds?: (null | undefined | string)[];
+  businessNumber: string[];
+  address: { zipcode: string; street: string; detail: string };
+  bankAccount: { bank: string; account: string };
+  name: string;
+  sex: string;
+  residentId: string;
+  phone: string;
+  signature: string;
+  email: string;
+  resumeIds: (null | undefined | string)[];
+  scraps: (null | undefined | string)[];
+  applyIds: (null | undefined | string)[];
 }
 
 const getUser = async (userId: string | undefined) => {

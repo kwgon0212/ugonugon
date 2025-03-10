@@ -389,6 +389,9 @@ function MypageResumeAdd() {
                 const resumeId = await postResume({
                   userId,
                   title: resumeTitle,
+                  name,
+                  sex,
+                  residentId,
                   phone,
                   email,
                   address,
