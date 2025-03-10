@@ -14,8 +14,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import getUser, { type User, postUser } from "@/hooks/fetchUser";
-import { type Resume, postResume } from "@/hooks/fetchResume";
+import getUser, { type User, putUser } from "@/hooks/fetchUser";
+import { postResume } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import Modal from "@/components/Modal";
 import DaumPostcode from "react-daum-postcode";
@@ -115,7 +115,7 @@ function MypageResumeAdd() {
     "초등학교",
   ];
   const [schoolState, setSchoolState] = useState("");
-  const stateTypes = ["졸업", "재학", "휴학", "중퇴"];
+  const schoolStateTypes = ["졸업", "재학", "휴학", "중퇴"];
   const [introduction, setIntroduction] = useState("");
   const [careers, setcareers] = useState<
     {
@@ -398,7 +398,7 @@ function MypageResumeAdd() {
                   introduction,
                   writtenDay: new Date().toLocaleDateString(),
                 });
-                await postUser(userId, {
+                await putUser(userId, {
                   resumeIds: [
                     ...(Array.isArray(userData.resumeIds)
                       ? userData.resumeIds
@@ -512,7 +512,7 @@ function MypageResumeAdd() {
                     >
                       <option
                         className="text-main-darkGray"
-                        key={school.length + 1}
+                        key={schoolTypes.length + 1}
                         value=""
                         disabled
                         hidden
@@ -538,14 +538,14 @@ function MypageResumeAdd() {
                     >
                       <option
                         className="text-main-darkGray"
-                        key={schoolState.length + 1}
+                        key={schoolStateTypes.length + 1}
                         value=""
                         disabled
                         hidden
                       >
                         상태
                       </option>
-                      {stateTypes.map((value, index) => (
+                      {schoolStateTypes.map((value, index) => (
                         <option key={index} value={value}>
                           {value}
                         </option>

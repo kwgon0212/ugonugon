@@ -1,6 +1,14 @@
 import React from "react";
+import { Document } from "mongoose";
+import getUser, { putUser } from "./fetchUser";
 
-export interface Resume {
+export interface Career {
+  company: string;
+  dates: string;
+  careerDetail: string;
+}
+
+export interface Resume extends Document {
   userId?: string;
   title?: string;
   phone?: string;
@@ -8,10 +16,10 @@ export interface Resume {
   address?: string;
   school?: string;
   schoolState?: string;
-  careers?: string[];
+  careers?: Career[];
   introduction?: string;
   writtenDay?: string;
-  apply?: string[];
+  applyIds?: (null | undefined | string)[];
 }
 
 const getResume = async (resumeId: string | undefined) => {
@@ -34,6 +42,42 @@ export const postResume = async (data: object) => {
       },
     });
     return res.json();
+  } catch (err: any) {
+    console.log(err, err?.messages);
+  }
+};
+
+export const putResume = async (resumeId: string | undefined, data: object) => {
+  try {
+    await fetch("/api/resume", {
+      method: "PUT",
+      body: JSON.stringify({ resumeId, data }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (err: any) {
+    console.log(err, err?.messages);
+  }
+};
+
+export const deleteResume = async (
+  resumeId: string | undefined,
+  userId: string,
+  applyIds: string[]
+) => {
+  try {
+    const userData = await getUser(userId);
+    const resumeIds = userData.resumeIds.filter((v: string) => v !== resumeId);
+    await putUser(userId, { resumeIds });
+    if (applyIds.length === 0)
+      await fetch("/api/resume", {
+        method: "DELETE",
+        body: JSON.stringify({ resumeId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
   } catch (err: any) {
     console.log(err, err?.messages);
   }

@@ -49,15 +49,30 @@ const ResumesSchema = new mongoose.Schema({
       company: { type: String, required: true },
       dates: { type: String, required: true },
       careerDetail: { type: String, required: true },
+      _id: false,
     },
   ],
   introduction: { type: String, required: true },
-  writtenDay: { type: String, require: true },
+  writtenDay: { type: String, required: true },
   // writtenDay: { type: Date, require: true },
-  applys: [{ type: String, require: false }],
+  applyIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
   // applys: [{type: mongoose.Types.ObjectId, ref: "posts", require: false}],
 });
 const Resumes = mongoose.model("resumes", ResumesSchema);
+
+router.get("/", async (req, res) => {
+  try {
+    const resume = await Resumes.findById(req.query.resumeId);
+    res.status(201).json(resume);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 router.post("/", async (req, res) => {
   try {
@@ -70,18 +85,28 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/", async (req, res) => {
+  await Resumes.findByIdAndUpdate(req.body.resumeId, req.body.data);
   try {
-    await Resumes.findByIdAndUpdate(req.body.userId, req.body.data);
     res.status(201).end();
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.get("/", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
-    const resume = await Resumes.findById(req.query.resumeId);
-    res.status(201).json(resume);
+    await Resumes.findByIdAndDelete(req.body.resumeId);
+    res.status(201).end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:resumeId", async (req, res) => {
+  try {
+    // const resume = await Resumes.findById(req.query.resumeId);
+    const resume = await Resumes.findById(req.params.resumeId);
+    return res.status(200).json(resume);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
