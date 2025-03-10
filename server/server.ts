@@ -16,6 +16,8 @@ import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
 import { defaultMaxListeners } from "events";
+import fs from "fs";
+import path from "path";
 dotenv.config();
 
 const app: Express = express();
@@ -37,7 +39,10 @@ app.use(
     credentials: true, // ✅ 쿠키 허용
   })
 );
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // JSON 요청 크기 제한 (Base64 이미지 지원)
+// ✅ 정적 파일 제공 (이미지 접근 가능하게 설정)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 

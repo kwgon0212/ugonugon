@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DaumPostcode from "react-daum-postcode";
 import Main from "@/components/Main";
 import Header from "@/components/Header";
@@ -31,6 +31,69 @@ function MyPageEditInfoPage() {
   const [zipcodeOpen, setZipcodeOpen] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  // const ProfileRef = useRef<HTMLInputElement | null>(null);
+  const ProfileRef = useRef(null);
+  const handleProfile = () => {
+    ProfileRef.current?.click();
+    // const file = e.target.files[0];
+    // const imageUrl = URL.createObjectURL(file);
+    // setProfile(imageUrl);
+  };
+  // 📌 파일 선택 시 미리보기 설정
+  //  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfile(imageUrl);
+      // uploadImage(file); // 서버로 업로드 (옵션)
+    }
+  };
+
+  // // 📌 클립보드에서 이미지 붙여넣기 감지
+  // useEffect(() => {
+  //   // const handlePaste = (event: ClipboardEvent) => {
+  //   const handlePaste = (event) => {
+  //     const items = event.clipboardData?.items;
+  //     if (!items) return;
+
+  //     for (const item of items) {
+  //       if (item.type.startsWith("image")) {
+  //         const file = item.getAsFile();
+  //         if (file) {
+  //           const imageUrl = URL.createObjectURL(file);
+  //           setProfile(imageUrl);
+  //           uploadImage(file); // 서버로 업로드 (옵션)
+  //         }
+  //       }
+  //     }
+  //   };
+
+  //   document.addEventListener("paste", handlePaste);
+  //   return () => {
+  //     document.removeEventListener("paste", handlePaste);
+  //   };
+  // }, []);
+
+  // 📌 이미지 서버 업로드 (백엔드 API 필요)
+  // const uploadImage = async (file: File) => {
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("profile", file);
+
+    try {
+      const response = await fetch("http://localhost:5000/upload-profile", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log("Uploaded:", data.profile);
+    } catch (error) {
+      console.error("Upload failed", error);
+    }
+  };
 
   useEffect(() => {
     if (userData !== null) {
@@ -38,6 +101,7 @@ function MyPageEditInfoPage() {
       setAddress(userData.address.street);
       setDetailAddress(userData.address.detail);
       setPhone(userData.phone);
+      setProfile(userData.profile);
     }
   }, [userData]);
 
@@ -69,7 +133,29 @@ function MyPageEditInfoPage() {
             <div>
               <div className="flex h-[74px] mt-5">
                 <div className="mr-5 relative">
-                  <ProfileIcon />
+                  <div
+                    className="w-[74px] h-[74px] rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
+                    onClick={handleProfile}
+                  >
+                    {profile ? (
+                      <img
+                        src={profile}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ProfileIcon>
+                        <span className="text-gray-500">Upload</span>
+                      </ProfileIcon>
+                    )}
+                    <input
+                      type="file"
+                      ref={ProfileRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                  </div>
                   <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
                     <CameraIcon color="white" width={14} height={14} />
                   </p>
@@ -142,6 +228,7 @@ function MyPageEditInfoPage() {
                       street: address,
                       detail: detailAddress,
                     },
+                    // profile: profile,
                   });
                   setSaveModalOpen(!saveModalOpen);
                 }}

@@ -105,6 +105,7 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   try {
+    // req.body.data.profileFile ? "" : "";
     await Users.findByIdAndUpdate(req.body.userId, req.body.data);
     res.status(201).end();
   } catch (err) {

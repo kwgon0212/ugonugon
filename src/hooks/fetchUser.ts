@@ -2,14 +2,15 @@ import React from "react";
 import { Document } from "mongoose";
 
 export interface User extends Document {
-  businessNumber: string[];
-  address: { zipcode: string; street: string; detail: string };
-  bankAccount: { bank: string; account: string };
   name: string;
+  businessNumber: string[];
   sex: string;
   residentId: string;
   phone: string;
+  address: { zipcode: string; street: string; detail: string };
   signature: string;
+  profile: string;
+  bankAccount: { bank: string; account: string };
   email: string;
   resumeIds: (null | undefined | string)[];
   scraps: (null | undefined | string)[];
