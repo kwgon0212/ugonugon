@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
-import WorkPlaceMap from "./WorkPlaceMap";
+import WorkPlaceMap from "./PlaceMap";
 import NotFound from "@/NotFound";
 import Resume from "@/types/Resume";
 
