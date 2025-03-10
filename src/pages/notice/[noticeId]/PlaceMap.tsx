@@ -6,7 +6,7 @@ interface MapProps {
   address: string; // 지도에 표시할 주소
 }
 
-const WorkPlaceMap: React.FC<MapProps> = ({ address }) => {
+const PlaceMap: React.FC<MapProps> = ({ address }) => {
   const mapRef = useRef<kakao.maps.Map | null>(null); // ✅ 지도 객체 저장
   const markerRef = useRef<kakao.maps.Marker | null>(null); // ✅ 마커 객체 저장
 
@@ -61,4 +61,4 @@ const WorkPlaceMap: React.FC<MapProps> = ({ address }) => {
   );
 };
 
-export default WorkPlaceMap;
+export default PlaceMap;

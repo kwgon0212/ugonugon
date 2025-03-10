@@ -2,17 +2,71 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Main from "@/components/Main";
-import React from "react";
+import Notice from "@/types/Notice";
+import Resume from "@/types/Resume";
+import axios from "axios";
+import mongoose, { Types } from "mongoose";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+interface Apply {
+  userId: Types.ObjectId;
+  resumeId: Types.ObjectId;
+  postId: Types.ObjectId;
+  appliedAt: Date;
+}
 
 const NoticeApplyPage = () => {
   const navigate = useNavigate();
   const { noticeId } = useParams();
-  console.log(noticeId);
+  const [postData, setPostData] = useState<Notice | null>(null);
+  const [applies, setApplies] = useState<Apply[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`/api/post/${noticeId}`);
+        const post: Notice = response.data;
+        setPostData(post);
+        if (!post.applies) {
+          setApplies([]);
+        } else {
+          setApplies(response.data.applies);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchPost();
+  }, [noticeId]);
+
+  useEffect(() => {
+    if (applies.length <= 0) return;
+
+    const fetchResumes = async () => {
+      const resumeArr = applies.map(
+        // (item) => new mongoose.Types.ObjectId(item.resumeId)
+        (item) => item.resumeId
+      );
+      const resumeData = await Promise.all(
+        resumeArr.map((id) =>
+          axios(`/api/resume?resumeId=${id}`).then((res) => res.data)
+        )
+      );
+      setResumes(resumeData);
+    };
+
+    fetchResumes();
+  }, [applies]);
 
   const handleClickUser = (resumeId: string) => {
     navigate(`/notice/${noticeId}/apply/${resumeId}`);
   };
+
+  console.log(resumes);
+
   return (
     <>
       <Header>
@@ -34,30 +88,29 @@ const NoticeApplyPage = () => {
                 <span>2025-02-17</span>
                 <span>10:29:15</span>
               </div> */}
-              <h1 className="font-bold text-[20px]">
-                [업무강도 상] 풀스택 프로젝트 보조 구인 / 중식 제공
-              </h1>
-              <div className="text-[14px] flex w-full justify-between">
-                <h3>한경 2기 풀스택반</h3>
-                <span className="text-main-darkGray">~ 25/03/04(월)</span>
+              <h1 className="font-bold text-[20px]">{postData?.title}</h1>
+              <div className="text-[14px] flex w-full justify-end">
+                {/* <h3>한경 2기 풀스택반</h3> */}
+                <span className="text-main-darkGray">
+                  ~ {postData?.deadline.date}
+                </span>
               </div>
-              <div className="text-main-darkGray flex gap-[4px] text-[14px]">
+              {/* <div className="text-main-darkGray flex gap-[4px] text-[14px]">
                 <span>설립 1년차</span>
                 <span>25년 2월부터 이용중</span>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex h-full flex-col gap-[20px] bg-white rounded-[20px] p-[20px]">
               <div className="flex flex-col gap-[10px] pb-[20px]">
                 <h3 className="font-bold text-[20px]">지원현황</h3>
-                {Array(5)
-                  .fill(0)
-                  .map((_, idx) => {
+                {resumes.length > 0 ? (
+                  resumes.map((resume, idx) => {
                     return (
                       <button
                         key={idx + "지원자"}
                         className="w-full bg-white border border-main-gray flex gap-[10px] rounded-[10px] px-[15px] py-[10px]"
-                        onClick={() => handleClickUser("이력서id")}
+                        onClick={() => handleClickUser(resume._id.toString())}
                       >
                         <img
                           src="https://placehold.co/80"
@@ -71,13 +124,21 @@ const NoticeApplyPage = () => {
                             </span>
                             <ArrowRightIcon color="#717171" />
                           </p>
-                          <span>2001.02.12</span>
-                          <span>010-1234-1234</span>
-                          <span>서울 서대문구 어쩌구 저쩌구</span>
+                          <span>생년월일</span>
+                          <span>
+                            {resume.phone.replace(
+                              /(\d{3})(\d{4})(\d{4})/,
+                              "$1-$2-$3"
+                            )}
+                          </span>
+                          <span>{resume.address.street}</span>
                         </div>
                       </button>
                     );
-                  })}
+                  })
+                ) : (
+                  <p>아직 지원자가 존재하지 않습니다</p>
+                )}
               </div>
             </div>
           </div>
