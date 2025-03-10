@@ -361,7 +361,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <p className="w-full flex justify-between">
+              <div className="w-full flex justify-between">
                 <b>
                   근무기간 <b className="text-warn">*</b>
                 </b>
@@ -379,7 +379,7 @@ const NoticeEditPage = () => {
                     id="period-discussion"
                   />
                 </div>
-              </p>
+              </div>
               <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={period?.start || null}
@@ -408,7 +408,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <p className="w-full flex justify-between">
+              <div className="w-full flex justify-between">
                 <b>
                   근무시간 <b className="text-warn">*</b>
                 </b>
@@ -426,7 +426,7 @@ const NoticeEditPage = () => {
                     id="hour-discussion"
                   />
                 </div>
-              </p>
+              </div>
               <div className="w-full flex justify-between items-center gap-[10px]">
                 <CustomDatePicker
                   selected={hour?.start || null}

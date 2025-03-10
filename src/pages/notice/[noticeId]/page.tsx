@@ -827,10 +827,10 @@ const layout = (
     <div>
       <div className="flex items-start">
         <span className="text-main-gray basis-[80px]">{title}</span>
-        <p className="flex gap-[10px] items-center break-keep flex-1">
+        <div className="flex gap-[10px] items-center break-keep flex-1">
           {content ? content : "-"}
           {option}
-        </p>
+        </div>
       </div>
     </div>
   );
