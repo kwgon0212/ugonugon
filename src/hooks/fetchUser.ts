@@ -40,4 +40,18 @@ export const putUser = async (userId: string | undefined, data: object) => {
   }
 };
 
+export const deleteUser = async (userId: string | undefined) => {
+  try {
+    await fetch("/api/users", {
+      method: "DELETE",
+      body: JSON.stringify({ userId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (err: any) {
+    console.log(err, err?.messages);
+  }
+};
+
 export default getUser;

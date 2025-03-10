@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { logout } from "@/util/slices/authSlice";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { deleteUser } from "@/hooks/fetchUser";
 
 const LogoutModal = Modal;
 const WithdrawModal = Modal;
@@ -176,7 +177,24 @@ const MyPage = () => {
               setIsOpen={setIsOpenWithdrawModal}
             >
               <div className="size-full flex flex-col items-center gap-[20px]">
-                <p>정말 로그아웃 하시겠어요?</p>
+                <p>
+                  정말 <span className="text-main-color">회원 탈퇴</span>{" "}
+                  하시겠어요?
+                </p>
+                <p className="text-sm -mt-[15px]">
+                  탈퇴 시 모든{" "}
+                  <span className="text-main-color">회원 정보</span>는
+                  <span className="text-warn">삭제</span>
+                  됩니다.
+                </p>
+                <p className="text-xs -mt-[15px] ">
+                  ※&nbsp;
+                  <span className="text-main-color">
+                    지원 및 근무 이력 관련 정보
+                  </span>
+                  는<span className="text-warn">보관</span>
+                  됩니다.
+                </p>
                 <div className="w-full flex gap-[10px]">
                   <button
                     onClick={() => setIsOpenWithdrawModal(false)}
@@ -186,12 +204,12 @@ const MyPage = () => {
                   </button>
                   <button
                     onClick={() => {
-                      // 해당 유저 도큐먼트 삭제 요청
+                      deleteUser(userId);
                       navigate("/login");
                     }}
                     className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
                   >
-                    로그아웃
+                    회원 탈퇴
                   </button>
                 </div>
               </div>
