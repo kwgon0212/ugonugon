@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Main from "@/components/Main";
-
 import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageSlider from "./ImageSlider";
@@ -15,7 +14,8 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./WorkPlaceMap";
 import NotFound from "@/NotFound";
-import Resume from "@/types/Resume";
+// import type Resume from "@/types/Resume";
+import getResume, { type Resume } from "@/hooks/fetchResume";
 
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
@@ -147,9 +147,7 @@ const NoticeDetailPage = () => {
 
           const userResumeArr = [];
           for (const resumeId of resumeIds) {
-            const response = await axios.get(
-              `/api/resume?resumeId=${resumeId}`
-            );
+            const response = await getResume(resumeId);
             userResumeArr.push(response.data);
           }
 
@@ -563,11 +561,11 @@ const NoticeDetailPage = () => {
             <div className="size-full flex flex-col gap-[20px]">
               <p className="text-xl font-bold">이력서 선택</p>
               <div className="flex flex-col gap-[10px] max-h-[200px] overflow-y-scroll">
-                {resumes.length > 0 ? (
+                {resumes.length ? (
                   resumes.map((resume) => {
                     return (
                       <button
-                        key={resume.title + resume.createdAt}
+                        key={(resume?.title as string) + resume?.writtenDay}
                         className={`w-full p-[15px] gap-[10px] ${
                           selectedResume === resume
                             ? "border border-transparent bg-selected-box"
@@ -576,7 +574,7 @@ const NoticeDetailPage = () => {
                         onClick={() => setSelectedResume(resume)}
                       >
                         <p className="text-main-darkGray text-[14px] text-start">
-                          작성일자 {resume.createdAt.toLocaleDateString()}
+                          작성일자 {resume?.writtenDay}
                         </p>
                         <p className="font-bold flex justify-between items-center">
                           {resume.title}
