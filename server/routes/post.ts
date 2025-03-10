@@ -1,6 +1,7 @@
 import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
+import { Users } from "./users";
 
 const router = express.Router();
 const { Schema } = mongoose;
@@ -234,6 +235,12 @@ const JobPostingSchema = new Schema({
 
 // 모델 생성
 const JobPosting = mongoose.model("JobPosting", JobPostingSchema, "posts");
+
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+});
+
+const User = mongoose.models.users;
 
 /**
  * @swagger
@@ -499,6 +506,20 @@ router.post("/:postId/apply", async (req, res) => {
     // DB 업데이트
     await post.save();
 
+    const user = await User.findById(userId);
+
+    if (!user.applies || !Array.isArray(user.applies)) {
+      user.set("applies", []);
+    }
+
+    user.applies.push({
+      postId: new mongoose.Types.ObjectId(postId),
+      status: "pending",
+      appliedAt: new Date(),
+    });
+
+    await user.save();
+
     res.status(200).json({ message: "공고 지원 완료", applies: post.applies });
   } catch (err) {
     console.error("공고 지원 중 오류 발생:", err);
@@ -525,6 +546,18 @@ router.post("/:postId/apply/status", async (req, res) => {
     // 지원 상태 업데이트
     apply.status = status;
     await post.save(); // 변경 사항 저장
+
+    const result = await Users.findOneAndUpdate(
+      { _id: userId, "applies.postId": postId }, // 특정 postId를 가진 applies 배열 찾기
+      { $set: { "applies.$.status": status } }, // 배열 안의 해당 요소의 status 변경
+      { new: true } // 업데이트 후 변경된 문서 반환
+    );
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ error: "해당 유저의 지원 내역을 찾을 수 없습니다." });
+    }
 
     res
       .status(200)
