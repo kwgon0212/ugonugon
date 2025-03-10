@@ -1,6 +1,7 @@
 import React from "react";
+import { Document } from "mongoose";
 
-export interface User {
+export interface User extends Document {
   businessNumber?: string[];
   address?: { zipcode: string; street: string; detail: string };
   bankAccount?: { bank: string; account: string };
@@ -11,6 +12,8 @@ export interface User {
   signature?: string;
   email?: string;
   resumeIds?: (null | undefined | string)[];
+  scrabIds?: (null | undefined | string)[];
+  applyIds?: (null | undefined | string)[];
 }
 
 const getUser = async (userId: string | undefined) => {
@@ -23,10 +26,10 @@ const getUser = async (userId: string | undefined) => {
   }
 };
 
-export const postUser = async (userId: string | undefined, data: object) => {
+export const putUser = async (userId: string | undefined, data: object) => {
   try {
     await fetch("/api/users", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({ userId, data }),
       headers: {
         "Content-Type": "application/json",

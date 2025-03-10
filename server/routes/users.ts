@@ -24,7 +24,7 @@ const router = express.Router();
 const UsersSchema = new mongoose.Schema({
   name: { type: String, required: true },
   businessNumber: { type: Array, required: false },
-  sex: { type: String, required: true, enum: ["male", "female"] },
+  sex: { type: String, required: true, enum: ["남성", "여성"] },
   residentId: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
   address: {
@@ -50,6 +50,18 @@ const UsersSchema = new mongoose.Schema({
       ref: "resumes",
     },
   ],
+  scraps: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
+  applyIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "posts",
+    },
+  ],
 });
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
 const Users = mongoose.model("users", UsersSchema);
@@ -70,14 +82,14 @@ const Users = mongoose.model("users", UsersSchema);
 //   }
 // });
 
-router.post("/", async (req, res) => {
-  try {
-    await Users.findByIdAndUpdate(req.body.userId, req.body.data);
-    res.status(201).end();
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// router.post("/", async (req, res) => {
+//   try {
+//     await Users.findByIdAndUpdate(req.body.userId, req.body.data);
+//     res.status(201).end();
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 router.put("/", async (req, res) => {
   try {
@@ -91,7 +103,7 @@ router.put("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const user = await Users.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds"
+      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applyIds"
     );
     if (user) user["residentId"] = user.residentId.slice(0, 7);
     res.status(201).json(user);
