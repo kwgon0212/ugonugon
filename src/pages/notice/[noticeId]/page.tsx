@@ -47,6 +47,58 @@ const NoticeDetailPage = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setcontentHeight] = useState("auto");
 
+  // 스크랩 상태와 로딩 상태 관리
+  const [isScraped, setIsScraped] = useState(false);
+  const [isScrapLoading, setIsScrapLoading] = useState(false);
+  // 추가된 부분: 스크랩 상태 확인 함수
+  useEffect(() => {
+    const checkScrapStatus = async () => {
+      if (!userId || !noticeId) return;
+
+      try {
+        const response = await axios.get(`/api/users`, {
+          params: { userId },
+        });
+
+        if (response.data && response.data.scraps) {
+          const isAlreadyScraped = response.data.scraps.includes(noticeId);
+          setIsScraped(isAlreadyScraped);
+        }
+      } catch (error) {
+        console.error("스크랩 상태 확인 오류:", error);
+      }
+    };
+
+    checkScrapStatus();
+  }, [userId, noticeId]);
+
+  // 스크랩 토글 함수 수정
+  const handleToggleScrap = async () => {
+    if (isScrapLoading || !userId || !noticeId) return;
+
+    setIsScrapLoading(true);
+
+    try {
+      const response = await axios.post("/api/scrap/toggle", {
+        userId,
+        postId: noticeId,
+      });
+
+      setIsScraped(response.data.isScraped);
+
+      // 스크랩 상태에 따라 다른 메시지 표시
+      if (response.data.isScraped) {
+        alert("공고가 스크랩 되었습니다.");
+      } else {
+        alert("공고 스크랩이 취소되었습니다.");
+      }
+    } catch (error) {
+      console.error("스크랩 토글 오류:", error);
+      alert("스크랩 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsScrapLoading(false);
+    }
+  };
   useEffect(() => {
     if (contentRef.current) {
       setcontentHeight(`${contentRef.current.scrollHeight}px`);
@@ -187,8 +239,16 @@ const NoticeDetailPage = () => {
             <span className="font-bold">채용정보</span>
           </div>
           <div className="flex gap-[10px]">
-            <div className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]">
-              <StarIcon />
+            <div
+              className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]"
+              onClick={handleToggleScrap}
+            >
+              {/* fill 속성 대신 조건부 렌더링 */}
+              {isScraped ? (
+                <StarIcon color="#FFD700" /> // 또는 StarIcon에 지원되는 색상 관련 props 사용
+              ) : (
+                <StarIcon />
+              )}
               {/* <span>스크랩</span> */}
             </div>
             <div className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]">

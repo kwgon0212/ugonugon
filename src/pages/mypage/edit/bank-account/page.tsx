@@ -11,7 +11,7 @@ import Main from "@/components/Main";
 import banks from "./banks";
 import AlertModal from "./AlertMocal";
 import { useAppSelector } from "@/hooks/useRedux";
-import getUser, { postUser, type User } from "@/hooks/fetchUser";
+import getUser, { putUser, type User } from "@/hooks/fetchUser";
 
 const HeaderWrap = styled.div`
   display: flex;
@@ -142,7 +142,7 @@ export function EditBankAccountPage() {
             <SaveBtn
               className="bg-main-color"
               onClick={() => {
-                postUser(userId, {
+                putUser(userId, {
                   bankAccount: {
                     bank,
                     account,
