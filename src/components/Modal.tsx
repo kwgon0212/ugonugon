@@ -90,6 +90,7 @@ const Overlay = styled.div<SheetProps>`
 
 const Sheet = styled.div<SheetProps>`
   width: 100%;
+  max-width: 450px;
   max-height: 70%;
   min-height: ${({ position }) => (position === "center" ? "auto" : "50%")};
   background: white;
