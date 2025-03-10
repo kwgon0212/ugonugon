@@ -17,6 +17,8 @@ import NotFound from "@/NotFound";
 // import type Resume from "@/types/Resume";
 import getResume, { type Resume } from "@/hooks/fetchResume";
 
+import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
+import { io } from "socket.io-client";
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
 const AcceptModal = Modal;
@@ -188,6 +190,50 @@ const NoticeDetailPage = () => {
       }, 1500);
     });
   };
+  // NoticeDetailPage.tsx의 handleStartChat 함수만 수정
+
+  const handleStartChat = async () => {
+    if (!userId || !postData?.author) {
+      alert("채팅을 시작할 수 없습니다. 로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      // 채팅방 생성 API 호출
+      const response = await axios.post("/api/chat-rooms", {
+        user1Id: userId,
+        user2Id: postData.author,
+      });
+
+      const roomId = response.data.roomId;
+
+      // Socket.IO 연결
+      const socket = io("http://localhost:8080", {
+        transports: ["websocket"],
+        withCredentials: true,
+      });
+
+      // 사용자 ID 등록 및 채팅방 참여
+      socket.emit("join_user", { userId });
+      socket.emit("join_room", { roomId });
+
+      // 연결 후 채팅방으로 이동
+      setTimeout(() => {
+        socket.disconnect(); // 페이지 이동 전 연결 해제
+
+        // 채팅방으로 이동
+        navigate(`/chat/chatting?roomId=${roomId}&userId=${userId}`, {
+          state: {
+            roomId: roomId,
+            otherName: postData.recruiter?.name || "공고 등록자",
+          },
+        });
+      }, 500);
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+      alert("채팅방 생성에 실패했습니다.");
+    }
+  };
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
@@ -211,16 +257,8 @@ const NoticeDetailPage = () => {
     setIsOpenApplyResultModal(true);
   };
 
-  const [isDeletedNotice, setIsDeletedNotice] = useState(false);
-  const handleDeleteNotice = async () => {
+  const handleDeleteNotice = () => {
     // 해당 공고 삭제
-    try {
-      await axios.delete(`/api/post/${noticeId}`);
-      setIsDeletedNotice(true);
-    } catch (error) {
-      alert("error");
-      setIsDeletedNotice(false);
-    }
   };
 
   if (isNotFound) {
@@ -491,7 +529,9 @@ const NoticeDetailPage = () => {
                   "근무지역",
                   `(${postData?.address.zipcode}) ${postData?.address.street} ${postData?.address.detail}`
                 )}
-                <WorkPlaceMap address={`${postData?.address.street}`} />
+                <WorkPlaceMap
+                  address={`${postData?.address.street} ${postData?.address.detail}`}
+                />
               </div>
 
               <div className="flex flex-col gap-[10px]">
@@ -711,38 +751,22 @@ const NoticeDetailPage = () => {
             clickOutsideClose={false}
           >
             <div className="w-full flex flex-col gap-[20px]">
-              {isDeletedNotice ? (
-                <>
-                  <p className="text-center">정상적으로 삭제되었습니다</p>
-                  <button
-                    onClick={() => navigate("/")}
-                    className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                  >
-                    확인
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-xl font-bold">공고 삭제</p>
-                  <p className="text-center">
-                    정말 해당 공고를 삭제하시겠습니까?
-                  </p>
-                  <div className="flex gap-[20px]">
-                    <button
-                      onClick={() => setIsOpenDeleteModal(false)}
-                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                    >
-                      취소
-                    </button>
-                    <button
-                      onClick={handleDeleteNotice}
-                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </>
-              )}
+              <p className="text-xl font-bold">공고 삭제</p>
+              <p className="text-center">정말 해당 공고를 삭제하시겠습니까?</p>
+              <div className="flex gap-[20px]">
+                <button
+                  onClick={() => setIsOpenDeleteModal(false)}
+                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleDeleteNotice}
+                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                >
+                  삭제
+                </button>
+              </div>
             </div>
           </DeleteModal>
         </div>
@@ -771,7 +795,10 @@ const NoticeDetailPage = () => {
           </>
         ) : (
           <>
-            <button className="flex h-[50px] border border-main-gray justify-center items-center px-[40px] bg-white rounded-[10px]">
+            <button
+              onClick={handleStartChat}
+              className="flex h-[50px] border border-main-gray justify-center items-center px-[40px] bg-white rounded-[10px]"
+            >
               채팅하기
             </button>
             <button
