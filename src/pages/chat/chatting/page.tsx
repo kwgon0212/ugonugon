@@ -576,7 +576,7 @@ export function ChattingPage() {
     if (isPartnerLeft) {
       return (
         <InputBar className="bg-main-bg">
-          <div className="w-full flex justify-center items-center h-[45px] border-2 border-main-gray rounded-[10px] bg-gray-100 text-gray-500">
+          <div className="w-full flex justify-center mr-4 items-center h-[45px] border-2 border-main-color rounded-[10px] bg-selected-box text-gray-500">
             상대방이 채팅방을 나갔습니다
           </div>
         </InputBar>
