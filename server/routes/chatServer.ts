@@ -27,6 +27,23 @@ const userSchema = new mongoose.Schema({
 
 const Useree = mongoose.model("Useree", userSchema);
 
+// 공고 스키마 (JobPosting 모델 정의)
+const JobPostingSchema = new mongoose.Schema(
+  {
+    title: String,
+    recruiter: {
+      name: String,
+      email: String,
+      phone: String,
+    },
+    author: mongoose.Schema.Types.ObjectId,
+  },
+  { strict: false }
+);
+
+// JobPosting 모델을 posts 컬렉션에 연결
+const JobPosting = mongoose.model("JobPostingTemp", JobPostingSchema, "posts");
+
 // 채팅방 스키마
 const chatRoomSchema = new mongoose.Schema({
   roomId: { type: String, required: true, unique: true },
@@ -39,29 +56,6 @@ const ChatRoom = mongoose.model("ChatRoom", chatRoomSchema);
 
 // 소켓 클라이언트 ID와 사용자 ID, 방 ID 매핑을 위한 객체
 const userSockets = new Map();
-
-// 초기 사용자 데이터 저장 함수
-export const ensureUsersExist = async () => {
-  try {
-    const users = [
-      { _id: "67c7d6bf38fe53ff868e3880", name: "홍길동" },
-      { _id: "67c901f21e006624c5145f13", name: "1" },
-      { _id: "67c901f21e006624c5145f14", name: "2" },
-      { _id: "67c901f21e006624c5145f15", name: "3" },
-    ];
-
-    for (const user of users) {
-      await Useree.findOneAndUpdate({ _id: user._id }, user, {
-        upsert: true,
-        new: true,
-      });
-    }
-
-    console.log("샘플 유저 데이터 생성 완료");
-  } catch (error) {
-    console.error("샘플 유저 데이터 생성 실패:", error);
-  }
-};
 
 // 소켓 이벤트 핸들러 설정
 const setupSocketHandlers = () => {
@@ -191,16 +185,15 @@ const setupSocketHandlers = () => {
   });
 };
 
-// 서버 초기화 함수
+// 서버 초기화 함수 - 정적 데이터 생성 제거
 export const initializeChatServer = async () => {
-  await ensureUsersExist();
   setupSocketHandlers();
   console.log("채팅 서버 초기화 완료");
 };
 
 // ---- API 라우트 정의 ----
 
-// 사용자 정보 조회 API
+// 사용자 정보 조회 API - 수정
 router.get("/users/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -211,15 +204,133 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const user = await Useree.findById(userId);
+    // 디버깅을 위한 로그
+    console.log(`사용자 정보 조회 시도: ${userId}`);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // 1. Users 컬렉션에서 ObjectId로 조회
+    try {
+      const UserSchema = new mongoose.Schema(
+        {
+          name: String,
+          email: String,
+          phone: String,
+          profile: String,
+          businessNumber: Array,
+          sex: String,
+          residentId: String,
+          address: Object,
+          signature: String,
+          bankAccount: Object,
+          password: String,
+        },
+        { strict: false }
+      );
+
+      // 모델이 이미 존재하는지 확인하고, 그렇지 않으면 새로 생성
+      const User =
+        mongoose.models.RealUserModel ||
+        mongoose.model("RealUserModel", UserSchema, "users");
+
+      // ObjectId로 변환 시도
+      let objId;
+      try {
+        objId = new mongoose.Types.ObjectId(userId);
+        console.log("ObjectId 변환 성공:", objId);
+      } catch (e) {
+        console.log(`사용자 ID ${userId}는 ObjectId로 변환할 수 없음`);
+      }
+
+      // ObjectId로 검색 시도
+      if (objId) {
+        const user = await User.findById(objId);
+        if (user) {
+          console.log(`ObjectId로 사용자 찾음: ${user.name}`);
+          return res.status(200).json({
+            _id: userId,
+            name: user.name || "사용자",
+            email: user.email || "",
+            phone: user.phone || "",
+            profile: user.profile || "",
+          });
+        }
+      }
+
+      // 2. phone, email로 검색 시도
+      const userByField = await User.findOne({
+        $or: [{ phone: userId }, { email: userId }],
+      });
+
+      if (userByField) {
+        console.log(`필드 검색으로 사용자 찾음: ${userByField.name}`);
+        return res.status(200).json({
+          _id: userId,
+          name: userByField.name || "사용자",
+          email: userByField.email || "",
+          phone: userByField.phone || "",
+          profile: userByField.profile || "",
+        });
+      }
+    } catch (userError) {
+      console.error("users 컬렉션 조회 중 오류:", userError);
     }
 
-    res.status(200).json(user);
+    // 3. Useree 모델에서 사용자 조회 (백업)
+    const user = await Useree.findById(userId);
+    if (user) {
+      console.log(`Useree 모델에서 사용자 찾음: ${user.name}`);
+      return res.status(200).json(user);
+    }
+
+    // 4. 공고 작성자 정보 조회
+    try {
+      const PostSchema = new mongoose.Schema(
+        {
+          author: mongoose.Schema.Types.ObjectId,
+          recruiter: {
+            name: String,
+            email: String,
+            phone: String,
+          },
+        },
+        { strict: false }
+      );
+
+      const Post =
+        mongoose.models.PostModel ||
+        mongoose.model("PostModel", PostSchema, "posts");
+
+      // ObjectId로 변환
+      let objId;
+      try {
+        objId = new mongoose.Types.ObjectId(userId);
+      } catch (e) {
+        console.log(`ID ${userId}는 ObjectId로 변환할 수 없음`);
+      }
+
+      if (objId) {
+        const post = await Post.findOne({ author: objId });
+        if (post && post.recruiter && post.recruiter.name) {
+          console.log(`공고 작성자 정보 찾음: ${post.recruiter.name}`);
+          return res.status(200).json({
+            _id: userId,
+            name: post.recruiter.name || "사용자",
+            email: post.recruiter.email || "",
+            phone: post.recruiter.phone || "",
+          });
+        }
+      }
+    } catch (postError) {
+      console.error("공고 작성자 정보 조회 오류:", postError);
+    }
+
+    // 5. 모든 조회 방법 실패 - 기본값 반환
+    console.log(`사용자 ID ${userId}에 대한 정보를 찾을 수 없음, 기본값 사용`);
+    return res.status(200).json({
+      _id: userId,
+      name: "사용자",
+    });
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error("사용자 정보 조회 중 오류 발생:", error);
     res.status(500).json({ message: "Failed to fetch user" });
   }
 });
@@ -232,6 +343,67 @@ router.get("/users", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Failed to fetch users" });
+  }
+});
+
+// 작성자 ID로 공고 정보 조회 API
+router.get("/post/author/:authorId", async (req: Request, res: Response) => {
+  try {
+    const { authorId } = req.params;
+
+    if (!authorId || authorId === "undefined" || authorId === "null") {
+      return res.status(400).json({ message: "Invalid author ID" });
+    }
+
+    // ObjectId로 변환
+    const objId = new mongoose.Types.ObjectId(authorId);
+
+    // JobPosting 모델로 작성자 정보 조회
+    const post = await JobPosting.findOne({ author: objId });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "No posts found for this author" });
+    }
+
+    // 작성자 정보 반환
+    res.status(200).json({
+      recruiter: post.recruiter || { name: "사용자" },
+      author: post.author,
+    });
+  } catch (error) {
+    console.error("Error fetching author info:", error);
+    res.status(500).json({ message: "Failed to fetch author info" });
+  }
+});
+
+// 작성자 ID로 직접 공고 검색 API
+router.get("/post/by-author/:authorId", async (req: Request, res: Response) => {
+  try {
+    const { authorId } = req.params;
+
+    if (!authorId || authorId === "undefined" || authorId === "null") {
+      return res.status(400).json({ message: "Invalid author ID" });
+    }
+
+    // ObjectId로 변환
+    const objId = new mongoose.Types.ObjectId(authorId);
+
+    // JobPosting 모델로 공고 정보 조회
+    const post = await JobPosting.findOne({ author: objId });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "No posts found for this author" });
+    }
+
+    // 공고 정보 반환
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error fetching post by author:", error);
+    res.status(500).json({ message: "Failed to fetch post by author" });
   }
 });
 
