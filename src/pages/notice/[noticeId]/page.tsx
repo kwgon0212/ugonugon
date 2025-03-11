@@ -344,7 +344,7 @@ const NoticeDetailPage = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <ImageSlider imageArr={postData?.images} />
+          {postData && <ImageSlider imageArr={postData.images} />}
           <div
             ref={contentRef}
             className="w-full h-full flex flex-col relative"

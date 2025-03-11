@@ -6,7 +6,7 @@ import "@/css/slick.css";
 import styled from "styled-components";
 
 interface Props {
-  imageArr?: string[];
+  imageArr: string[];
 }
 
 interface ImageBoxProps {
@@ -31,14 +31,21 @@ const ImageSlider = ({ imageArr }: Props) => {
   return (
     <div className="slider-container">
       <Slider {...settings}>
-        {imageArr &&
+        {imageArr.length > 0 ? (
           imageArr.map((src, idx) => {
             return (
               <div key={idx} className="max-h-[250px]">
                 <ImageBox src={src} />
               </div>
             );
-          })}
+          })
+        ) : (
+          <div className="max-h-[250px]">
+            <div className="w-full h-[250px] bg-main-gray text-main-darkGray flex justify-center items-center">
+              이미지 없음
+            </div>
+          </div>
+        )}
       </Slider>
     </div>
   );
