@@ -35,6 +35,7 @@ import ChattingPage from "./pages/chat/chatting/page";
 import PostDataTest from "./pages/notice/post/page";
 import NoticeAddPage from "./pages/notice/add/page";
 import NoticeEditPage from "./pages/notice/edit/[noticeId]/page";
+import WorkApplyPage from "./pages/work/apply/page";
 
 function App() {
   return (
@@ -112,6 +113,7 @@ function App() {
               </Route>
 
               <Route path="/work" element={<WorkPage />} />
+              <Route path="/work/apply" element={<WorkApplyPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
