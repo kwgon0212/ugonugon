@@ -6,7 +6,7 @@ import "@/css/slick.css";
 import styled from "styled-components";
 
 interface Props {
-  imageArr: string[];
+  imageArr?: string[];
 }
 
 interface ImageBoxProps {
@@ -31,13 +31,14 @@ const ImageSlider = ({ imageArr }: Props) => {
   return (
     <div className="slider-container">
       <Slider {...settings}>
-        {imageArr.map((src, idx) => {
-          return (
-            <div key={idx} className="max-h-[250px]">
-              <ImageBox src={src} />
-            </div>
-          );
-        })}
+        {imageArr &&
+          imageArr.map((src, idx) => {
+            return (
+              <div key={idx} className="max-h-[250px]">
+                <ImageBox src={src} />
+              </div>
+            );
+          })}
       </Slider>
     </div>
   );
