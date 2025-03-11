@@ -3,7 +3,7 @@ import Notice from "@/types/Notice";
 
 const dummyNotice: Notice[] = [
   {
-    _id: new Types.ObjectId("1234567890"),
+    _id: new Types.ObjectId("65f1b2c3d4e5f6789a0b1c2d"),
     title: "카페 바리스타 구인",
     jobType: "서비스직",
     pay: {
@@ -69,7 +69,7 @@ const dummyNotice: Notice[] = [
     ],
   },
   {
-    _id: new Types.ObjectId("123456789dd0"),
+    _id: new Types.ObjectId("65f1b2c3d4e5fd789a0b1c2d"),
     title: "야간 편의점 알바 모집",
     jobType: "매장 관리",
     pay: {
@@ -129,7 +129,7 @@ const dummyNotice: Notice[] = [
     ],
   },
   {
-    _id: new Types.ObjectId("123456789012231d"),
+    _id: new Types.ObjectId("65f1b2d3d4e5f6789a0b1c2d"),
     title: "쿠팡 플렉스 단기 알바 모집",
     jobType: "배송",
     pay: {

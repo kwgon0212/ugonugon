@@ -128,9 +128,9 @@ const RootPage = () => {
                 <span className="text-[16px] font-medium text-red-500">
                   긴급 공고 🚨
                 </span>
-                <span className="text-[12px] text-main-darkGray cursor-pointer">
+                {/* <span className="text-[12px] text-main-darkGray cursor-pointer">
                   전체보기
-                </span>
+                </span> */}
               </div>
               {/* <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
@@ -160,12 +160,12 @@ const RootPage = () => {
             {/* 방금 올라온 공고 */}
             <div className="py-[20px] flex flex-col gap-[10px]">
               <div className="flex gap-2 justify-between items-center px-[20px] text-main-darkGray">
-                <span className="text-[16px] font-medium">
+                <span className="text-[16px] font-medium text-main-color">
                   방금 올라온 공고
                 </span>
-                <span className="text-[12px] text-main-darkGray cursor-pointer">
+                {/* <span className="text-[12px] text-main-darkGray cursor-pointer">
                   전체보기
-                </span>
+                </span> */}
               </div>
               {/* <div className="flex space-x-4 overflow-x-auto pb-2">
                 {[...Array(10)].map((_, index) => (
