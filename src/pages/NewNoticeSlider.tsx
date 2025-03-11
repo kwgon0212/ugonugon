@@ -29,10 +29,9 @@ const NewNoticeSlider = ({ notices }: Props) => {
       <StyledSlider {...settings}>
         {notices.map((notice, idx) => {
           return (
-            <div key={notice._id}>
+            <div key={notice._id.toString()}>
               <button
                 onClick={() => navigate(`/notice/${notice._id}`)}
-                key={notice._id}
                 className="bg-white rounded-[10px] p-[10px] w-full"
               >
                 <div className="w-full h-[120px] bg-main-gray rounded-[10px] mb-[10px]" />

@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export default interface Notice {
-  _id: string;
+  _id: Types.ObjectId;
   title: string;
   jobType: string;
   pay: {
@@ -10,26 +10,26 @@ export default interface Notice {
   };
   hireType: string[];
   period: {
-    start: string;
-    end: string;
+    start: Date;
+    end: Date;
     discussion: boolean;
   };
   hour: {
-    start: string;
-    end: string;
+    start: Date;
+    end: Date;
     discussion: boolean;
   };
   restTime: {
-    start: string;
-    end: string;
+    start: Date;
+    end: Date;
   };
   day: string[];
   workDetail?: string;
   welfare?: string;
   postDetail?: string;
   deadline: {
-    date: string;
-    time: string;
+    date: Date;
+    time: Date;
   };
   person: number;
   preferences?: string;
@@ -47,7 +47,7 @@ export default interface Notice {
     email?: string;
     phone?: string;
   };
-  createdAt?: string;
+  createdAt: Date;
   author: string;
   images: string[];
   company?: string;
