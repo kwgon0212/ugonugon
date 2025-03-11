@@ -2,9 +2,12 @@ import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./users";
+import multer from "multer";
+import { bucket } from "../firebaseAdmin";
 
 const router = express.Router();
 const { Schema } = mongoose;
+const upload = multer({ storage: multer.memoryStorage() });
 
 // 공고 스키마 - 수정 전 입니다. 건들 ㄴㄴ
 // const PostSchema = new Schema(
@@ -231,14 +234,11 @@ const JobPostingSchema = new Schema({
       appliedAt: { type: Date, default: Date.now },
     },
   ],
+  images: [String],
 });
 
 // 모델 생성
 const JobPosting = mongoose.model("JobPosting", JobPostingSchema, "posts");
-
-const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-});
 
 const User = mongoose.models.users;
 
@@ -260,19 +260,89 @@ const User = mongoose.models.users;
  *                     type: string
  *                     example: "post success"
  */
-router.post("/notice", async (req, res) => {
+// router.post("/notice", async (req, res) => {
+//   try {
+//     const { author, ...postData } = req.body;
+//     const newPost = new JobPosting({
+//       ...postData,
+//       author: new mongoose.Types.ObjectId(author),
+//     });
+
+//     await newPost.save(); // 새로 생성한 객체를 DB에 저장
+
+//     res.status(200).json({ postId: newPost._id });
+//     // .json({ message: "Post created successfully", post: newPost });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+router.post("/notice", upload.array("images", 5), async (req, res) => {
   try {
     const { author, ...postData } = req.body;
-    const newPost = new JobPosting({
+
+    const parseJSON = (data: any) => {
+      return data ? JSON.parse(data) : null;
+    };
+
+    const parsedPostData = {
       ...postData,
+      pay: parseJSON(postData.pay),
+      hireType: parseJSON(postData.hireType),
+      period: parseJSON(postData.period),
+      hour: parseJSON(postData.hour),
+      restTime: parseJSON(postData.restTime),
+      day: parseJSON(postData.day),
+      welfare: parseJSON(postData.welfare),
+      deadline: parseJSON(postData.deadline),
+      preferences: parseJSON(postData.preferences),
+      education: parseJSON(postData.education),
+      address: parseJSON(postData.address),
+      recruiter: parseJSON(postData.recruiter),
+    };
+
+    if (!author) {
+      return res.status(400).json({ message: "작성자가 필요합니다." });
+    }
+
+    const newPost = new JobPosting({
+      ...parsedPostData,
       author: new mongoose.Types.ObjectId(author),
+      images: [],
     });
 
-    await newPost.save(); // 새로 생성한 객체를 DB에 저장
+    await newPost.save();
+    const postId = newPost._id.toString();
 
-    res.status(200).json({ postId: newPost._id });
-    // .json({ message: "Post created successfully", post: newPost });
+    const uploadedImages: string[] = [];
+
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files as Express.Multer.File[]) {
+        const fileName = `posts/${postId}/${Date.now()}_${file.originalname}`;
+        const storageFile = bucket.file(fileName);
+        const stream = storageFile.createWriteStream({
+          metadata: { contentType: file.mimetype },
+        });
+
+        await new Promise((resolve, reject) => {
+          stream.on("error", reject);
+          stream.on("finish", async () => {
+            await storageFile.makePublic();
+            const imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+            uploadedImages.push(imageUrl);
+            resolve(true);
+          });
+          stream.end(file.buffer);
+        });
+      }
+    }
+
+    newPost.images = uploadedImages;
+    await newPost.save();
+
+    res.status(200).json({ postId: newPost._id, images: uploadedImages });
   } catch (err) {
+    console.error("공고 등록 오류:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -295,45 +365,134 @@ router.post("/notice", async (req, res) => {
  *                     type: string
  *                     example: "post update success"
  */
-router.put("/:postId", async (req, res) => {
+// router.put("/:postId", async (req, res) => {
+//   try {
+//     const { postId } = req.params;
+//     if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+//       return res.status(400).json({ message: "Invalid Post ID" });
+//     }
+
+//     // 요청 데이터에서 `undefined`가 아닌 값만 `updateFields`에 추가
+//     const updateFields = Object.fromEntries(
+//       Object.entries(req.body).filter(([_, value]) => value !== undefined)
+//     );
+
+//     if (Object.keys(updateFields).length === 0) {
+//       return res.status(400).json({ message: "No valid fields to update" });
+//     }
+
+//     // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
+//     const updatedPost = await JobPosting.findByIdAndUpdate(
+//       postId,
+//       updateFields,
+//       {
+//         new: true, // 업데이트된 문서를 반환
+//         runValidators: true, // 유효성 검사 실행
+//       }
+//     );
+
+//     if (!updatedPost) {
+//       return res.status(404).json({ message: "Post Not Found" });
+//     }
+
+//     res
+//       .status(200)
+//       .json({ message: "Post updated successfully", post: updatedPost });
+//   } catch (err) {
+//     console.error("에러 발생:", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+// fetch / 뭐시였더라?("/update/:postId" 로 바꾸기
+
+router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
   try {
     const { postId } = req.params;
-    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-      return res.status(400).json({ message: "Invalid Post ID" });
+    const { deletedImages, ...updatedData } = req.body;
+
+    const post = await JobPosting.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "해당 공고를 찾을 수 없습니다." });
     }
 
-    // 요청 데이터에서 `undefined`가 아닌 값만 `updateFields`에 추가
-    const updateFields = Object.fromEntries(
-      Object.entries(req.body).filter(([_, value]) => value !== undefined)
-    );
+    let updatedImages = post.images;
 
-    if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ message: "No valid fields to update" });
-    }
+    // 🔥 1️⃣ 삭제할 이미지 처리 (Firebase에서도 삭제)
+    if (deletedImages) {
+      const imagesToDelete = JSON.parse(deletedImages); // 클라이언트에서 배열 형태로 전송
+      updatedImages = updatedImages.filter(
+        (img) => !imagesToDelete.includes(img)
+      );
 
-    // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
-    const updatedPost = await JobPosting.findByIdAndUpdate(
-      postId,
-      updateFields,
-      {
-        new: true, // 업데이트된 문서를 반환
-        runValidators: true, // 유효성 검사 실행
+      for (const img of imagesToDelete) {
+        const filePath = img.split(
+          `https://storage.googleapis.com/${bucket.name}/`
+        )[1];
+        await bucket.file(filePath).delete(); // Firebase Storage에서 삭제
       }
-    );
-
-    if (!updatedPost) {
-      return res.status(404).json({ message: "Post Not Found" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Post updated successfully", post: updatedPost });
+    // 🔥 2️⃣ 새로운 이미지 업로드 처리
+    const uploadedImages: string[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files as Express.Multer.File[]) {
+        const fileName = `posts/${postId}/${Date.now()}_${file.originalname}`;
+        const storageFile = bucket.file(fileName);
+        const stream = storageFile.createWriteStream({
+          metadata: { contentType: file.mimetype },
+        });
+
+        await new Promise((resolve, reject) => {
+          stream.on("error", reject);
+          stream.on("finish", async () => {
+            await storageFile.makePublic();
+            const imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+            uploadedImages.push(imageUrl);
+            resolve(true);
+          });
+          stream.end(file.buffer);
+        });
+      }
+    }
+
+    const parseJSON = (data: any) => {
+      return data ? JSON.parse(data) : null;
+    };
+
+    const parsedPostData = {
+      ...updatedData,
+      pay: parseJSON(updatedData.pay),
+      hireType: parseJSON(updatedData.hireType),
+      period: parseJSON(updatedData.period),
+      hour: parseJSON(updatedData.hour),
+      restTime: parseJSON(updatedData.restTime),
+      day: parseJSON(updatedData.day),
+      welfare: parseJSON(updatedData.welfare),
+      deadline: parseJSON(updatedData.deadline),
+      preferences: parseJSON(updatedData.preferences),
+      education: parseJSON(updatedData.education),
+      address: parseJSON(updatedData.address),
+      recruiter: parseJSON(updatedData.recruiter),
+    };
+
+    // 🔥 3️⃣ DB 업데이트 (삭제된 이미지 제거 + 새 이미지 추가)
+    post.set({
+      ...parsedPostData,
+      images: [...updatedImages, ...uploadedImages],
+    });
+
+    await post.save();
+
+    res.status(200).json({
+      message: "공고가 수정되었습니다.",
+      post,
+      images: post.images,
+    });
   } catch (err) {
-    console.error("에러 발생:", err);
+    console.error("공고 수정 오류:", err);
     res.status(500).json({ error: err.message });
   }
 });
-// fetch / 뭐시였더라?("/update/:postId" 로 바꾸기
 
 /**
  * @swagger
@@ -354,29 +513,70 @@ router.put("/:postId", async (req, res) => {
  *                     example: "post delete success"
  */
 // router.delete("/delete/:postId", async (req, res) => {
+// router.delete("/:postId", async (req, res) => {
+//   try {
+//     const { postId } = req.params;
+//     if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+//       return res.status(400).json({ message: "Invalid Post ID" });
+//     }
+
+//     // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
+//     const deletePost = await JobPosting.findByIdAndDelete(postId);
+
+//     if (!deletePost) {
+//       return res.status(404).json({ message: "Post Not Found" });
+//     }
+
+//     res
+//       .status(200)
+//       .json({ message: "Post deleted successfully", post: deletePost });
+//   } catch (err) {
+//     console.error("에러 발생:", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+// delete("/:postId" 로 바꾸기
+
 router.delete("/:postId", async (req, res) => {
   try {
     const { postId } = req.params;
-    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-      return res.status(400).json({ message: "Invalid Post ID" });
+
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "잘못된 ID 형식입니다." });
     }
 
-    // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
-    const deletePost = await JobPosting.findByIdAndDelete(postId);
-
-    if (!deletePost) {
-      return res.status(404).json({ message: "Post Not Found" });
+    const post = await JobPosting.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "해당 공고를 찾을 수 없습니다." });
     }
 
-    res
-      .status(200)
-      .json({ message: "Post deleted successfully", post: deletePost });
+    // 🔥 Firebase Storage 이미지 삭제
+    if (post.images && post.images.length > 0) {
+      const deletePromises = post.images.map(async (imageUrl: string) => {
+        try {
+          const filePath = imageUrl.split(
+            `https://storage.googleapis.com/${bucket.name}/`
+          )[1];
+          if (filePath) {
+            await bucket.file(filePath).delete();
+            console.log(`✅ 삭제 완료: ${filePath}`);
+          }
+        } catch (error) {
+          console.error(`❌ Firebase 이미지 삭제 실패: ${imageUrl}`, error);
+        }
+      });
+
+      await Promise.all(deletePromises); // 모든 이미지 삭제
+    }
+
+    // 🔥 MongoDB에서 공고 삭제
+    await JobPosting.findByIdAndDelete(postId);
+    res.status(200).json({ message: "공고가 삭제되었습니다." });
   } catch (err) {
-    console.error("에러 발생:", err);
+    console.error("공고 삭제 오류:", err);
     res.status(500).json({ error: err.message });
   }
 });
-// delete("/:postId" 로 바꾸기
 
 /**
  * @swagger

@@ -20,6 +20,8 @@ import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useGeocode from "@/hooks/useGeocode";
+import PlusIcon from "@/components/icons/Plus";
+import CancelIcon from "@/components/icons/Cancel";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -107,6 +109,10 @@ const NoticeEditPage = () => {
     useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
   const [postId, setPostId] = useState("");
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]); // 기존 이미지
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지 리스트
 
   useEffect(() => {
     if (noticeId) {
@@ -151,6 +157,7 @@ const NoticeEditPage = () => {
             setEducation(data.education || { school: "무관", state: "무관" });
             setAddress(data.address || { zipcode: "", street: "", detail: "" });
             setRecruiter(data.recruiter || { name: "", email: "", phone: "" });
+            setExistingImages(data.images || []);
           }
         } catch (error) {
           console.error("Error fetching post:", error);
@@ -185,6 +192,33 @@ const NoticeEditPage = () => {
     setIsPostcodeOpen(false);
   };
 
+  const handleNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+
+      if (selectedFiles.length + existingImages.length > 5) {
+        alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+        return;
+      }
+
+      setNewImages((prev) => [...prev, ...selectedFiles]);
+      setImagePreviews((prev) => [
+        ...prev,
+        ...selectedFiles.map((file) => URL.createObjectURL(file)),
+      ]);
+    }
+  };
+
+  const handleDeleteExistingImage = (imageUrl: string) => {
+    setExistingImages((prev) => prev.filter((img) => img !== imageUrl));
+    setDeletedImages((prev) => [...prev, imageUrl]);
+  };
+
+  const handleDeleteNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmitEditNotice = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
@@ -203,29 +237,39 @@ const NoticeEditPage = () => {
     const coords = await getCoordinates(address.street);
 
     try {
-      const response = await axios.put(`/api/post/${noticeId}`, {
-        title,
-        jobType,
-        pay,
-        hireType,
-        period,
-        hour,
-        restTime,
-        day,
-        workDetail,
-        welfare,
-        postDetail,
-        deadline,
-        person,
-        preferences,
-        education,
-        address: {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("jobType", jobType);
+      formData.append("pay", JSON.stringify(pay));
+      formData.append("hireType", JSON.stringify(hireType));
+      formData.append("period", JSON.stringify(period));
+      formData.append("hour", JSON.stringify(hour));
+      formData.append("restTime", JSON.stringify(restTime));
+      formData.append("day", JSON.stringify(day));
+      formData.append("workDetail", workDetail);
+      formData.append("welfare", JSON.stringify(welfare));
+      formData.append("postDetail", postDetail);
+      formData.append("deadline", JSON.stringify(deadline));
+      formData.append("person", person.toString());
+      formData.append("preferences", JSON.stringify(preferences));
+      formData.append("education", JSON.stringify(education));
+      formData.append(
+        "address",
+        JSON.stringify({
           ...address,
           lat: coords?.lat,
           lng: coords?.lng,
-        },
-        recruiter,
-        author: userId,
+        })
+      );
+      formData.append("recruiter", JSON.stringify(recruiter));
+
+      formData.append("deletedImages", JSON.stringify(deletedImages));
+
+      newImages.forEach((image) => {
+        formData.append("newImages", image);
+      });
+      const response = await axios.put(`/api/post/${noticeId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       const { post } = response.data;
 
@@ -743,6 +787,63 @@ const NoticeEditPage = () => {
                     }
                   />
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-[10px]">
+                <input
+                  id="post-images"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleNewImages}
+                />
+                <label
+                  className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
+                  htmlFor="post-images"
+                >
+                  <PlusIcon />
+                  <span className="text-main-color">이미지 추가</span>
+                </label>
+
+                <div className="flex gap-[10px]">
+                  {existingImages.map((img, index) => (
+                    <div
+                      key={index}
+                      className="relative cursor-pointer bg-main-bg"
+                      onClick={() => handleDeleteExistingImage(img)}
+                    >
+                      <img
+                        src={img}
+                        alt="기존 이미지"
+                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                      />
+                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                        <CancelIcon color="red" />
+                      </div>
+                    </div>
+                  ))}
+                  {imagePreviews.map((preview, index) => (
+                    <div
+                      key={index}
+                      className="relative cursor-pointer bg-main-bg"
+                      onClick={() => handleDeleteNewImage(index)}
+                    >
+                      <img
+                        src={preview}
+                        alt="preview"
+                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                      />
+                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                        <CancelIcon color="red" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="w-full text-right text-main-darkGray">
+                  {existingImages.length + imagePreviews.length} / 5
+                </p>
               </div>
             </div>
 
