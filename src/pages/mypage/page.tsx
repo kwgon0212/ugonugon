@@ -69,7 +69,7 @@ const MyPage = () => {
                     <ProfileIcon />
                   )}
                 </div>
-                <div className="flex flex-col max-w-[calc(390px_-_130px)]">
+                <div className="flex flex-col max-w-[calc(100%_-_120px)]">
                   <span className="text-[18px]">
                     안녕하세요!&nbsp;
                     <b className="text-main-color">{userData?.name}</b>님
