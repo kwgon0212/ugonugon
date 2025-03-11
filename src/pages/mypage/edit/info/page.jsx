@@ -31,79 +31,17 @@ function MyPageEditInfoPage() {
   const [zipcodeOpen, setZipcodeOpen] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
   const [saveModalOpen, setSaveModalOpen] = useState(false);
-  const [profile, setProfile] = useState(null);
+  // const [profile, setProfile] = useState();
 
-  // const ProfileRef = useRef<HTMLInputElement | null>(null);
-  const ProfileRef = useRef(null);
-  const handleProfile = () => {
-    ProfileRef.current?.click();
-    // const file = e.target.files[0];
-    // const imageUrl = URL.createObjectURL(file);
-    // setProfile(imageUrl);
-  };
-  // 📌 파일 선택 시 미리보기 설정
-  //  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfile(imageUrl);
-      // uploadImage(file); // 서버로 업로드 (옵션)
-    }
-  };
-
-  // // 📌 클립보드에서 이미지 붙여넣기 감지
   // useEffect(() => {
-  //   // const handlePaste = (event: ClipboardEvent) => {
-  //   const handlePaste = (event) => {
-  //     const items = event.clipboardData?.items;
-  //     if (!items) return;
-
-  //     for (const item of items) {
-  //       if (item.type.startsWith("image")) {
-  //         const file = item.getAsFile();
-  //         if (file) {
-  //           const imageUrl = URL.createObjectURL(file);
-  //           setProfile(imageUrl);
-  //           uploadImage(file); // 서버로 업로드 (옵션)
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   document.addEventListener("paste", handlePaste);
-  //   return () => {
-  //     document.removeEventListener("paste", handlePaste);
-  //   };
-  // }, []);
-
-  // 📌 이미지 서버 업로드 (백엔드 API 필요)
-  // const uploadImage = async (file: File) => {
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("profile", file);
-
-    try {
-      const response = await fetch("http://localhost:5000/upload-profile", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      console.log("Uploaded:", data.profile);
-    } catch (error) {
-      console.error("Upload failed", error);
-    }
-  };
-
-  useEffect(() => {
-    if (userData !== null) {
-      setZipcode(userData.address.zipcode);
-      setAddress(userData.address.street);
-      setDetailAddress(userData.address.detail);
-      setPhone(userData.phone);
-      setProfile(userData.profile);
-    }
-  }, [userData]);
+  //   if (userData !== null) {
+  //     setZipcode(userData.address.zipcode);
+  //     setAddress(userData.address.street);
+  //     setDetailAddress(userData.address.detail);
+  //     setPhone(userData.phone);
+  //     setProfile(userData.profile);
+  //   }
+  // }, [userData]);
 
   const handleOpenzipcodePopup = () => setZipcodeOpen(true);
 
@@ -114,6 +52,77 @@ function MyPageEditInfoPage() {
   };
 
   const handleExitModal = () => setExitModalOpen(!exitModalOpen); // 저장 버튼 클릭 시 모달 열기
+
+  // const [image, setImage] = useState<string | null>(null);
+  // const fileInputRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // 📌 이미지 클릭 시 파일 선택 창 열기
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // 📌 파일 선택 시 미리보기 설정
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Base64 변환
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setImage(reader.result);
+          // uploadProfileImage(reader.result); // 서버 업로드 요청
+          putUser(userId, { profile: reader.result });
+          // putUser(userId, {profile: {image: reader.result}})
+        }
+      };
+    }
+  };
+
+  useEffect(() => {
+    if (userData !== null) {
+      setZipcode(userData.address.zipcode);
+      setAddress(userData.address.street);
+      setDetailAddress(userData.address.detail);
+      setPhone(userData.phone);
+      setImage(userData.profile);
+    }
+  }, [userData]);
+
+  // 📌 클립보드에서 이미지 붙여넣기 감지
+  useEffect(() => {
+    // const handlePaste = (event: ClipboardEvent) => {
+    const handlePaste = (event) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.startsWith("image")) {
+          const file = item.getAsFile();
+          if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImage(imageUrl);
+            // uploadImage(file); // 서버로 업로드 (옵션)
+          }
+        }
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
+  // 📌 이미지 서버 업로드 (백엔드 API 필요)
+  // const uploadImage = async (file: File) => {
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("profileImage", file);
+    putUser(userId, { profile: { image: formData } });
+  };
 
   return (
     <>
@@ -135,11 +144,11 @@ function MyPageEditInfoPage() {
                 <div className="mr-5 relative">
                   <div
                     className="w-[74px] h-[74px] rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
-                    onClick={handleProfile}
+                    onClick={handleImageClick}
                   >
-                    {profile ? (
+                    {image ? (
                       <img
-                        src={profile}
+                        src={image}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -150,7 +159,7 @@ function MyPageEditInfoPage() {
                     )}
                     <input
                       type="file"
-                      ref={ProfileRef}
+                      ref={fileInputRef}
                       accept="image/*"
                       className="hidden"
                       onChange={handleFileChange}
@@ -171,7 +180,8 @@ function MyPageEditInfoPage() {
                     userData.sex,
                     userData.residentId.slice(0, 6) +
                       "-" +
-                      userData.residentId[6],
+                      userData.residentId[6] +
+                      "******",
                   ].map((value, index) => (
                     <li key={index}>{value}</li>
                   ))}
@@ -228,7 +238,6 @@ function MyPageEditInfoPage() {
                       street: address,
                       detail: detailAddress,
                     },
-                    // profile: profile,
                   });
                   setSaveModalOpen(!saveModalOpen);
                 }}
