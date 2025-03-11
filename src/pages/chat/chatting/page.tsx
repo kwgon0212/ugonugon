@@ -12,7 +12,6 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
 import SendIcon from "@/components/icons/Send";
 import { formatMessageTime, getOtherUserId } from "@/util/chatUtils";
-
 const HeaderWrap = styled.div`
   position: relative;
   display: flex;
