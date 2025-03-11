@@ -105,17 +105,26 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
             <NoticeButton onClick={() => navigate(`/notice/${notice._id}`)}>
               <NoticeContent>
                 <div>
-                  <CompanyText>
-                    {notice.company ? notice.company : "한국경제신문"}
-                  </CompanyText>
-                  <Title>{notice.title}</Title>
+                  <p className="font-bold overflow-hidden truncate whitespace-nowrap">
+                    {notice.title}
+                  </p>
+                  <p className="text-[12px]">
+                    현재 {notice.applies ? notice.applies.length : 0}명 지원중
+                  </p>
                 </div>
                 <div>
                   <AddressText>{notice.address.street}</AddressText>
-                  <PayInfo>
-                    <PayType>{notice.pay.type}</PayType>
-                    <PayAmount>{notice.pay.value.toLocaleString()}원</PayAmount>
-                  </PayInfo>
+                  <div className="flex justify-between">
+                    <PayInfo>
+                      <PayType>{notice.pay.type}</PayType>
+                      <PayAmount>
+                        {notice.pay.value.toLocaleString()}원
+                      </PayAmount>
+                    </PayInfo>
+                    <span className="text-main-darkGray text-[12px]">
+                      ~ {notice.deadline.date.toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
               </NoticeContent>
             </NoticeButton>

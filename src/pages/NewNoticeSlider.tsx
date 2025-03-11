@@ -34,28 +34,44 @@ const NewNoticeSlider = ({ notices }: Props) => {
                 onClick={() => navigate(`/notice/${notice._id}`)}
                 className="bg-white rounded-[10px] p-[10px] w-full"
               >
-                <div className="w-full h-[120px] bg-main-gray rounded-[10px] mb-[10px]" />
+                {/* <div className="w-full h-[120px] bg-main-gray rounded-[10px] mb-[10px]" /> */}
+                {notice.images.length > 0 ? (
+                  <img
+                    src={notice.images[0]}
+                    alt="img"
+                    className="w-full h-[120px] rounded-[10px] object-cover mb-[10px]"
+                  />
+                ) : (
+                  <p className="w-full h-[120px] rounded-[10px] mb-[10px] bg-main-gray text-main-darkGray text-[12px] flex justify-center items-center">
+                    이미지 없음
+                  </p>
+                )}
                 <div className="flex flex-col gap-[5px] text-left w-full">
                   <div>
-                    <p className="text-[12px] text-main-darkGray">
-                      {notice.company ? notice.company : "한국경제신문"}
-                    </p>
                     <p className="font-bold overflow-hidden truncate whitespace-nowrap w-full">
                       {notice.title}
+                    </p>
+                    <p className="text-[12px]">
+                      현재 {notice.applies ? notice.applies.length : 0}명 지원중
                     </p>
                   </div>
                   <div>
                     <p className="text-[12px] text-main-darkGray overflow-hidden truncate whitespace-nowrap w-full">
                       {notice.address.street}
                     </p>
-                    <p className="flex gap-[4px] text-sm">
-                      <span className="font-bold text-main-color">
-                        {notice.pay.type}
+                    <div className="flex justify-between items-center gap-[4px] text-sm">
+                      <div className="flex gap-[4px]">
+                        <span className="font-bold text-main-color">
+                          {notice.pay.type}
+                        </span>
+                        <span className="text-[12px] text-main-darkGray">
+                          {notice.pay.value.toLocaleString()}원
+                        </span>
+                      </div>
+                      <span className="text-main-darkGray text-[12px]">
+                        ~ {notice.deadline.date.toLocaleDateString()}
                       </span>
-                      <span className="text-[12px] text-main-darkGray">
-                        {notice.pay.value.toLocaleString()}원
-                      </span>
-                    </p>
+                    </div>
                   </div>
                 </div>
               </button>
