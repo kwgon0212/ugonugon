@@ -97,7 +97,7 @@ export { Users };
 router.get("/", async (req, res) => {
   try {
     const user = await Users.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applyIds"
+      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applies"
     );
     if (user) user["residentId"] = user.residentId.slice(0, 7);
     res.status(201).json(user);
