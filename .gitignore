@@ -28,3 +28,6 @@ PayRunner.vuerd.json
 
 # garbage
 .vscode/
+
+# firebase key
+serviceAccountKey.json

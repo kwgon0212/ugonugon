@@ -565,4 +565,30 @@ router.post("/:postId/apply/status", async (req, res) => {
   }
 });
 
+//API: GET/api/recruit/manage
+//사용자가 등록한 공고 목록 조회 API
+router.get("/recruit/manage/:authorId", async (req, res) => {
+  try {
+    const { authorId } = req.params;
+
+    const authorObjectId = new mongoose.Types.ObjectId(authorId);
+
+    //author가 현재 로그인한 사용자와 일치하는 공고 검색
+    const myPosts = await JobPosting.find({ author: authorObjectId }).sort({
+      createdAt: -1,
+    });
+
+    if (!myPosts.length) {
+      return res
+        .status(200)
+        .json({ message: "등록한 공고가 없습니다.", posts: [] });
+    }
+    res
+      .status(200)
+      .json({ message: "성공적으로 공고를 불러왔습니다.", posts: myPosts });
+  } catch (err) {
+    console.error("사용자 공고 조회 중 오류 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;

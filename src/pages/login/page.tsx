@@ -78,9 +78,6 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const auth = useAppSelector((state) => state.auth);
-  console.log(auth);
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 

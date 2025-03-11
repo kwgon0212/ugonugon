@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import multer from "multer";
+
 const router = express.Router();
 
 /**
@@ -100,6 +102,16 @@ router.get("/", async (req, res) => {
       "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applies"
     );
     if (user) user["residentId"] = user.residentId.slice(0, 7);
+
+    //   const servicePlan = await Users.findOne({ _id: req.params.planId })
+    // let sig = Buffer.from(servicePlan.submittedSig.data, 'base64').toString('base64');
+    // sig = servicePlan.submittedSig.data.toString('base64');
+    // let sig = Buffer.from(user?.profile as Buffer, "base64").toString("base64")
+
+    // const base64Image = user?.profile?.toString("base64")
+
+    // console.log("sig plan: ", servicePlan)
+    // res.send(servicePlan)
     res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
