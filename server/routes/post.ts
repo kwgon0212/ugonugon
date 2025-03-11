@@ -1,6 +1,7 @@
 import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
+import { Users } from "./users";
 
 const router = express.Router();
 const { Schema } = mongoose;
@@ -226,6 +227,7 @@ const JobPostingSchema = new Schema({
         ref: "Post",
         required: true,
       },
+      status: { type: String, enum: ["pending", "accepted", "rejected"] },
       appliedAt: { type: Date, default: Date.now },
     },
   ],
@@ -233,6 +235,12 @@ const JobPostingSchema = new Schema({
 
 // 모델 생성
 const JobPosting = mongoose.model("JobPosting", JobPostingSchema, "posts");
+
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+});
+
+const User = mongoose.models.users;
 
 /**
  * @swagger
@@ -491,11 +499,26 @@ router.post("/:postId/apply", async (req, res) => {
       userId: userObjectId,
       resumeId: resumeObjectId,
       postId: postObjectId,
+      status: "pending",
       appliedAt: new Date(),
     });
 
     // DB 업데이트
     await post.save();
+
+    const user = await User.findById(userId);
+
+    if (!user.applies || !Array.isArray(user.applies)) {
+      user.set("applies", []);
+    }
+
+    user.applies.push({
+      postId: new mongoose.Types.ObjectId(postId),
+      status: "pending",
+      appliedAt: new Date(),
+    });
+
+    await user.save();
 
     res.status(200).json({ message: "공고 지원 완료", applies: post.applies });
   } catch (err) {
@@ -504,4 +527,71 @@ router.post("/:postId/apply", async (req, res) => {
   }
 });
 
+router.post("/:postId/apply/status", async (req, res) => {
+  const { postId } = req.params;
+  const { userId, status } = req.body;
+
+  try {
+    const post = await JobPosting.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "공고를 찾을 수 없습니다." });
+    }
+
+    // 특정 지원 내역 찾기
+    const apply = post.applies.find((app) => app.userId.toString() === userId);
+    if (!apply) {
+      return res.status(404).json({ error: "지원 내역을 찾을 수 없습니다." });
+    }
+
+    // 지원 상태 업데이트
+    apply.status = status;
+    await post.save(); // 변경 사항 저장
+
+    const result = await Users.findOneAndUpdate(
+      { _id: userId, "applies.postId": postId }, // 특정 postId를 가진 applies 배열 찾기
+      { $set: { "applies.$.status": status } }, // 배열 안의 해당 요소의 status 변경
+      { new: true } // 업데이트 후 변경된 문서 반환
+    );
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({ error: "해당 유저의 지원 내역을 찾을 수 없습니다." });
+    }
+
+    res
+      .status(200)
+      .json({ message: `지원 상태가 ${status}로 변경되었습니다.` });
+  } catch (error) {
+    console.error("지원 상태 업데이트 실패:", error);
+    res.status(500).json({ error: "서버 오류" });
+  }
+});
+
+//API: GET/api/recruit/manage
+//사용자가 등록한 공고 목록 조회 API
+router.get("/recruit/manage/:authorId", async (req, res) => {
+  try {
+    const { authorId } = req.params;
+
+    const authorObjectId = new mongoose.Types.ObjectId(authorId);
+
+    //author가 현재 로그인한 사용자와 일치하는 공고 검색
+    const myPosts = await JobPosting.find({ author: authorObjectId }).sort({
+      createdAt: -1,
+    });
+
+    if (!myPosts.length) {
+      return res
+        .status(200)
+        .json({ message: "등록한 공고가 없습니다.", posts: [] });
+    }
+    res
+      .status(200)
+      .json({ message: "성공적으로 공고를 불러왔습니다.", posts: myPosts });
+  } catch (err) {
+    console.error("사용자 공고 조회 중 오류 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;

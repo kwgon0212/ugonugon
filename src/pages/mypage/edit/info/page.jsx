@@ -251,13 +251,18 @@ function MyPageEditInfoPage() {
                   <p className="font-bold text-lg">
                     정보가 성공적으로 수정되었습니다.
                   </p>
-                  <button
-                    type="button"
-                    className="w-1/2 p-2 rounded-[10px] bg-main-color text-white"
-                    onClick={() => setSaveModalOpen(!saveModalOpen)}
+                  <Link
+                    to="/mypage"
+                    className="w-1/2 p-2 rounded-[10px] text-center bg-main-color text-white"
                   >
-                    확인
-                  </button>
+                    <button
+                      type="button"
+                      className="text-center"
+                      onClick={() => setSaveModalOpen(!saveModalOpen)}
+                    >
+                      확인
+                    </button>
+                  </Link>
                 </div>
               </div>
             )}

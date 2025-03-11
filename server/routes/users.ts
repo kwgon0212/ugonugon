@@ -26,7 +26,7 @@ const router = express.Router();
 const UsersSchema = new mongoose.Schema({
   name: { type: String, required: true },
   businessNumber: { type: Array, required: false },
-  sex: { type: String, required: true, enum: ["남성", "여성"] },
+  sex: { type: String, required: true, enum: ["male", "female"] },
   residentId: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
   address: {
@@ -58,15 +58,18 @@ const UsersSchema = new mongoose.Schema({
       ref: "posts",
     },
   ],
-  applyIds: [
+  applies: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "posts",
+      _id: false,
+      postId: mongoose.Schema.Types.ObjectId,
+      status: { type: String, enum: ["pending", "accepted", "rejected"] },
+      appliedAt: { type: Date, default: Date.now },
     },
   ],
 });
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
 const Users = mongoose.model("users", UsersSchema);
+export { Users };
 
 // router.post("/", async (req, res) => {
 //   try {
@@ -96,7 +99,7 @@ const Users = mongoose.model("users", UsersSchema);
 router.get("/", async (req, res) => {
   try {
     const user = await Users.findById(req.query.userId).select(
-      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applyIds"
+      "businessNumber address bankAccount name sex phone signature email residentId profile resumeIds scraps applies"
     );
     if (user) user["residentId"] = user.residentId.slice(0, 7);
 
