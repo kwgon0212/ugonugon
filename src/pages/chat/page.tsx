@@ -7,7 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import { useAppSelector } from "@/hooks/useRedux";
 import { getOtherUserId } from "@/util/chatUtils";
-
+import RefreshIcon from "@/components/icons/Refresh";
 // 채팅방 정보 인터페이스 정의
 interface ChatRoom {
   id: string;
@@ -343,9 +343,20 @@ function ChatPage() {
   return (
     <>
       <Header>
-        <p className="flex h-full justify-center items-center font-bold">
-          채팅
-        </p>
+        <div className="flex h-full w-full justify-between items-center px-5 relative">
+          <div className="w-8"></div> {/* 왼쪽 여백용 빈 div */}
+          {/* left-1/2: 요소의 왼쪽 모서리를 부모 컨테이너 너비의 50% 위치에 배치합니다. 이는 CSS로 left: 50%와 같습니다.
+transform -translate-x-1/2: 요소를 자신의 너비의 50%만큼 왼쪽으로 이동시킵니다. 이는 CSS로 transform: translateX(-50%)와 같습니다. */}
+          <p className="font-bold absolute left-1/2 transform -translate-x-1/2">
+            채팅
+          </p>
+          <div
+            onClick={() => window.location.reload()}
+            className="cursor-pointer"
+          >
+            <RefreshIcon />
+          </div>
+        </div>
       </Header>
       <Main hasBottomNav={true}>
         <div className="p-5">

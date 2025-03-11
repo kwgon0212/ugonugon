@@ -76,7 +76,6 @@ const Numbernav = styled.div`
 `;
 
 const NavBtn = styled.div`
-  flex: 1;
   color: #717171;
   cursor: pointer;
 `;
@@ -370,7 +369,7 @@ export function MypageScrabPage() {
 
                 {/* 페이지 번호 버튼과 좌우 화살표 */}
                 <Numbernav>
-                  <div className="flex flex-row w-[50%] justify-around">
+                  <div className="flex flex-row w-[50%] justify-center gap-3">
                     {pageGroup > 0 && (
                       <NavBtn onClick={() => setPageGroup(pageGroup - 1)}>
                         <ArrowLeftIcon />
