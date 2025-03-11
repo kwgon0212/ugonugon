@@ -196,28 +196,6 @@ export function MypageScrabPage() {
     fetchScrapedNotices();
   }, [userId]);
 
-  // 추가: 스크랩 취소 함수
-  const handleToggleScrap = async (postId: string) => {
-    if (!userId) return;
-
-    try {
-      await axios.post("/api/scrap/toggle", {
-        userId,
-        postId,
-      });
-
-      // 목록에서 제거
-      setNoticeList((prev) => prev.filter((notice) => notice._id !== postId));
-
-      // 공고가 없으면 hasNotice false로 설정
-      if (noticeList.length <= 1) {
-        setNotice(false);
-      }
-    } catch (error) {
-      console.error("스크랩 토글 오류:", error);
-    }
-  };
-
   // 추가: 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

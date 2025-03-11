@@ -182,7 +182,13 @@ const NoticeAddPage = () => {
     <>
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
+          <div
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon width={24} height={24} />
+          </div>
           <span className="absolute left-1/2 -translate-x-1/2 font-bold text-base">
             공고 등록
           </span>
