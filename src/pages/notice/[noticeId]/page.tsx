@@ -272,7 +272,7 @@ const NoticeDetailPage = () => {
       <Header>
         <div className="size-full flex items-center px-[20px] justify-between">
           <div className="flex gap-[10px]">
-            <button onClick={() => navigate(-1)}>
+            <button onClick={() => navigate("/recruit/manage")}>
               <ArrowLeftIcon />
             </button>
             <span className="font-bold">채용정보</span>
