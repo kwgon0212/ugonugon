@@ -85,19 +85,17 @@ const User = mongoose.model("user", UserSchema);
  */
 router.post("/", async (req, res) => {
   const { password, signature, ...userInfo } = req.body;
-  console.log(req.body);
-  const tempSignature = "@@@";
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({
     ...userInfo,
     password: hashedPassword,
-    signature: tempSignature,
+    signature: "",
   });
 
   try {
     const savedUser = await newUser.save();
     console.log(savedUser);
-    res.status(201).json({ message: "회원가입 성공" });
+    res.status(201).json({ message: "회원가입 성공", userId: savedUser._id });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

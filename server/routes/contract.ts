@@ -1,12 +1,14 @@
 import express, { Response, Request } from "express";
 import puppeteer from "puppeteer";
-import fs from "fs";
 
 const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
     // const { name, contact, position, salary, company, workPeriod } = req.body;
+
+    const userId = "67cfd0e3c7cd52ffd3d7e2fc";
+    const authorId = "67cfd0e3c7cd52ffd3d7e2fc";
 
     const now = new Date();
 
@@ -15,17 +17,19 @@ router.get("/", async (req: Request, res: Response) => {
               <head>
                 <title>표준근로계약서</title>
                 <style>
-                  body { margin: 0; padding: 40px; }
+                  body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
                   p,h1 { margin: 0; }
                   .wrapper {
                     width: 794px;
-                    height: 1123px;
+                    height: 1120px;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     gap: 20px;
                     border: 2px solid black;
                     padding: 40px;
+                    box-sizing: border-box;
+                    background: white;
                   }
                   .wrap {
                     display: flex;
@@ -76,7 +80,7 @@ router.get("/", async (req: Request, res: Response) => {
                       <div style="display: flex; justify-content: space-between">
                         <p>대 표 자 : ${"대표자명"}</p>
                         <p style="position: relative">(서명)
-                          <img src="https://placehold.co/70" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;"/>
+                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${authorId}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
                         </p>
                       </div>
                     </div>
@@ -90,7 +94,7 @@ router.get("/", async (req: Request, res: Response) => {
                       <div style="display: flex; justify-content: space-between">
                         <p>성 명 : ${"성명"}</p>
                         <p style="position: relative">(서명)
-                          <img src="https://placehold.co/70" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;"/>
+                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${userId}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
                         </p>
                       </div>
                     </div>
@@ -106,10 +110,16 @@ router.get("/", async (req: Request, res: Response) => {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle2" });
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
     // await page.pdf({ path: "test.pdf", format: "A4", printBackground: true });
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      width: "210mm",
+      height: "297mm",
+      margin: { top: "0mm", right: "0mm", bottom: "0mm", left: "0mm" },
+    });
 
     await browser.close();
 
