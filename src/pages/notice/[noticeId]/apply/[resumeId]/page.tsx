@@ -3,6 +3,7 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
 import { Resume } from "@/hooks/fetchResume";
+import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +23,10 @@ const NoticeApplyResumePage = () => {
 
   const [isFetchStatus, setIsFetchStatus] = useState(false);
 
+  // Redux에서 현재 로그인한 사용자 정보 가져오기
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const currentUserId = currentUser?._id;
+
   useEffect(() => {
     const fetchResume = async () => {
       try {
@@ -36,8 +41,55 @@ const NoticeApplyResumePage = () => {
     fetchResume();
   }, [resumeId]);
 
-  const handleClickChat = () => {};
+  const handleClickChat = async () => {
+    try {
+      if (!resume || !resume.userId || !currentUserId) {
+        console.error("채팅에 필요한 사용자 정보가 부족합니다.");
+        alert("채팅을 시작할 수 없습니다. 사용자 정보가 부족합니다.");
+        return;
+      }
 
+      console.log(
+        "채팅 시작: 공고 작성자",
+        currentUserId,
+        "지원자",
+        resume.userId
+      );
+
+      // 지원자 사용자 정보 가져오기 (이름을 확실히 얻기 위해)
+      let applicantName = "지원자";
+      try {
+        const userResponse = await axios.get(`/api/users/${resume.userId}`);
+        if (userResponse.data && userResponse.data.name) {
+          applicantName = userResponse.data.name;
+        }
+      } catch (error) {
+        console.error("사용자 정보 조회 실패:", error);
+        // 실패해도 계속 진행 (기본 이름 사용)
+      }
+
+      // 채팅방 생성 또는 기존 채팅방 가져오기
+      const response = await axios.post("/api/chat-rooms", {
+        user1Id: currentUserId,
+        user2Id: resume.userId,
+      });
+
+      // 생성된/기존 채팅방 ID 가져오기
+      const roomId = response.data.roomId;
+      console.log("채팅방 ID:", roomId);
+
+      // 채팅 페이지로 이동
+      navigate(`/chat/chatting?roomId=${roomId}&userId=${currentUserId}`, {
+        state: {
+          roomId,
+          otherName: applicantName, // 가져온 실제 사용자 이름 사용
+        },
+      });
+    } catch (error) {
+      console.error("채팅방 생성 중 오류 발생:", error);
+      alert("채팅 시작에 실패했습니다. 다시 시도해 주세요.");
+    }
+  };
   const handleReject = async () => {
     if (!resume) return;
 
