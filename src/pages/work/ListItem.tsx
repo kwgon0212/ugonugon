@@ -2,194 +2,604 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import axios from "axios";
-
 import { useAppSelector } from "@/hooks/useRedux";
 
 import CalendarIcon from "../../components/icons/Calendar";
 import SendIcon from "../../components/icons/Send";
 import ArrowRightIcon from "../../components/icons/ArrowRight";
-import { resolve } from "path";
+import LocationIcon from "../../components/icons/ArrowDown";
 
-interface UserData {
-  noticeId: string[] | string; // 스키마에서 배열로 선언했기 때문에 type을 이렇게 지정
-  contract: string;
-}
+import { WorkItem } from "./WorkItem";
+import { LocationStatusBar } from "./LocationStatusBar";
+import { AttendanceGuide } from "./AttendanceGuide";
+import {
+  WorkData,
+  UserData,
+  WorkStatus,
+  Location,
+  getWorkDate,
+  getWorkStartTime,
+  getWorkEndTime,
+  getWorkEndDate,
+  getWorkplaceLocation,
+  logTimeInfo,
+  calculateDistance,
+  DISTANCE_TOLERANCE,
+  isWithinAllowedDistance,
+  //getKoreanDate,
+  //formatKoreanDateTime,
+  calculateMinutesDifference,
+} from "./utils";
 
-interface WorkData {
-  _id: string;
-  title: string;
-  companyAddress: {
-    address: string;
-    detailAddress: string;
-    Latitude: string;
-    Longitude: string;
-  };
-  payType: string;
-  pay: number;
-  workDate: string;
-  customTime: {
-    startTime: string;
-    endTime: string;
-  };
-}
+// 이 부분에서 attendanceService에서 정의한 함수들을 임포트합니다
+import {
+  checkIn,
+  checkOut,
+  getAttendanceStatus,
+  getAttendanceHistory,
+  getAttendanceById,
+  getUserStats,
+  calculateWorkProgress,
+  AttendanceRecord,
+  CheckInData,
+  CheckOutData,
+} from "./attendanceService";
 
-// 임의의 데이터
-// const title = "tossbank X 한국 경제 신문 FullStack";
-// const address = "서울 중구 청파로 463 한국 경제 신문사";
-// const pay = 10030;
-// const date = "2025-3-27";
-// const startTime = "9:00";
-// const endTime = "18:00";
+export function ListItem({ userInfo }: { userInfo: UserData | null }) {
+  const user = useAppSelector((state) => state.auth.user);
 
-// // date와 time을 결합하여 하나의 Date 객체로 변환
-// const dateTimeString = `${getDate}T${getTime}:00`; // ISO 8601 형식으로 결합
-// const date = new Date(dateTimeString); // Date 객체로 변환
-
-// // 시간은 00초로 설정하여 timeInfo에 저장 (시간만 다룰 때)
-// const time = new Date();
-// time.setHours(Number(getTime.split(":")[0]));
-// time.setMinutes(Number(getTime.split(":")[1]));
-// time.setSeconds(0); // 초는 0으로 설정
-
-export function ListItem() {
-  const user = useAppSelector((state) => state.auth.user); // 현재 접속한 유저
-
-  // 유저의 정보 관리 -> 현재는 근로 Id 불러올 때
-  // 이 경우는 배열이 아니라 객체기 때문에 [] X
-  const [userInfo, setUserInfo] = useState<UserData | null>(null);
-  // 유저의 근로(공고) 정보 관리
   const [data, setData] = useState<WorkData[]>([]);
+  const [filteredData, setFilteredData] = useState<WorkData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // 근무 상태 관리
-  const [isOnTime, setOnTime] = useState(true);
-  const [percent, SetPercent] = useState(0);
-  const [isFinish, setFinish] = useState(false);
+  // 현재 위치 정보 상태
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [locationEnabled, setLocationEnabled] = useState<boolean>(false);
 
-  // 페이지 접근했을 때 user에 저장된 근로 정보 접근을 위해 근로(공고)Id 불러오기
+  // 거리 정보 상태
+  const [distances, setDistances] = useState<Record<string, number>>({});
+
+  // 각 공고별 근무 상태를 관리하는 상태 추가
+  const [workStatus, setWorkStatus] = useState<Record<string, WorkStatus>>({});
+  // 기존 상태 외에 사용자 출근 상태 추가
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    Record<string, AttendanceRecord>
+  >({});
+
+  // 페이지 로드 시 출근 상태 불러오기
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    // 사용자 정보가 있는 경우에만 데이터 가져오기
+    if (userInfo && userInfo.noticeIds && userInfo.noticeIds.length > 0) {
+      const fetchAttendanceStatus = async () => {
+        try {
+          const noticeIds = Array.isArray(userInfo.noticeIds)
+            ? userInfo.noticeIds
+            : [userInfo.noticeIds];
+
+          const userId = userInfo.userId || "";
+
+          // 출근 상태 가져오기 - attendanceService의 함수 사용
+          const records = await getAttendanceStatus(userId, noticeIds);
+
+          // 출근 상태를 noticeId별로 매핑
+          const recordsMap: Record<string, AttendanceRecord> = {};
+          records.forEach((record) => {
+            recordsMap[record.noticeId] = record;
+          });
+
+          setAttendanceRecords(recordsMap);
+
+          // 데이터가 있을 때만 상태 업데이트
+          if (filteredData.length > 0) {
+            // 기존 workStatus 상태를 출근 기록에 맞게 업데이트
+            updateWorkStatusFromRecords(recordsMap);
+          }
+        } catch (error) {
+          console.error("출근 상태 가져오기 실패:", error);
+        }
+      };
+
+      fetchAttendanceStatus();
+    }
+  }, [userInfo, filteredData]);
+
+  // 출근 기록으로부터 workStatus 업데이트하는 함수
+  const updateWorkStatusFromRecords = (
+    records: Record<string, AttendanceRecord>
+  ) => {
+    const updatedStatus: Record<string, WorkStatus> = {};
+
+    filteredData.forEach((notice) => {
+      const record = records[notice._id];
+      const startTime = getWorkStartTime(notice);
+      const endTime = getWorkEndTime(notice);
+
+      if (record && record.checkInTime) {
+        // 이미 출근한 경우
+        const checkInTime = new Date(record.checkInTime);
+        const estimatedCheckOutTime = endTime || new Date();
+        const totalWorkDuration = calculateMinutesDifference(
+          checkInTime,
+          estimatedCheckOutTime
+        );
+
+        // 퇴근 여부 확인
+        const hasCheckedOut = !!record.checkOutTime;
+        const now = new Date();
+        // attendanceService의 calculateWorkProgress 함수 사용
+        const percent = hasCheckedOut
+          ? 100
+          : calculateWorkProgress(checkInTime, estimatedCheckOutTime, now);
+
+        updatedStatus[notice._id] = {
+          isOnTime: false, // 출근했으므로 false
+          percent,
+          checkInTime,
+          estimatedCheckOutTime,
+          totalWorkDuration,
+          canCheckOut: !hasCheckedOut && percent >= 100, // 퇴근 안했고 근무 완료 시 퇴근 가능
+        };
+      } else {
+        // 아직 출근하지 않은 경우
+        updatedStatus[notice._id] = {
+          isOnTime: true,
+          percent: 0,
+          canCheckOut: false,
+        };
+      }
+    });
+
+    setWorkStatus((prev) => ({
+      ...prev,
+      ...updatedStatus,
+    }));
+  };
+
+  // 현재 시간을 1분마다 업데이트 (진행률 계산을 위해)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now);
+
+      // 각 공고별 진행률 업데이트
+      updateWorkProgress(now);
+    }, 60000); // 1분마다 업데이트
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // 근무 진행률 업데이트 함수
+  const updateWorkProgress = (now: Date) => {
+    setWorkStatus((prevStatus) => {
+      const updatedStatus = { ...prevStatus };
+
+      // 모든 공고에 대해 진행률 업데이트
+      Object.keys(updatedStatus).forEach((noticeId) => {
+        const status = updatedStatus[noticeId];
+
+        // 이미 출근했고, 퇴근을 아직 하지 않은 경우
+        if (
+          !status.isOnTime &&
+          status.checkInTime &&
+          status.totalWorkDuration
+        ) {
+          // 출근 시간부터 지금까지 경과한 시간(분)
+          const elapsedMinutes = calculateMinutesDifference(
+            status.checkInTime,
+            now
+          );
+
+          // 진행률 계산 (최대 100%)
+          let newPercent = Math.min(
+            Math.floor((elapsedMinutes / status.totalWorkDuration) * 100),
+            100
+          );
+
+          // 근무 시간이 다 되었으면 퇴근 가능하게 설정
+          const canCheckOut = newPercent >= 100;
+
+          // 상태 업데이트
+          updatedStatus[noticeId] = {
+            ...status,
+            percent: newPercent,
+            canCheckOut,
+          };
+        }
+      });
+
+      return updatedStatus;
+    });
+  };
+
+  // 위치 권한 확인 및 초기화
+  useEffect(() => {
+    const checkLocationPermission = async () => {
       try {
-        if (user?._id) {
-          const res = await axios.get(`/api/auth/userInfo/${user._id}`);
-          console.log("사용자 정보:", res.data);
-          setUserInfo(res.data); // 객체 그대로 저장
+        if ("permissions" in navigator) {
+          const status = await navigator.permissions.query({
+            name: "geolocation" as PermissionName,
+          });
+          if (status.state === "granted") {
+            setLocationEnabled(true);
+            getLocation();
+          } else if (status.state === "prompt") {
+            // 사용자에게 권한 요청 (위치 한 번 가져오기 시도)
+            getLocation();
+          } else {
+            setLocationEnabled(false);
+            setLocationError("위치 권한이 거부되었습니다.");
+          }
+        } else {
+          // permissions API를 지원하지 않는 브라우저
+          getLocation();
         }
       } catch (error) {
-        console.error("데이터 가져오기 실패:", error);
+        console.error("위치 권한 확인 오류:", error);
+        setLocationError("위치 권한 확인 중 오류가 발생했습니다.");
       }
     };
 
-    if (user?._id) {
-      fetchUserInfo();
-    }
-  }, [user?._id]);
+    checkLocationPermission();
+  }, []);
 
+  // 위치 정보 가져오기 함수
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("브라우저가 위치 정보를 지원하지 않습니다.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ latitude, longitude });
+        setLocationEnabled(true);
+        setLocationError(null);
+
+        // 위치 정보를 가져왔으므로 거리 계산
+        if (filteredData.length > 0) {
+          calculateDistances(filteredData, { latitude, longitude });
+        }
+      },
+      (error) => {
+        console.error("위치 정보 가져오기 오류:", error);
+        setLocationError(
+          error.code === 1
+            ? "위치 정보 접근이 거부되었습니다."
+            : "위치 정보를 가져올 수 없습니다."
+        );
+        setLocationEnabled(false);
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  };
+
+  // 위치 정보 주기적 업데이트
+  useEffect(() => {
+    if (!locationEnabled) return;
+
+    const locationWatchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ latitude, longitude });
+
+        // 거리 계산 업데이트
+        if (filteredData.length > 0) {
+          calculateDistances(filteredData, { latitude, longitude });
+        }
+      },
+      (error) => {
+        console.error("위치 모니터링 오류:", error);
+        setLocationError("위치 정보를 업데이트할 수 없습니다.");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(locationWatchId);
+    };
+  }, [locationEnabled, filteredData]);
+
+  // 근무지와의 거리 계산
+  const calculateDistances = (notices: WorkData[], userLocation: Location) => {
+    const newDistances: Record<string, number> = {};
+
+    notices.forEach((notice) => {
+      const workplaceLocation = getWorkplaceLocation(notice);
+
+      if (workplaceLocation) {
+        const distance = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          workplaceLocation.lat,
+          workplaceLocation.lng
+        );
+
+        newDistances[notice._id] = distance;
+      } else {
+        newDistances[notice._id] = Infinity; // 위치 정보가 없는 경우
+      }
+    });
+
+    setDistances(newDistances);
+  };
+
+  // 공고 데이터 가져오기
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        if (userInfo && userInfo.noticeId) {
-          let noticeIds = Array.isArray(userInfo.noticeId)
-            ? userInfo.noticeId
-            : [userInfo.noticeId];
-
-          if (noticeIds.length === 0) {
-            console.error("유효한 noticeId가 없습니다:", userInfo.noticeId);
-            return;
-          }
-
-          console.log("사용할 noticeIds:", noticeIds);
-
-          // 모든 noticeId에 대해 API 요청을 보내고 응답을 병렬 처리
-          const responses = await Promise.all(
-            noticeIds.map(async (id) => {
-              const response = await axios.get(`/api/post/get/oneNotice/${id}`);
-              return response.data;
-            })
-          );
-
-          console.log("근로 정보 가져오기 성공", responses);
-
-          // 여러 개의 데이터를 한 번에 추가
-          setData(responses.flat()); // 응답이 배열일 수도 있으므로 flat() 사용
-        } else {
-          console.error("userInfo에서 noticeId를 찾을 수 없음:", userInfo);
+        if (!userInfo) {
+          setLoading(false);
+          return;
         }
-      } catch (error) {
+
+        // API 응답 구조에 맞게 처리
+        let noticeIds = Array.isArray(userInfo.noticeIds)
+          ? userInfo.noticeIds
+          : [userInfo.noticeIds];
+
+        if (noticeIds.length === 0) {
+          console.error("유효한 noticeId가 없습니다:", userInfo.noticeIds);
+          setLoading(false);
+          return;
+        }
+
+        console.log("사용할 noticeIds:", noticeIds);
+
+        // API 엔드포인트 확인
+        const responses = await Promise.all(
+          noticeIds.map(async (id) => {
+            try {
+              const response = await axios.get(`/api/post/${id}`);
+              return response.data;
+            } catch (err) {
+              console.error(`ID ${id}에 대한 데이터를 가져오는데 실패:`, err);
+              return null;
+            }
+          })
+        );
+
+        // null 값 필터링
+        const validResponses = responses.filter(Boolean);
+        console.log("근로 정보 가져오기 성공", validResponses);
+
+        if (validResponses.length > 0) {
+          // 각 공고의 시간 정보 로깅 (디버깅용)
+          validResponses.forEach((notice) => {
+            logTimeInfo(notice);
+          });
+
+          setData(validResponses);
+
+          // 받아온 공고 데이터로 초기 근무 상태 설정
+          const initialStatus: Record<string, WorkStatus> = {};
+          validResponses.forEach((notice) => {
+            initialStatus[notice._id] = {
+              isOnTime: true,
+              percent: 0,
+              canCheckOut: false,
+            };
+          });
+          setWorkStatus(initialStatus);
+
+          // 현재 위치가 있다면 거리 계산
+          if (currentLocation) {
+            calculateDistances(validResponses, currentLocation);
+          }
+        }
+      } catch (error: any) {
         console.error("근로 정보 가져오기 실패:", error);
+        setError(error.message || "데이터를 가져오는데 실패했습니다");
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (userInfo) {
-      fetchPosts();
-    }
+    fetchPosts();
   }, [userInfo]);
 
-  // 출근하기 눌렀을 때
-  // 나중에 근로 시간 계산해서 percent가 0부터 채워지게 해야 됨
-  function CheckAttendance() {
-    return setOnTime(false), SetPercent(100);
+  // 날짜 필터링 및 정렬
+  useEffect(() => {
+    if (data.length > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // 오늘 날짜의 시작 (00:00:00)
+
+      // 현재 날짜 이후의 근무만 필터링
+      const filtered = data.filter((notice) => {
+        const endDate = getWorkEndDate(notice);
+        // 종료일이 오늘 이후인 경우만 포함
+        return endDate && endDate >= today;
+      });
+
+      // 가까운 날짜순으로 정렬
+      const sorted = filtered.sort((a, b) => {
+        const dateA = getWorkDate(a) || new Date(9999, 11, 31); // 날짜가 없으면 가장 미래로
+        const dateB = getWorkDate(b) || new Date(9999, 11, 31);
+        return dateA.getTime() - dateB.getTime(); // 오름차순 정렬
+      });
+
+      setFilteredData(sorted);
+      console.log("필터링 및 정렬된 데이터:", sorted);
+
+      // 현재 위치가 있다면 거리 계산
+      if (currentLocation) {
+        calculateDistances(sorted, currentLocation);
+      }
+    }
+  }, [data, currentLocation]);
+
+  // 출근하기 버튼 클릭 핸들러 (API 연동)
+  const handleCheckAttendance = async (noticeId: string) => {
+    if (!userInfo) return;
+
+    const notice = filteredData.find((item) => item._id === noticeId);
+    if (!notice) return;
+
+    const userId = userInfo.userId || "";
+
+    // 거리 확인
+    if (locationEnabled && distances[noticeId] !== undefined) {
+      const distanceInMeters = distances[noticeId];
+      if (!isWithinAllowedDistance(distanceInMeters)) {
+        alert(
+          `근무지와의 거리가 허용 범위(${DISTANCE_TOLERANCE}m)를 초과합니다. 현재 거리: ${Math.round(
+            distanceInMeters
+          )}m`
+        );
+        return;
+      }
+    }
+
+    const now = new Date();
+    const startTime = getWorkStartTime(notice);
+    const endTime = getWorkEndTime(notice);
+
+    if (!startTime || !endTime) return;
+
+    try {
+      // API 호출로 출근 정보 서버에 저장 - attendanceService의 checkIn 함수 사용
+      const attendanceData = await checkIn({
+        userId: userId,
+        noticeId: noticeId,
+        checkInTime: now,
+        location: currentLocation || undefined,
+      });
+
+      // 성공 시 상태 업데이트
+      setAttendanceRecords((prev) => ({
+        ...prev,
+        [noticeId]: attendanceData,
+      }));
+
+      // 근무 시간 계산 (분 단위)
+      const totalWorkDuration = calculateMinutesDifference(startTime, endTime);
+
+      // 상태 업데이트
+      setWorkStatus((prevStatus) => ({
+        ...prevStatus,
+        [noticeId]: {
+          ...prevStatus[noticeId],
+          isOnTime: false,
+          checkInTime: now,
+          estimatedCheckOutTime: endTime,
+          totalWorkDuration,
+          percent: 0,
+          canCheckOut: false,
+        },
+      }));
+
+      // 메시지 알림
+      alert(
+        `${notice.title} 근무에 출근 처리되었습니다. 퇴근 시간에 퇴근 버튼을 눌러주세요.`
+      );
+    } catch (error) {
+      console.error("출근 처리 실패:", error);
+      alert("출근 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 퇴근하기 버튼 클릭 핸들러 (API 연동)
+  const handleCheckOut = async (noticeId: string) => {
+    if (!userInfo) return;
+
+    // 거리 확인
+    if (locationEnabled && distances[noticeId] !== undefined) {
+      const distanceInMeters = distances[noticeId];
+      if (!isWithinAllowedDistance(distanceInMeters)) {
+        alert(
+          `근무지와의 거리가 허용 범위(${DISTANCE_TOLERANCE}m)를 초과합니다. 현재 거리: ${Math.round(
+            distanceInMeters
+          )}m`
+        );
+        return;
+      }
+    }
+
+    const now = new Date();
+    const userId = userInfo.userId || "";
+
+    try {
+      // API 호출로 퇴근 정보 서버에 저장 - attendanceService의 checkOut 함수 사용
+      const attendanceData = await checkOut({
+        userId: userId,
+        noticeId: noticeId,
+        checkOutTime: now,
+        location: currentLocation || undefined,
+      });
+
+      // 성공 시 상태 업데이트
+      setAttendanceRecords((prev) => ({
+        ...prev,
+        [noticeId]: attendanceData,
+      }));
+
+      // 퇴근 처리 로직
+      setWorkStatus((prevStatus) => ({
+        ...prevStatus,
+        [noticeId]: {
+          ...prevStatus[noticeId],
+          percent: 100,
+          canCheckOut: false, // 이미 퇴근 처리됨
+        },
+      }));
+
+      // 메시지 알림
+      alert("퇴근 처리되었습니다!");
+    } catch (error) {
+      console.error("퇴근 처리 실패:", error);
+      alert("퇴근 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 위치 정보 업데이트 버튼 클릭 핸들러
+  const handleUpdateLocation = () => {
+    getLocation();
+  };
+
+  if (loading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div>에러 발생: {error}</div>;
+  }
+
+  if (filteredData.length === 0) {
+    return <div>현재 예정된 근무 정보가 없습니다.</div>;
   }
 
   return (
     <>
-      {data.map((notice) => (
-        <ItemContainer key={notice._id}>
-          <div className="flex flex-col pt-4 pb-2 mb-4 w-[90%] border-b border-b-selected-box">
-            <div className="font-bold mb-2 text-base">{notice.title}</div>
-            <div className="mb-2 text-sm">{notice.companyAddress.address}</div>
-            <div>
-              <span className="font-bold text-main-color text-sm">
-                {notice.payType}{" "}
-              </span>
-              <span className="text-sm">{notice.pay.toLocaleString()} 원</span>
-            </div>
-          </div>
-          <div className="flex flex-col w-[90%] border-b border-b-selected-box">
-            <div className="font-bold mb-2 text-base ">근무일자</div>
-            <div className="flex flex-row mb-2 w-full">
-              <span className="font-bold text-sm text-main-color pr-2">
-                {notice.workDate}
-              </span>
-              <span className="font-bold text-sm text-main-color">
-                {notice.customTime.startTime} ~
-              </span>
-              <span className="font-bold text-sm pl-1 text-main-color">
-                {notice.customTime.endTime}
-              </span>
-            </div>
-          </div>
+      <LocationStatusBar
+        locationEnabled={locationEnabled}
+        locationError={locationError}
+        onUpdateLocation={handleUpdateLocation}
+      />
 
-          {isOnTime ? (
-            <></>
-          ) : (
-            <div className="flex flex-col w-[90%] mt-3 mb-5 ">
-              <div className="w-full mb-2">{percent}% 근무완료</div>
-              <div className="relative w-full h-[10px] rounded-[10px] bg-selected-box">
-                <div
-                  className="absolute h-[10px] rounded-[10px] bg-selected-text z-10"
-                  style={{ width: `${percent}%` }}
-                />
-                <div className="relative w-full h-[10px] rounded-[10px] bg-selected-box " />
-              </div>
-            </div>
-          )}
+      <AttendanceGuide />
 
-          {isOnTime ? (
-            <Btn className="bg-main-color" onClick={CheckAttendance}>
-              출근하기
-            </Btn>
-          ) : (
-            <Btn className="bg-selected-box">퇴근하기</Btn>
-          )}
-
-          {/* {percent === 100 ? (
-        <Btn className="bg-main-color" onClick={CheckAttendance}>
-          퇴근하기
-        </Btn>
-      ) : (
-        <></>
-      )} */}
-        </ItemContainer>
+      {filteredData.map((notice) => (
+        <WorkItem
+          key={notice._id}
+          notice={notice}
+          status={
+            workStatus[notice._id] || {
+              isOnTime: true,
+              percent: 0,
+              canCheckOut: false,
+            }
+          }
+          distance={distances[notice._id]}
+          currentLocation={currentLocation}
+          locationEnabled={locationEnabled}
+          currentTime={currentTime}
+          onCheckIn={handleCheckAttendance}
+          onCheckOut={handleCheckOut}
+          // attendanceRecord={attendanceRecords[notice._id]}
+        />
       ))}
 
       <MenuContainer>
@@ -212,30 +622,6 @@ export function ListItem() {
   );
 }
 
-const ItemContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 95%;
-  height: fit-content;
-  border-radius: 10px;
-  background-color: white;
-`;
-
-const Btn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 70%;
-  height: 40px;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  margin-top: 14px;
-`;
-
 const MenuContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -245,7 +631,7 @@ const MenuContainer = styled.div`
   height: 120px;
   background-color: white;
   border-radius: 10px;
-  margin-top: 40px;
+  margin-top: 24px;
   margin-bottom: 20px;
 `;
 
