@@ -1,10 +1,14 @@
-// utils.ts 파일 - 새 스키마에 맞게 수정됨
+// utils.ts 파일 - 스키마에 맞게 수정됨
+// 인터페이스 정의.ts
 
-// 인터페이스 정의
+import mongoose from "mongoose";
+
+// workPage에서 user 스키마에 있는 applies 필드 정보 저장
 export interface UserData {
-  userId: string;
-  noticeIds: string[] | string;
-  contract?: string;
+  postId: mongoose.Types.ObjectId;
+  status: string;
+  applieAt: Date;
+  _id: mongoose.Types.ObjectId;
 }
 
 // 공고 스키마에 맞게 수정된 WorkData 인터페이스
@@ -59,6 +63,24 @@ export interface WorkData {
   };
   author: string;
   createdAt?: string | Date;
+  applies: [
+    {
+      userId: mongoose.Types.ObjectId;
+      resumeId: mongoose.Types.ObjectId;
+      // postId: mongoose.Types.ObjectId;
+      status?: "pending" | "accepted" | "rejected";
+      appliedAt?: string | Date;
+    }
+  ];
+  // applies: IApply[]; // 따로 분리한 인터페이스 적용
+}
+// 지원자 정보 인터페이스 (applies 배열) -> 따로 분리해서 사용할 경우
+export interface IApply {
+  userId: mongoose.Types.ObjectId;
+  resumeId: mongoose.Types.ObjectId;
+  // postId: mongoose.Types.ObjectId;
+  status?: "pending" | "accepted" | "rejected";
+  appliedAt?: string | Date;
 }
 
 // 각 공고별 근무 상태를 관리하기 위한 인터페이스
@@ -71,13 +93,13 @@ export interface WorkStatus {
   canCheckOut: boolean; // 퇴근 가능 여부
 }
 
-// 위치 정보 인터페이스
+// 유저의 현재 위치 정보 인터페이스
 export interface Location {
   latitude: number;
   longitude: number;
 }
 
-// 버튼 상태 인터페이스
+// 출퇴근 버튼 상태 인터페이스
 export interface ButtonState {
   text: string;
   enabled: boolean;
@@ -239,7 +261,7 @@ export const formatDateString = (date: Date): string => {
 };
 
 // 허용 오차 범위 (미터 단위)
-export const DISTANCE_TOLERANCE = 1000; // 500m로 설정 (필요에 따라 조정 가능)
+export const DISTANCE_TOLERANCE = 1000; // 1Km 로 설정 (필요에 따라 조정 가능)
 
 // 거리가 허용 오차 범위 내에 있는지 확인하는 함수
 export const isWithinAllowedDistance = (distanceInMeters: number): boolean => {

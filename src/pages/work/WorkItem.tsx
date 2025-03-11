@@ -13,6 +13,7 @@ import {
   formatDate,
   formatTime,
   formatTime12Hour,
+  getWorkplaceLocation,
 } from "./utils";
 
 interface WorkItemProps {
@@ -223,7 +224,7 @@ const getButtonState = (
 
   if (!isToday) {
     return {
-      text: workDate > today ? "예정된 근무" : "지난 근무",
+      text: workDate.getTime() > today.getTime() ? "예정된 근무" : "지난 근무",
       enabled: false,
       style: "bg-gray-300 cursor-not-allowed",
     };
@@ -380,23 +381,23 @@ const getButtonState = (
     buttonText = "출근하기";
   } else {
     // 시작 시간 이전 (조기 출근)
-    buttonText = "조기 출근";
+    buttonText = "출근하기";
   }
 
   // 모든 조건을 만족하면 출근 가능
   return { text: buttonText, enabled: true, style: "bg-main-color" };
 };
 
-// 근무지 위치 정보를 가져오는 함수 (실제 스키마에 맞게 수정)
-const getWorkplaceLocation = (
-  notice: WorkData
-): { lat: number; lng: number } | null => {
-  // address 내부에 lat, lng가 있는 경우 (새 스키마)
-  if (notice.address?.lat && notice.address?.lng) {
-    return {
-      lat: notice.address.lat,
-      lng: notice.address.lng,
-    };
-  }
-  return null;
-};
+// 근무지 위치 정보를 가져오는 함수
+// const getWorkplaceLocation = (
+//   notice: WorkData
+// ): { lat: number; lng: number } | null => {
+//   // address 내부에 lat, lng가 있는 경우 (새 스키마)
+//   if (notice.address?.lat && notice.address?.lng) {
+//     return {
+//       lat: notice.address.lat,
+//       lng: notice.address.lng,
+//     };
+//   }
+//   return null;
+// };

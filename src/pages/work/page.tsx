@@ -9,6 +9,8 @@ import Main from "../../components/Main";
 import BottomNav from "../../components/BottomNav";
 import Check from "../../components/icons/Check";
 import ListItem from "../work/ListItem";
+import mongoose from "mongoose";
+import { UserData } from "./utils";
 
 const Body = styled.div`
   display: flex;
@@ -31,15 +33,9 @@ const CenterDiv = styled.div`
   height: 100%;
 `;
 
-interface UserData {
-  noticeIds: string[] | string; // 스키마에서 배열 또는 단일 문자열로 선언했기 때문에 type을 이렇게 지정
-  contract?: string;
-  userId: string;
-}
-
 export function WorkPage() {
   const user = useAppSelector((state) => state.auth.user);
-  const [userInfo, setUserInfo] = useState<UserData | null>(null);
+  const [userInfo, setUserInfo] = useState<UserData[] | null>(null);
   const [hasWorkItem, setWorkItem] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -51,26 +47,27 @@ export function WorkPage() {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
+      const userId = user?._id;
       if (!user?._id) {
         setLoading(false);
         return;
       }
 
       try {
-        // API 엔드포인트 수정 - users로 변경 (backend 코드에 따라)
-        const res = await axios.get(`/api/users/userInfo/${user._id}`);
+        console.log("사용자 정보 응답:", userId);
+
+        // API 엔드포인트 수정 - users로 변경
+        const res = await axios.get(`/api/users/`, { params: { userId } });
         console.log("사용자 정보 응답:", res.data);
 
-        // 중요: API 응답 구조에 맞게 처리
-        const userData = res.data;
+        const getData = res.data;
+        const userData = getData.applies;
 
-        // noticeIds가 있는지, 그리고 데이터가 있는지 확인
+        // userData가 배열인지 확인하고, 적어도 하나의 항목이 accepted 상태인지 확인
         const hasNotices =
           userData &&
-          userData.noticeIds &&
-          (Array.isArray(userData.noticeIds)
-            ? userData.noticeIds.length > 0
-            : !!userData.noticeIds);
+          Array.isArray(userData) &&
+          userData.some((item) => item.status === "accepted");
 
         setUserInfo(userData);
         setWorkItem(hasNotices);

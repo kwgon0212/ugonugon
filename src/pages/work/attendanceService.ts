@@ -80,7 +80,7 @@ export const checkOut = async (
 // 출근 상태 조회 API 호출
 export const getAttendanceStatus = async (
   userId: string,
-  noticeIds?: string[]
+  noticeIds?: Object[]
 ): Promise<AttendanceRecord[]> => {
   try {
     const response = await axios.get("/api/attendance/status", {
