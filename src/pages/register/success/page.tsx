@@ -9,6 +9,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { Link, useNavigate } from "react-router-dom";
 import JSConfetti from "js-confetti";
 import StatusBar from "@/components/StatusBar";
+import axios from "axios";
 
 const BottomButton = styled.button`
   position: absolute;
@@ -30,6 +31,7 @@ function RegisterSuccessPage() {
     emailCode,
     address,
     bankAccount,
+    signature,
     ...userInfo
   } = registerUserInfo;
   const confettiRef = useRef(null);
@@ -40,7 +42,8 @@ function RegisterSuccessPage() {
       return value !== "";
     }) &&
     Boolean(
-      bankAccount.account &&
+      signature &&
+        bankAccount.account &&
         bankAccount.bank &&
         address.zipcode &&
         address.street &&
@@ -89,8 +92,15 @@ function RegisterSuccessPage() {
     const data = await response.json();
 
     if (response.ok) {
-      console.log(data.message);
-      navigate("/login");
+      try {
+        await axios.post("/api/image/signature", {
+          userId: data.userId,
+          image: signature,
+        });
+        navigate("/login");
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       alert("잘못된 접근입니다");
       navigate("/login");
