@@ -11,6 +11,7 @@ export interface Career {
 export interface Resume extends Document {
   userId: string;
   title: string;
+  profile: string;
   name: string;
   sex: string;
   residentId: string;

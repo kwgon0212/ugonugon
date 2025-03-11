@@ -31,17 +31,6 @@ function MyPageEditInfoPage() {
   const [zipcodeOpen, setZipcodeOpen] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
   const [saveModalOpen, setSaveModalOpen] = useState(false);
-  // const [profile, setProfile] = useState();
-
-  // useEffect(() => {
-  //   if (userData !== null) {
-  //     setZipcode(userData.address.zipcode);
-  //     setAddress(userData.address.street);
-  //     setDetailAddress(userData.address.detail);
-  //     setPhone(userData.phone);
-  //     setProfile(userData.profile);
-  //   }
-  // }, [userData]);
 
   const handleOpenzipcodePopup = () => setZipcodeOpen(true);
 
@@ -53,29 +42,36 @@ function MyPageEditInfoPage() {
 
   const handleExitModal = () => setExitModalOpen(!exitModalOpen); // 저장 버튼 클릭 시 모달 열기
 
-  // const [image, setImage] = useState<string | null>(null);
-  // const fileInputRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState(null);
-  const fileInputRef = useRef(null);
+  // const [profile, setProfile] = useState<string | null>(null);
+  // const profileInputRef = useRef<HTMLInputElement>(null);
+  const [profile, setProfile] = useState(null);
+  const profileInputRef = useRef(null);
 
-  // 📌 이미지 클릭 시 파일 선택 창 열기
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  // 📌 파일 선택 시 미리보기 설정
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const handleFileChange = (event) => {
+  // const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file); // Base64 변환
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
-          setImage(reader.result);
-          // uploadProfileImage(reader.result); // 서버 업로드 요청
-          putUser(userId, { profile: reader.result });
-          // putUser(userId, {profile: {image: reader.result}})
+          const img = new Image();
+          img.src = reader.result;
+          img.onload = () => {
+            const { width, height } = img;
+            const scale = 80 / Math.min(width, height); // 짧은 쪽을 80px로 변환
+            const newWidth = Math.round(width * scale);
+            const newHeight = Math.round(height * scale);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            const compressedImage = canvas.toDataURL("image/webp", 0.7);
+            setProfile(compressedImage);
+          };
         }
       };
     }
@@ -87,42 +83,9 @@ function MyPageEditInfoPage() {
       setAddress(userData.address.street);
       setDetailAddress(userData.address.detail);
       setPhone(userData.phone);
-      setImage(userData.profile);
+      setProfile(userData.profile);
     }
   }, [userData]);
-
-  // 📌 클립보드에서 이미지 붙여넣기 감지
-  useEffect(() => {
-    // const handlePaste = (event: ClipboardEvent) => {
-    const handlePaste = (event) => {
-      const items = event.clipboardData?.items;
-      if (!items) return;
-
-      for (const item of items) {
-        if (item.type.startsWith("image")) {
-          const file = item.getAsFile();
-          if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setImage(imageUrl);
-            // uploadImage(file); // 서버로 업로드 (옵션)
-          }
-        }
-      }
-    };
-
-    document.addEventListener("paste", handlePaste);
-    return () => {
-      document.removeEventListener("paste", handlePaste);
-    };
-  }, []);
-
-  // 📌 이미지 서버 업로드 (백엔드 API 필요)
-  // const uploadImage = async (file: File) => {
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("profileImage", file);
-    putUser(userId, { profile: { image: formData } });
-  };
 
   return (
     <>
@@ -138,17 +101,17 @@ function MyPageEditInfoPage() {
       </Header>
       {userData !== null && (
         <Main>
-          <form className="w-full px-5 pt-5 flex flex-col gap-layout">
+          <form className="w-full px-5 flex flex-col gap-layout">
             <div>
-              <div className="flex h-[74px] mt-5">
+              <div className="flex h-20 mt-5">
                 <div className="mr-5 relative">
                   <div
-                    className="w-[74px] h-[74px] rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
-                    onClick={handleImageClick}
+                    className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
+                    onClick={() => profileInputRef.current?.click()}
                   >
-                    {image ? (
+                    {profile ? (
                       <img
-                        src={image}
+                        src={profile}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -159,10 +122,10 @@ function MyPageEditInfoPage() {
                     )}
                     <input
                       type="file"
-                      ref={fileInputRef}
+                      ref={profileInputRef}
                       accept="image/*"
                       className="hidden"
-                      onChange={handleFileChange}
+                      onChange={handleProfileChange}
                     />
                   </div>
                   <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
@@ -238,6 +201,7 @@ function MyPageEditInfoPage() {
                       street: address,
                       detail: detailAddress,
                     },
+                    profile,
                   });
                   setSaveModalOpen(!saveModalOpen);
                 }}

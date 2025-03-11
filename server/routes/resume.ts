@@ -1,4 +1,4 @@
-import { timeStamp } from "console";
+import { profile, timeStamp } from "console";
 import express from "express";
 import mongoose from "mongoose";
 const router = express.Router();
@@ -39,6 +39,7 @@ const router = express.Router();
 const ResumesSchema = new mongoose.Schema({
   userId: { type: mongoose.Types.ObjectId, ref: "users" },
   title: { type: String, required: true },
+  profile: { type: String },
   name: { type: String, required: true },
   sex: { type: String, required: true },
   residentId: { type: String, required: true },

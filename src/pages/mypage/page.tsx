@@ -14,6 +14,7 @@ import { logout } from "@/util/slices/authSlice";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser } from "@/hooks/fetchUser";
+import ProfileIcon from "@/components/icons/Profile";
 
 const LogoutModal = Modal;
 const WithdrawModal = Modal;
@@ -57,14 +58,24 @@ const MyPage = () => {
           <>
             <div className="size-full flex flex-col gap-[20px] pt-[20px]">
               <div className="w-full flex gap-[10px] px-[20px]">
-                <img src="https://placehold.co/80" alt="" />
-                <div className="flex flex-col">
+                <div className="w-[80px] h-[80px] rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden">
+                  {userData.profile ? (
+                    <img
+                      src={userData.profile}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ProfileIcon />
+                  )}
+                </div>
+                <div className="flex flex-col max-w-[calc(390px_-_130px)]">
                   <span className="text-[18px]">
                     안녕하세요!&nbsp;
                     <b className="text-main-color">{userData?.name}</b>님
                   </span>
                   <span className="text-main-gray">{userData?.email}</span>
-                  <span className="text-main-gray">
+                  <span className="text-main-gray truncate">
                     {userData?.address?.street}
                   </span>
                 </div>
