@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Header from "@/components/Header";
 import Main from "@/components/Main";
@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import getUser, { type User, putUser } from "@/hooks/fetchUser";
+import getUser, { type User } from "@/hooks/fetchUser";
 import getResume, {
   type Resume,
   type Career,
@@ -140,8 +140,7 @@ function MypageResumeListId() {
   useEffect(() => {
     if (userId) {
       const fetchData = async () => {
-        const user = await getUser(userId);
-        setUserData(user);
+        setUserData(await getUser(userId));
         const resume = await getResume(window.location.pathname.slice(20));
         setResumeData(resume);
       };
@@ -155,19 +154,45 @@ function MypageResumeListId() {
   const [email, setEmail] = useState<string | undefined>("");
   const [phone, setPhone] = useState<string | undefined>("");
   const [address, setAddress] = useState<string | undefined>("");
+  const [profile, setProfile] = useState<string | undefined>(undefined);
+  const profileInputRef = useRef<HTMLInputElement>(null);
+  const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Base64 변환
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          const img = new Image();
+          img.src = reader.result;
+          img.onload = () => {
+            const { width, height } = img;
+            const scale = 80 / Math.min(width, height); // 짧은 쪽을 80px로 변환
+            const newWidth = Math.round(width * scale);
+            const newHeight = Math.round(height * scale);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            const compressedImage = canvas.toDataURL("image/webp", 0.7);
+            setProfile(compressedImage);
+          };
+        }
+      };
+    }
+  };
+
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
   const navigate = useNavigate();
 
   useEffect(() => {
-    setName(userData?.name);
-    setSex(userData?.sex);
-    if (userData?.residentId)
-      setResidentId(
-        userData.residentId.slice(0, 6) +
-          "-" +
-          userData.residentId[6] +
-          "******"
-      );
+    setProfile(resumeData?.profile);
+    setName(resumeData?.name);
+    setSex(resumeData?.sex);
+    setResidentId(resumeData?.residentId);
     setPhone(resumeData?.phone);
     setEmail(resumeData?.email);
     setAddress(resumeData?.address);
@@ -195,7 +220,7 @@ function MypageResumeListId() {
           <Title>이력서 등록</Title>
         </Link>
       </Header>
-      {userData && (
+      {resumeData && (
         <Main hasBottomNav={false}>
           <>
             {isPostcodeOpen && (
@@ -398,6 +423,9 @@ function MypageResumeListId() {
                 await putResume(resumeData?._id as string, {
                   userId,
                   title: resumeTitle,
+                  name,
+                  sex,
+                  residentId,
                   phone,
                   email,
                   address,
@@ -421,11 +449,34 @@ function MypageResumeListId() {
                 />
                 <div className="flex h-[74px] mt-5">
                   <div className="mr-5 relative">
-                    <ProfileIcon />
+                    <div
+                      className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
+                      onClick={() => profileInputRef.current?.click()}
+                    >
+                      {profile ? (
+                        <img
+                          src={profile}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <ProfileIcon>
+                          <span className="text-gray-500">Upload</span>
+                        </ProfileIcon>
+                      )}
+                      <input
+                        type="file"
+                        ref={profileInputRef}
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfileChange}
+                      />
+                    </div>
                     <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
                       <CameraIcon color="white" width={14} height={14} />
                     </p>
                   </div>
+
                   <ul className="flex flex-col gap-[10px] text-[12px] text-main-darkGray">
                     {["이름", "성별", "주민번호"].map((value, index) => (
                       <li key={index}>{value}</li>
@@ -443,9 +494,10 @@ function MypageResumeListId() {
                   className="text-main-color text-xs underline -mb-[10px]"
                   type="button"
                   onClick={() => {
-                    setPhone(userData.phone);
-                    setEmail(userData.email);
-                    setAddress(userData.address?.street);
+                    setPhone(userData?.phone);
+                    setEmail(userData?.email);
+                    setAddress(userData?.address.street);
+                    setProfile(userData?.profile);
                   }}
                 >
                   내 정보 불러오기

@@ -9,17 +9,21 @@ export interface Career {
 }
 
 export interface Resume extends Document {
-  userId?: string;
-  title?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  school?: string;
-  schoolState?: string;
-  careers?: Career[];
-  introduction?: string;
-  writtenDay?: string;
-  applyIds?: (null | undefined | string)[];
+  userId: string;
+  title: string;
+  profile: string;
+  name: string;
+  sex: string;
+  residentId: string;
+  phone: string;
+  email: string;
+  address: string;
+  school: string;
+  schoolState: string;
+  careers: Career[];
+  introduction: string;
+  writtenDay: string;
+  applyIds: (null | undefined | string)[];
 }
 
 const getResume = async (resumeId: string | undefined) => {

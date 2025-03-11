@@ -16,7 +16,6 @@ import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
-import { defaultMaxListeners } from "events";
 dotenv.config();
 
 const app: Express = express();
@@ -38,7 +37,8 @@ app.use(
     credentials: true, // ✅ 쿠키 허용
   })
 );
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // JSON 요청 크기 제한 (Base64 이미지 지원)
 app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 

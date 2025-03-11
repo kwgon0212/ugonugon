@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DaumPostcode from "react-daum-postcode";
 import Main from "@/components/Main";
 import Header from "@/components/Header";
@@ -32,15 +32,6 @@ function MyPageEditInfoPage() {
   const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
   const [saveModalOpen, setSaveModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (userData !== null) {
-      setZipcode(userData.address.zipcode);
-      setAddress(userData.address.street);
-      setDetailAddress(userData.address.detail);
-      setPhone(userData.phone);
-    }
-  }, [userData]);
-
   const handleOpenzipcodePopup = () => setZipcodeOpen(true);
 
   const handlezipcodeComplete = (data) => {
@@ -50,6 +41,51 @@ function MyPageEditInfoPage() {
   };
 
   const handleExitModal = () => setExitModalOpen(!exitModalOpen); // 저장 버튼 클릭 시 모달 열기
+
+  // const [profile, setProfile] = useState<string | null>(null);
+  // const profileInputRef = useRef<HTMLInputElement>(null);
+  const [profile, setProfile] = useState(null);
+  const profileInputRef = useRef(null);
+
+  // const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Base64 변환
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          const img = new Image();
+          img.src = reader.result;
+          img.onload = () => {
+            const { width, height } = img;
+            const scale = 80 / Math.min(width, height); // 짧은 쪽을 80px로 변환
+            const newWidth = Math.round(width * scale);
+            const newHeight = Math.round(height * scale);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            const compressedImage = canvas.toDataURL("image/webp", 0.7);
+            setProfile(compressedImage);
+          };
+        }
+      };
+    }
+  };
+
+  useEffect(() => {
+    if (userData !== null) {
+      setZipcode(userData.address.zipcode);
+      setAddress(userData.address.street);
+      setDetailAddress(userData.address.detail);
+      setPhone(userData.phone);
+      setProfile(userData.profile);
+    }
+  }, [userData]);
 
   return (
     <>
@@ -65,11 +101,33 @@ function MyPageEditInfoPage() {
       </Header>
       {userData !== null && (
         <Main>
-          <form className="w-full px-5 pt-5 flex flex-col gap-layout">
+          <form className="w-full px-5 flex flex-col gap-layout">
             <div>
-              <div className="flex h-[74px] mt-5">
+              <div className="flex h-20 mt-5">
                 <div className="mr-5 relative">
-                  <ProfileIcon />
+                  <div
+                    className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden"
+                    onClick={() => profileInputRef.current?.click()}
+                  >
+                    {profile ? (
+                      <img
+                        src={profile}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ProfileIcon>
+                        <span className="text-gray-500">Upload</span>
+                      </ProfileIcon>
+                    )}
+                    <input
+                      type="file"
+                      ref={profileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfileChange}
+                    />
+                  </div>
                   <p className="w-6 h-6 bg-main-color rounded-full flex justify-center items-center absolute right-0 bottom-0">
                     <CameraIcon color="white" width={14} height={14} />
                   </p>
@@ -85,7 +143,8 @@ function MyPageEditInfoPage() {
                     userData.sex,
                     userData.residentId.slice(0, 6) +
                       "-" +
-                      userData.residentId[6],
+                      userData.residentId[6] +
+                      "******",
                   ].map((value, index) => (
                     <li key={index}>{value}</li>
                   ))}
@@ -142,6 +201,7 @@ function MyPageEditInfoPage() {
                       street: address,
                       detail: detailAddress,
                     },
+                    profile,
                   });
                   setSaveModalOpen(!saveModalOpen);
                 }}
