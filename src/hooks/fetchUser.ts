@@ -5,8 +5,7 @@ export interface User extends Document {
   businessNumber: string[];
   address: { zipcode: string; street: string; detail: string };
   bankAccount: { bank: string; account: string };
-  // profile: { image: string; contentType: string };
-  profile: Buffer;
+  profile: string;
   name: string;
   sex: string;
   residentId: string;

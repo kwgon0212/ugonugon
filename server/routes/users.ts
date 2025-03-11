@@ -37,7 +37,7 @@ const UsersSchema = new mongoose.Schema({
     detatil: { type: String, required: true },
   },
   signature: { type: String, required: true },
-  profile: { type: Buffer },
+  profile: { type: String },
   bankAccount: {
     type: Object,
     required: true,
