@@ -74,8 +74,8 @@ const MyPage = () => {
                     안녕하세요!&nbsp;
                     <b className="text-main-color">{userData?.name}</b>님
                   </span>
-                  <span className="text-main-gray">{userData?.email}</span>
-                  <span className="text-main-gray truncate">
+                  <span className="text-main-darkGray">{userData?.email}</span>
+                  <span className="text-main-darkGray truncate">
                     {userData?.address?.street}
                   </span>
                 </div>

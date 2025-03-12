@@ -159,18 +159,18 @@ function MyPageEditInfoPage() {
                   className="bg-white border p-2 h-[50px] border-main-gray rounded-[10px] mt-1"
                 />
                 <p className="font-semibold mt-2">거주지</p>
-                <div className="flex gap-3 mb-2">
+                <div className="flex gap-3 mb-2 items-end">
                   <input
                     type="text"
                     value={zipcode}
                     placeholder="우편번호"
                     readOnly
-                    className="bg-white border h-[50px] w-[202px] p-2 border-main-gray rounded-[10px] mt-1"
+                    className="bg-white border h-[50px] w-[202px] px-2 border-main-gray rounded-[10px] mt-1"
                   />
                   <button
                     type="button"
                     onClick={handleOpenzipcodePopup}
-                    className="bg-main-color flex justify-center items-center text-white rounded-[10px] flex-grow"
+                    className="bg-main-color h-[50px] flex justify-center items-center text-white rounded-[10px] flex-grow"
                   >
                     주소검색
                   </button>

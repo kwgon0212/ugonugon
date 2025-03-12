@@ -182,7 +182,7 @@ function MypageResumeAdd() {
 
   useEffect(() => {
     setName(userData?.name);
-    setSex(userData?.sex);
+    setSex(userData?.sex === "male" ? "남성" : "여성");
     if (userData?.residentId)
       setResidentId(
         userData.residentId.slice(0, 6) +
@@ -631,41 +631,45 @@ function MypageResumeAdd() {
                           <li
                             key={index}
                             className="w-full relative flex justify-start gap-[10px]"
-                            onClick={() => {
-                              setCompany(company as string);
-                              if (typeof dates === "string") {
-                                let year = Number("20" + dates.slice(0, 2));
-                                setStartDate(
-                                  new Date(
-                                    year,
-                                    Number(dates.slice(3, 5)) - 1,
-                                    1
-                                  )
-                                );
-                                let year2 = Number("20" + dates.slice(6, 8));
-                                setEndDate(
-                                  new Date(
-                                    year2,
-                                    Number(dates.slice(10)) - 1,
-                                    1
-                                  )
-                                );
-                              }
-                              setcareerDetail(careerDetail as string);
-                              setModal(!modal);
-                            }}
                           >
-                            <span className="text-main-darkGray text-xs min-w-[64px]">
-                              {dates}
-                            </span>
-                            <span className="text-main-darkGray text-xs min-w-[64px] truncate">
-                              {company}
-                            </span>
-                            <span className="text-main-darkGray text-xs min-w-[64px] truncate pr-5">
-                              {careerDetail}
+                            <span
+                              className="w-full relative flex justify-start gap-[10px]"
+                              onClick={() => {
+                                setCompany(company as string);
+                                if (typeof dates === "string") {
+                                  let year = Number("20" + dates.slice(0, 2));
+                                  setStartDate(
+                                    new Date(
+                                      year,
+                                      Number(dates.slice(3, 5)) - 1,
+                                      1
+                                    )
+                                  );
+                                  let year2 = Number("20" + dates.slice(6, 8));
+                                  setEndDate(
+                                    new Date(
+                                      year2,
+                                      Number(dates.slice(10)) - 1,
+                                      1
+                                    )
+                                  );
+                                }
+                                setcareerDetail(careerDetail as string);
+                                setModal(!modal);
+                              }}
+                            >
+                              <span className="text-main-darkGray text-xs min-w-[64px]">
+                                {dates}
+                              </span>
+                              <span className="text-main-darkGray text-xs min-w-[64px] truncate">
+                                {company}
+                              </span>
+                              <span className="text-main-darkGray text-xs min-w-[64px] truncate pr-5">
+                                {careerDetail}
+                              </span>
                             </span>
                             <span
-                              className="absolute right-0"
+                              className="absolute right-0 top-1/2 -translate-y-1/2"
                               onClick={() =>
                                 setcareers(
                                   careers.filter((v, i) => i !== index)
