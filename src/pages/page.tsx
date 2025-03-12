@@ -10,6 +10,7 @@ import CustomNoticeSlider from "./CustomNoticeSlider";
 import dummy from "./DummyNotices";
 import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
+import Notice from "@/types/Notice";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -46,10 +47,16 @@ const RootPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const [customNotices, setCustomNotices] = useState(dummy);
-  const [emergencyNotices, setEmergencyNotices] = useState(dummy);
-  const [newNotices, setNewNotices] = useState(dummy);
-  useEffect(() => {}, []);
+  const [customNotices, setCustomNotices] = useState<Notice[] | null>(null);
+  const [emergencyNotices, setEmergencyNotices] = useState<Notice[] | null>(
+    null
+  );
+  const [newNotices, setNewNotices] = useState<Notice[] | null>(null);
+  useEffect(() => {
+    setCustomNotices(dummy);
+    setEmergencyNotices(dummy);
+    setNewNotices(dummy);
+  }, []);
 
   return (
     <>
@@ -97,30 +104,7 @@ const RootPage = () => {
                 </span>
                 <HelpCircleIcon color="#717171" width={14} height={14} />
               </div>
-              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
-                {[...Array(10)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="min-w-[160px] bg-white shadow-md rounded-[10px] p-3"
-                  >
-                    <div className="w-30 h-24 bg-main-gray rounded-[10px]"></div>
-                    <p className="text-[12px] text-main-darkGray font-regular mt-2">
-                      한국경제신문
-                    </p>
-                    <p className="text-[12px] font-bold mt-1">
-                      [업무강도 상] 풀스택 프로젝트 보조 구인
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-2">
-                      서울 용산구
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-1">
-                      <span className="text-main-color font-bold">시급</span>{" "}
-                      10,030원
-                    </p>
-                  </div>
-                ))}
-              </div> */}
-              <CustomNoticeSlider notices={customNotices} />
+              {customNotices && <CustomNoticeSlider notices={customNotices} />}
             </div>
             {/* 긴급 공고 */}
             <div className="flex flex-col gap-[10px] pb-[10px]">
@@ -128,69 +112,19 @@ const RootPage = () => {
                 <span className="text-[16px] font-medium text-red-500">
                   긴급 공고 🚨
                 </span>
-                <span className="text-[12px] text-main-darkGray cursor-pointer">
-                  전체보기
-                </span>
               </div>
-              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
-                {[...Array(10)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="min-w-[160px] bg-white shadow-md rounded-[10px] p-3"
-                  >
-                    <div className="w-30 h-24 bg-main-gray rounded-[10px]"></div>
-                    <p className="text-[12px] text-main-darkGray font-regular mt-2">
-                      한국경제신문
-                    </p>
-                    <p className="text-[12px] font-bold mt-1">
-                      [업무강도 상] 풀스택 프로젝트 보조 구인
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-2">
-                      서울 용산구
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-1">
-                      <span className="text-main-color font-bold">시급</span>{" "}
-                      10,030원
-                    </p>
-                  </div>
-                ))}
-              </div> */}
-              <EmergencyNoticeSlider notices={emergencyNotices} />
+              {emergencyNotices && (
+                <EmergencyNoticeSlider notices={emergencyNotices} />
+              )}
             </div>
             {/* 방금 올라온 공고 */}
             <div className="py-[20px] flex flex-col gap-[10px]">
               <div className="flex gap-2 justify-between items-center px-[20px] text-main-darkGray">
-                <span className="text-[16px] font-medium">
+                <span className="text-[16px] font-medium text-main-color">
                   방금 올라온 공고
                 </span>
-                <span className="text-[12px] text-main-darkGray cursor-pointer">
-                  전체보기
-                </span>
               </div>
-              {/* <div className="flex space-x-4 overflow-x-auto pb-2">
-                {[...Array(10)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="min-w-[160px] bg-white shadow-md rounded-[10px] p-3"
-                  >
-                    <div className="w-30 h-24 bg-main-gray rounded-[10px]"></div>
-                    <p className="text-[12px] text-main-darkGray font-regular mt-2">
-                      한국경제신문
-                    </p>
-                    <p className="text-[12px] font-bold mt-1">
-                      [업무강도 상] 풀스택 프로젝트 보조 구인
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-2">
-                      서울 용산구
-                    </p>
-                    <p className="text-[10px] text-main-darkGray mt-1">
-                      <span className="text-main-color font-bold">시급</span>{" "}
-                      10,030원
-                    </p>
-                  </div>
-                ))}
-              </div> */}
-              <NewNoticeSlider notices={newNotices} />
+              {newNotices && <NewNoticeSlider notices={newNotices} />}
             </div>
             {/* 하단 정보 */}
             <div className=" text-center text-[12px] text-main-darkGray">

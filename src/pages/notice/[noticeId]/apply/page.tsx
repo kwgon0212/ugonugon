@@ -98,7 +98,13 @@ const NoticeApplyPage = () => {
               <div className="text-[14px] flex w-full justify-end">
                 {/* <h3>한경 2기 풀스택반</h3> */}
                 <span className="text-main-darkGray">
-                  ~ {postData?.deadline.date}
+                  ~{" "}
+                  {postData &&
+                    `${new Date(
+                      postData.deadline.date
+                    ).toLocaleDateString()} ${new Date(
+                      postData.deadline.time
+                    ).toLocaleTimeString()}`}
                 </span>
               </div>
               {/* <div className="text-main-darkGray flex gap-[4px] text-[14px]">

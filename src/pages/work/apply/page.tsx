@@ -89,7 +89,7 @@ const WorkApplyPage = () => {
               posts.map((post, idx) => {
                 return (
                   <button
-                    key={post._id}
+                    key={post._id.toString()}
                     onClick={() => navigate(`/notice/${post._id}`)}
                     className="w-full bg-white rounded-[10px] flex p-[10px] gap-[20px] items-center"
                   >

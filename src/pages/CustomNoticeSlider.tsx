@@ -34,30 +34,45 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                 onClick={() => navigate(`/notice/${notice._id}`)}
                 className="w-full bg-white flex gap-[20px] items-center rounded-[10px] p-[10px]"
               >
-                <img
-                  src="https://placehold.co/90"
-                  alt="img"
-                  className="size-[90px] rounded-[10px]"
-                />
+                {notice.images.length > 0 ? (
+                  <img
+                    src={notice.images[0]}
+                    alt="img"
+                    className="size-[90px] rounded-[10px] object-cover"
+                  />
+                ) : (
+                  <p className="size-[90px] min-w-[90px] rounded-[10px] bg-main-gray text-main-darkGray text-[12px] flex justify-center items-center">
+                    이미지 없음
+                  </p>
+                )}
+
                 <div className="flex-grow w-full flex flex-col gap-[4px] text-left">
-                  <div className="flex flex-col w-full">
-                    <span className="text-[12px] text-main-darkGray">
-                      {notice.company ? notice.company : "한국경제신문"}
+                  <div className="flex flex-col">
+                    <div className="flex justify-between items-center w-full">
+                      <p className="font-bold overflow-hidden truncate whitespace-nowrap">
+                        {notice.title}
+                      </p>
+                    </div>
+                    <span className="text-[12px]">
+                      현재 {notice.applies ? notice.applies.length : 0}명 지원중
                     </span>
-                    <p className="font-bold overflow-hidden truncate whitespace-nowrap">
-                      {notice.title}
-                    </p>
                   </div>
-                  <div className="flex flex-col w-fit">
-                    <span className="text-[12px] text-main-darkGray w-fit">
+
+                  <div className="flex flex-col w-full">
+                    <span className="text-[12px] text-main-darkGray w-full">
                       {notice.address.street}
                     </span>
-                    <div className="flex gap-[4px] text-sm w-fit">
-                      <span className="font-bold text-main-color">
-                        {notice.pay.type}
-                      </span>
-                      <span className="text-[12px] text-main-darkGray">
-                        {notice.pay.value.toLocaleString()}원
+                    <div className="w-full flex gap-[4px] justify-between text-sm">
+                      <div className="flex gap-[4px]">
+                        <span className="font-bold text-main-color">
+                          {notice.pay.type}
+                        </span>
+                        <span className="text-[12px] text-main-darkGray">
+                          {notice.pay.value.toLocaleString()}원
+                        </span>
+                      </div>
+                      <span className="text-main-darkGray text-[12px]">
+                        ~ {notice.deadline.date.toLocaleDateString()}
                       </span>
                     </div>
                   </div>
@@ -70,15 +85,5 @@ const CustomNoticeSlider = ({ notices }: Props) => {
     </div>
   );
 };
-
-const Title = styled.p`
-  font-weight: bold;
-  display: block;
-  max-width: 100%;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  flex-shrink: 1; /* flex가 적용된 부모 요소 내부에서 크기 조절 */
-`;
 
 export default CustomNoticeSlider;
