@@ -55,6 +55,7 @@ interface User {
   sex?: "male" | "female";
   phone: string;
   profileImage?: string;
+  profile?: string; // 추가: users에 profile 필드에 이미지 URL이 있을 수 있음
   residentId?: string;
   email?: string;
   address?: any;
@@ -180,6 +181,45 @@ const getGenderDisplay = (user: User): string => {
   return ""; // 성별 정보를 찾을 수 없는 경우
 };
 
+// 프로필 이미지 URL 가져오기
+const getProfileImageUrl = (user: User): string | undefined => {
+  // profileImage가 있으면 그걸 먼저 사용
+  if (user.profileImage) {
+    return user.profileImage;
+  }
+
+  // profile 필드에 이미지가 있을 수 있음
+  if (user.profile) {
+    // 이미 URL 형태면 그대로 반환
+    if (
+      typeof user.profile === "string" &&
+      (user.profile.startsWith("http") || user.profile.startsWith("data:image"))
+    ) {
+      return user.profile;
+    }
+
+    // 다른 형태일 경우 로깅
+    console.log(
+      "[DEBUG] Profile 필드 형식:",
+      typeof user.profile,
+      user.profile
+    );
+
+    // 문자열 변환 시도
+    if (user.profile.toString) {
+      const profileStr = user.profile.toString();
+      if (
+        profileStr.startsWith("http") ||
+        profileStr.startsWith("data:image")
+      ) {
+        return profileStr;
+      }
+    }
+  }
+
+  return undefined;
+};
+
 // 기본 사용자 정보 생성 함수
 const createDefaultUser = (userId: string): User => ({
   _id: userId,
@@ -267,6 +307,12 @@ const ReCruitPage: React.FC = () => {
 
               const userData: User =
                 userResponse.data || createDefaultUser(userId);
+
+              // 프로필 이미지 디버깅
+              console.log(`[DEBUG] 사용자 프로필 필드:`, {
+                profileImage: userData.profileImage,
+                profile: userData.profile,
+              });
 
               // 3-2. 출석 정보 불러오기
               console.log(
@@ -518,13 +564,17 @@ const ReCruitPage: React.FC = () => {
                               </h4>
                               <div className="flex items-center space-x-4 mt-2">
                                 {/* 근로자 사진 */}
-                                <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px]">
-                                  {worker.user.profileImage && (
+                                <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden">
+                                  {getProfileImageUrl(worker.user) ? (
                                     <img
-                                      src={worker.user.profileImage}
+                                      src={getProfileImageUrl(worker.user)}
                                       alt={worker.user.name}
                                       className="w-full h-full object-cover rounded-[10px]"
                                     />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
+                                      No Photo
+                                    </div>
                                   )}
                                 </div>
 
