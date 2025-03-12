@@ -31,7 +31,7 @@ const NoticeApplyPage = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`/api/post/${noticeId}`);
+        const response = await axios.get(`/api/post?postId=${noticeId}`);
         const post = response.data;
         setPostData(post);
         if (!post.applies) {
