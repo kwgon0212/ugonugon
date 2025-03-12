@@ -46,7 +46,9 @@ const WorkApplyPage = () => {
       try {
         const data = await Promise.all(
           applies.map(async (apply) => {
-            const response = await axios.get(`/api/post/${apply.postId}`);
+            const response = await axios.get(
+              `/api/post?postId=${apply.postId}`
+            );
             return response.data;
           })
         );
