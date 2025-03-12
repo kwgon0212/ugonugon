@@ -261,7 +261,7 @@ export const formatDateString = (date: Date): string => {
 };
 
 // 허용 오차 범위 (미터 단위)
-export const DISTANCE_TOLERANCE = 1000; // 1Km 로 설정 (필요에 따라 조정 가능)
+export const DISTANCE_TOLERANCE = 2000; // 1Km 로 설정 (필요에 따라 조정 가능)
 
 // 거리가 허용 오차 범위 내에 있는지 확인하는 함수
 export const isWithinAllowedDistance = (distanceInMeters: number): boolean => {
