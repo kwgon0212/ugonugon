@@ -51,10 +51,6 @@ const NoticeApplyPage = () => {
     if (applies.length <= 0) return;
 
     const fetchResumes = async () => {
-      // const resumeArr = applies.map(
-      //   // (item) => new mongoose.Types.ObjectId(item.resumeId)
-      //   (item) => item.resumeId
-      // );
       const resumeData = await Promise.all(
         applies.map(({ resumeId }) => getResume(resumeId as string))
       );
@@ -67,8 +63,6 @@ const NoticeApplyPage = () => {
   const handleClickUser = (resumeId: string) => {
     navigate(`/notice/${noticeId}/apply/${resumeId}`);
   };
-
-  console.log(resumes);
   return (
     <>
       <Header>
@@ -118,13 +112,15 @@ const NoticeApplyPage = () => {
                       <button
                         key={idx + "지원자"}
                         className="w-full bg-white border border-main-gray flex gap-[10px] rounded-[10px] px-[15px] py-[10px]"
-                        onClick={() => handleClickUser(resume.id)}
+                        onClick={() => {
+                          handleClickUser(resume._id as string);
+                        }}
                       >
                         <img
                           width="80px"
                           src={resume.profile}
                           alt="user-img"
-                          className="rounded-[10px]"
+                          className="rounded-full object-cover border border-main-darkGray"
                         />
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">

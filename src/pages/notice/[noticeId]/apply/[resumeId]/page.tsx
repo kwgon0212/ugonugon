@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
-import { Resume } from "@/hooks/fetchResume";
+import getResume, { postResume, Resume } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ const NoticeApplyResumePage = () => {
   const [isOpenRejectModal, setIsOpenRejectModal] = useState(false);
   const [isOpenAcceptModal, setIsOpenAcceptModal] = useState(false);
 
-  const [resume, setResume] = useState<Resume | null>(null);
+  const [resume, setResume] = useState<Resume>();
 
   const [isFetchStatus, setIsFetchStatus] = useState(false);
 
@@ -30,9 +30,11 @@ const NoticeApplyResumePage = () => {
   useEffect(() => {
     const fetchResume = async () => {
       try {
-        const response = await axios.get(`/api/resume?resumeId=${resumeId}`);
-        const resumeDoc = response.data;
-        setResume(resumeDoc);
+        const response = await getResume(resumeId);
+        setResume(response);
+        console.log(resumeId);
+        console.log(noticeId);
+        console.log(resume);
       } catch (error) {
         console.log(error);
       }
@@ -57,16 +59,16 @@ const NoticeApplyResumePage = () => {
       );
 
       // 지원자 사용자 정보 가져오기 (이름을 확실히 얻기 위해)
-      let applicantName = "지원자";
-      try {
-        const userResponse = await axios.get(`/api/users/${resume.userId}`);
-        if (userResponse.data && userResponse.data.name) {
-          applicantName = userResponse.data.name;
-        }
-      } catch (error) {
-        console.error("사용자 정보 조회 실패:", error);
-        // 실패해도 계속 진행 (기본 이름 사용)
-      }
+      let applicantName = resume.name;
+      // try {
+      //   const userResponse = await axios.get(`/api/users/${resume.userId}`);
+      //   if (userResponse.data && userResponse.data.name) {
+      //     applicantName = userResponse.data.name;
+      //   }
+      // } catch (error) {
+      //   console.error("사용자 정보 조회 실패:", error);
+      //   // 실패해도 계속 진행 (기본 이름 사용)
+      // }
 
       // 채팅방 생성 또는 기존 채팅방 가져오기
       const response = await axios.post("/api/chat-rooms", {
@@ -119,7 +121,7 @@ const NoticeApplyResumePage = () => {
       console.log(error);
     }
   };
-
+  if (!resume) return <></>;
   return (
     <>
       <Header>
@@ -128,7 +130,9 @@ const NoticeApplyResumePage = () => {
             <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
             </button>
-            <span className="font-bold">지원자</span>
+            <span className="font-bold">
+              지원자: <span className="text-main-color">{resume.name}</span>
+            </span>
           </div>
         </div>
       </Header>
@@ -137,28 +141,28 @@ const NoticeApplyResumePage = () => {
           <div className="w-full h-full flex flex-col relative">
             <div className="flex p-layout gap-[20px] items-center">
               <img
-                src="https://placehold.co/80"
+                width="80px"
+                src={resume.profile}
                 alt="user-img"
-                className="rounded-[10px]"
+                className="rounded-full object-cover border border-main-darkGray self-stretch"
               />
               <div className="w-full flex flex-col justify-between">
                 <p className="w-full flex">
                   <span className="basis-[80px] text-main-darkGray">이름</span>
-                  <span className="flex-grow">김김김</span>
+                  <span className="flex-grow">{resume.name}</span>
                 </p>
                 <p className="w-full flex">
                   <span className="basis-[80px] text-main-darkGray">성별</span>
-                  <span className="flex-grow">남성</span>
+                  <span className="flex-grow">{resume.sex}</span>
                 </p>
                 <p className="w-full flex">
                   <span className="basis-[80px] text-main-darkGray">
                     주민번호
                   </span>
-                  <span className="flex-grow">123456-1234567</span>
+                  <span className="flex-grow">{resume.residentId}</span>
                 </p>
               </div>
             </div>
-
             <div className="flex h-full flex-col gap-[20px] bg-white rounded-t-[20px] p-[20px]">
               <div className="flex flex-col gap-[20px] pb-[100px] bg-white">
                 <div className="w-full flex flex-col gap-[10px]">
@@ -209,32 +213,36 @@ const NoticeApplyResumePage = () => {
                     resume.careers?.map((career) => {
                       return (
                         <p
-                          className="w-full flex gap-[10px]"
+                          className="w-full flex gap-[10px] flex-col"
                           key={JSON.stringify(career)}
                         >
-                          <span className="basis-[100px] text-main-darkGray">
-                            {career.dates}
-                          </span>
-                          <span className="flex-grow">{career.company}</span>
+                          <div className="flex">
+                            <span className="basis-[100px] text-main-darkGray">
+                              {career.dates}
+                            </span>
+                            <span className="flex-grow">{career.company}</span>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-[16px] pb-[10px]">
+                              근무내용
+                            </h3>
+                            {career.careerDetail}
+                          </div>
+                          <hr className="border-dashed" />
                         </p>
                       );
                     })}
                 </div>
 
                 <div className="w-full flex flex-col gap-[10px]">
-                  <h3 className="font-bold text-[20px]">기타사항</h3>
-                  <p className="w-full flex">
-                    <span className="basis-[80px] text-main-darkGray">
-                      자기소개
-                    </span>
-                    <textarea
-                      value={resume?.introduction}
-                      readOnly
-                      disabled
-                      rows={5}
-                      className="flex-grow border border-main-gray rounded-[10px] py-[5px] px-[10px] resize-none bg-white"
-                    />
-                  </p>
+                  <h3 className="font-bold text-[20px]">자기소개</h3>
+                  <textarea
+                    value={resume?.introduction}
+                    readOnly
+                    disabled
+                    rows={5}
+                    className="flex-grow border border-main-gray rounded-[10px] py-[5px] px-[10px] resize-none bg-white"
+                  />
                 </div>
               </div>
             </div>
