@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import mongoose from "mongoose";
+import { Navigate } from "react-router-dom";
 
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
@@ -162,19 +164,32 @@ interface PostData {
   };
   hireType: string[];
   period: {
-    start: Date;
-    end: Date;
+    start: string | Date;
+    end: string | Date;
     discussion: boolean;
   };
   hour: {
-    start: Date;
-    end: Date;
+    start: string | Date;
+    end: string | Date;
     discussion: boolean;
   };
+  restTime?: {
+    start: string | Date;
+    end: string | Date;
+  };
   day: string[];
-  deadline: {
-    date: Date;
-    time: Date;
+  workDetail?: string;
+  welfare?: string;
+  postDetail?: string;
+  deadline?: {
+    date: string | Date;
+    time: string | Date;
+  };
+  person?: number;
+  preferences?: string;
+  education?: {
+    school: string;
+    state: string;
   };
   address: {
     zipcode: string;
@@ -183,7 +198,23 @@ interface PostData {
     lat?: number;
     lng?: number;
   };
-  createdAt: Date;
+  recruiter?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
+  author: string;
+  createdAt?: string | Date;
+  applies: [
+    {
+      userId: mongoose.Types.ObjectId;
+      resumeId: mongoose.Types.ObjectId;
+      // postId: mongoose.Types.ObjectId;
+      status?: "pending" | "accepted" | "rejected";
+      appliedAt?: string | Date;
+    }
+  ];
+  // applies: IApply[]; // 따로 분리한 인터페이스 적용
 }
 
 export function NoticeListPage() {
@@ -202,6 +233,8 @@ export function NoticeListPage() {
   const [allPosts, setAllPosts] = useState<PostData[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+
+  const navigate = useNavigate();
 
   // API에서 공고 데이터 가져오기
   useEffect(() => {
@@ -402,25 +435,44 @@ export function NoticeListPage() {
     // 근무 기간 필터링
     if (params.startDate || params.endDate) {
       result = result.filter((post) => {
+        // period 객체 내의 start와 end 날짜 사용
         const postStartDate = new Date(post.period.start);
-        const postEndDate = new Date(post.period.end);
+        const postEndDate = post.period.end ? new Date(post.period.end) : null;
 
         if (params.startDate && params.endDate) {
           const startDate = new Date(params.startDate);
           const endDate = new Date(params.endDate);
 
-          // 공고의 근무 기간이 검색 조건의 기간과 겹치는지 확인
-          return (
-            (postStartDate >= startDate && postStartDate <= endDate) ||
-            (postEndDate >= startDate && postEndDate <= endDate) ||
-            (postStartDate <= startDate && postEndDate >= endDate)
-          );
+          // 협의 가능한 경우와 날짜가 설정된 경우 모두 처리
+          if (post.period.discussion) {
+            return true; // 협의 가능한 경우 항상 포함
+          } else if (postEndDate) {
+            // 공고의 근무 기간이 검색 조건의 기간과 겹치는지 확인
+            return (
+              (postStartDate >= startDate && postStartDate <= endDate) ||
+              (postEndDate >= startDate && postEndDate <= endDate) ||
+              (postStartDate <= startDate && postEndDate >= endDate)
+            );
+          } else {
+            // 종료일이 없는 경우, 시작일만으로 판단
+            return postStartDate >= startDate && postStartDate <= endDate;
+          }
         } else if (params.startDate) {
           const startDate = new Date(params.startDate);
-          return postEndDate >= startDate;
+          if (post.period.discussion) {
+            return true;
+          } else if (postEndDate) {
+            return postEndDate >= startDate;
+          } else {
+            return postStartDate >= startDate;
+          }
         } else if (params.endDate) {
           const endDate = new Date(params.endDate);
-          return postStartDate <= endDate;
+          if (post.period.discussion) {
+            return true;
+          } else {
+            return postStartDate <= endDate;
+          }
         }
         return true;
       });
@@ -557,16 +609,25 @@ export function NoticeListPage() {
                   </div>
                   {/* 현재 페이지의 공고 아이템 렌더링 */}
                   {currentNotices.map((notice) => (
-                    <ListContainer key={notice._id}>
+                    <ListContainer
+                      key={notice._id}
+                      onClick={() =>
+                        navigate(`/notice/${notice._id.toString()}`)
+                      }
+                    >
                       <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray">
                         <img src="/logo192.png" alt="공고 이미지" />
                       </div>
                       <ListInfo>
                         <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
-                          <span>{notice.title}</span>
+                          <span>{notice.jobType}</span>
                           <div>
                             <span>마감일 </span>
-                            <span>{formatDate(notice.deadline.date)}</span>
+                            <span>
+                              {notice.deadline && notice.deadline.date
+                                ? formatDate(notice.deadline.date)
+                                : "상시모집"}
+                            </span>
                           </div>
                         </div>
                         <div className="w-[95%] text-[16px] font-bold flex-wrap">
