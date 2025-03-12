@@ -2,23 +2,18 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Main from "@/components/Main";
-import { Resume } from "@/hooks/fetchResume";
+import getResume, { Resume } from "@/hooks/fetchResume";
 import Notice from "@/types/Notice";
 import axios from "axios";
-import mongoose, { Types } from "mongoose";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface Apply {
-  userId: Types.ObjectId;
-  resumeId: Types.ObjectId;
-  postId: Types.ObjectId;
+  // userId: String;
+  resumeId: String;
+  // postId: String;
   status: "pending" | "accepted" | "rejected";
   appliedAt: Date;
-}
-
-interface CustomResume extends Resume {
-  _id: Types.ObjectId;
 }
 
 const NoticeApplyPage = () => {
@@ -26,7 +21,7 @@ const NoticeApplyPage = () => {
   const { noticeId } = useParams();
   const [postData, setPostData] = useState<Notice | null>(null);
   const [applies, setApplies] = useState<Apply[]>([]);
-  const [resumes, setResumes] = useState<CustomResume[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -54,14 +49,12 @@ const NoticeApplyPage = () => {
     if (applies.length <= 0) return;
 
     const fetchResumes = async () => {
-      const resumeArr = applies.map(
-        // (item) => new mongoose.Types.ObjectId(item.resumeId)
-        (item) => item.resumeId
-      );
+      // const resumeArr = applies.map(
+      //   // (item) => new mongoose.Types.ObjectId(item.resumeId)
+      //   (item) => item.resumeId
+      // );
       const resumeData = await Promise.all(
-        resumeArr.map((id) =>
-          axios(`/api/resume?resumeId=${id}`).then((res) => res.data)
-        )
+        applies.map(({ resumeId }) => getResume(resumeId as string))
       );
       setResumes(resumeData);
     };
@@ -122,17 +115,18 @@ const NoticeApplyPage = () => {
                       <button
                         key={idx + "지원자"}
                         className="w-full bg-white border border-main-gray flex gap-[10px] rounded-[10px] px-[15px] py-[10px]"
-                        onClick={() => handleClickUser(resume._id.toString())}
+                        onClick={() => handleClickUser(resume.id)}
                       >
                         <img
-                          src="https://placehold.co/80"
+                          width="80px"
+                          src={resume.profile}
                           alt="user-img"
                           className="rounded-[10px]"
                         />
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">
                             <span className="font-bold text-[14px] text-black">
-                              김김김 (남)
+                              {resume.name}
                             </span>
                             <ArrowRightIcon color="#717171" />
                           </p>
