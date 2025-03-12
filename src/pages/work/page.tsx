@@ -138,7 +138,7 @@ export function WorkPage() {
               </div>
               <div className="text-xl mb-5">근무가 존재하지 않아요</div>
               <div className="flex flex-row justify-center w-full">
-                <Link to="/">
+                <Link to="/work/apply">
                   <span className="text-main-color">
                     내가 지원한 공고 페이지
                   </span>

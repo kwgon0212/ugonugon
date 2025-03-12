@@ -10,8 +10,46 @@ import { Link } from "react-router-dom";
 import AddIcon from "@/components/icons/Plus";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 
+// 타입 정의
+interface User {
+  _id: string;
+  // 사용자에게 필요한 다른 속성들
+}
+
+interface Post {
+  _id: string;
+  title: string;
+  address?: {
+    street: string;
+    detail?: string;
+  };
+  pay: {
+    type: string;
+    value: number;
+  };
+  period?: {
+    start: string;
+    end: string;
+  };
+  hour?: {
+    start: string;
+    end: string;
+  };
+  deadline?: {
+    date: string;
+  };
+  person: number;
+  applies?: Array<any>; // 필요에 따라 더 구체적인 타입으로 교체
+}
+
+interface RootState {
+  auth: {
+    user: User | null;
+  };
+}
+
 // 날짜 포맷팅 함수
-const formatDate = (dateString) => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   const year = date.getFullYear().toString().substr(-2); // 년도 뒤의 2자리만
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -20,14 +58,18 @@ const formatDate = (dateString) => {
 };
 
 // 시간 포맷팅 함수
-const formatTime = (dateString) => {
+const formatTime = (dateString: string): string => {
   const date = new Date(dateString);
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
 };
 
-function ReCruitManage({ post }) {
+interface ReCruitManageProps {
+  post: Post;
+}
+
+function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
   const spanStyle = {
     text: "font-bold text-main-color",
   };
@@ -60,7 +102,9 @@ function ReCruitManage({ post }) {
       <div className="bg-white h-[160px] rounded-[10px] flex-col p-3">
         <div className="flex justify-between">
           <p className="font-bold text-[12px] mb-2">{post.title}</p>
-          <ArrowRightIcon />
+          <div className="w-5 h-5">
+            <ArrowRightIcon />
+          </div>
         </div>
         <div className="flex justify-between">
           <div className="flex flex-col gap-0.5 text-main-darkGray text-[10px]">
@@ -103,13 +147,13 @@ function ReCruitManage({ post }) {
   );
 }
 
-function ReCruitManagePage() {
+const ReCruitManagePage: React.FC = () => {
   const navigate = useNavigate();
   // Redux에서 로그인한 사용자 정보 가져오기
-  const user = useAppSelector((state) => state.auth.user);
-  const [myPosts, setMyPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const user = useAppSelector((state: RootState) => state.auth.user);
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 사용자가 등록한 공고 목록 불러오기
   useEffect(() => {
@@ -121,7 +165,7 @@ function ReCruitManagePage() {
       }
 
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ posts: Post[] }>(
           `/api/post/recruit/manage/${user._id}`
         );
 
@@ -199,6 +243,6 @@ function ReCruitManagePage() {
       <BottomNav></BottomNav>
     </>
   );
-}
+};
 
 export default ReCruitManagePage;

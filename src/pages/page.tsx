@@ -11,6 +11,7 @@ import dummy from "./DummyNotices";
 import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
 import Notice from "@/types/Notice";
+import axios from "axios";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -30,6 +31,7 @@ const RootPage = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   const userName = useAppSelector((state) => state.auth.user?.name);
+  const userId = useAppSelector((state) => state.auth.user?._id);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,10 +55,31 @@ const RootPage = () => {
   );
   const [newNotices, setNewNotices] = useState<Notice[] | null>(null);
   useEffect(() => {
-    setCustomNotices(dummy);
-    setEmergencyNotices(dummy);
-    setNewNotices(dummy);
-  }, []);
+    const fetchCustomPosts = async () => {
+      if (!userId) return;
+
+      const userResponse = await axios.get(`/api/users?userId=${userId}`);
+      const userAddress = userResponse.data.address.street.split(" ")[0];
+
+      const response = await axios.get(`/api/post?street=${userAddress}`);
+      const customPosts = response.data;
+      setCustomNotices(customPosts);
+    };
+    const fetchEmergencyPosts = async () => {
+      const response = await axios.get("/api/post?urgent=true");
+      const emergencyPosts = response.data;
+      setEmergencyNotices(emergencyPosts);
+    };
+    const fetchNewPosts = async () => {
+      const response = await axios.get("/api/post?latest=true");
+      const newPosts = response.data;
+      setNewNotices(newPosts);
+    };
+
+    fetchCustomPosts();
+    fetchEmergencyPosts();
+    fetchNewPosts();
+  }, [userId]);
 
   return (
     <>

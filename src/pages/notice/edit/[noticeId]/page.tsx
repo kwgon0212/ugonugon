@@ -225,6 +225,8 @@ const NoticeEditPage = () => {
     e.preventDefault();
     if (
       !title ||
+      hireType.length <= 0 ||
+      day.length <= 0 ||
       pay.value <= 0 ||
       person <= 0 ||
       !address.zipcode ||
