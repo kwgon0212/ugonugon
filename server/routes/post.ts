@@ -435,12 +435,10 @@ router.get("/lists", async (req, res) => {
  *                     example: "get notice success"
  */
 // router.get("/get/oneNotice/:postId", async (req, res) => {
-router.get("/:postId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { postId } = req.params;
-    const post = await JobPosting.findById(postId);
-
-    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+    const post = await JobPosting.findById(req.query.postId);
+    if (!req.query.postId) {
       return res.status(400).json({ message: "해당 공고를 찾을 수 없습니다." });
     }
 
@@ -450,7 +448,6 @@ router.get("/:postId", async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
-// get("/:postId" 로 바꾸기
 
 router.post("/:postId/apply", async (req, res) => {
   try {
@@ -568,4 +565,30 @@ router.post("/:postId/apply/status", async (req, res) => {
   }
 });
 
+//API: GET/api/recruit/manage
+//사용자가 등록한 공고 목록 조회 API
+router.get("/recruit/manage/:authorId", async (req, res) => {
+  try {
+    const { authorId } = req.params;
+
+    const authorObjectId = new mongoose.Types.ObjectId(authorId);
+
+    //author가 현재 로그인한 사용자와 일치하는 공고 검색
+    const myPosts = await JobPosting.find({ author: authorObjectId }).sort({
+      createdAt: -1,
+    });
+
+    if (!myPosts.length) {
+      return res
+        .status(200)
+        .json({ message: "등록한 공고가 없습니다.", posts: [] });
+    }
+    res
+      .status(200)
+      .json({ message: "성공적으로 공고를 불러왔습니다.", posts: myPosts });
+  } catch (err) {
+    console.error("사용자 공고 조회 중 오류 발생:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;

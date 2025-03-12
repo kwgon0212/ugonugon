@@ -9,14 +9,15 @@ import authRoutes from "./routes/auth.ts";
 import postRoutes from "./routes/post.ts";
 import contractRoutes from "./routes/contract.ts";
 import resumeRoutes from "./routes/resume.ts";
+import attendanceRoutes from "./routes/attendance.ts";
 
+import imageRoutes from "./routes/image.ts";
 import emailRoutes from "./routes/email.ts";
 import chatRoutes from "./routes/chatServer.ts";
 import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
-import { defaultMaxListeners } from "events";
 dotenv.config();
 
 const app: Express = express();
@@ -38,7 +39,8 @@ app.use(
     credentials: true, // ✅ 쿠키 허용
   })
 );
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // JSON 요청 크기 제한 (Base64 이미지 지원)
 app.use(express.urlencoded({ extended: true }));
 setupSwagger(app);
 
@@ -50,6 +52,9 @@ app.use("/api/email", emailRoutes);
 app.use("/api/contract", contractRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/scrap", scrapRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/scrap", scrapRoutes);
+app.use("/api/image", imageRoutes);
 
 app.use("/api/post", postRoutes);
 app.use("/api", chatRoutes); // 채팅 관련 라우트를 /api 접두사로 설정

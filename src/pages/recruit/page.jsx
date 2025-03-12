@@ -6,6 +6,7 @@ import ResumeIcon from "../../components/icons/Resume";
 import WalletIcon from "../../components/icons/Wallet";
 import { useState } from "react";
 import ReCruitPageFail from "./ReCruitPageFail";
+import { Link } from "react-router-dom";
 function ReCruitPage() {
   const [hasWorkItem, setWorkItem] = useState(true);
   const [userId, setUserId] = useState("의문의 계정");
@@ -98,15 +99,17 @@ function ReCruitPage() {
 
               {/*  수정된 목차: 흰 배경 유지, 아이콘을 오른쪽으로 정렬 */}
               <div className="mt-6 space-y-3">
-                <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer">
-                  <span className="text-gray-800 font-medium flex gap-[5px] items-center">
-                    <span>
-                      <ResumeIcon color="#717171" />
-                    </span>{" "}
-                    등록한 공고 관리
-                  </span>
-                  <ArrowRightIcon className="w-5 h-5 text-gray-700" />
-                </div>
+                <Link to="/recruit/manage">
+                  <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer">
+                    <span className="text-gray-800 font-medium flex gap-[5px] items-center">
+                      <span>
+                        <ResumeIcon color="#717171" />
+                      </span>{" "}
+                      등록한 공고 관리
+                    </span>
+                    <ArrowRightIcon className="w-5 h-5 text-gray-700" />
+                  </div>
+                </Link>
                 <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer">
                   <span className="text-gray-800 font-medium flex items-center gap-[5px]">
                     <span>

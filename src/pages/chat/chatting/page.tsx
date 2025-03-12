@@ -533,6 +533,7 @@ export function ChattingPage() {
         // 상대방이 나간 경우 알림 표시
         alert("상대방이 채팅방을 나갔습니다. 메시지를 보낼 수 없습니다.");
       }
+
       return;
     }
 

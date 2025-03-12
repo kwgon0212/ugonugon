@@ -201,6 +201,34 @@ const NoticeDetailPage = () => {
     }
 
     try {
+      // 채팅 시작 전에 상대방 정보 정확히 가져오기
+      let authorName = postData.recruiter?.name || "채용 담당자";
+
+      // API로 정확한 사용자 정보 가져오기 시도
+      try {
+        const authorId = postData.author.toString();
+        // 일반 사용자 정보 먼저 시도
+        const userResponse = await axios.get(`/api/users/${authorId}`);
+        if (
+          userResponse.data &&
+          userResponse.data.name &&
+          userResponse.data.name !== "사용자"
+        ) {
+          authorName = userResponse.data.name;
+        } else {
+          // 공고 작성자 정보 시도
+          const authorResponse = await axios.get(
+            `/api/post/author/${authorId}`
+          );
+          if (authorResponse.data?.recruiter?.name) {
+            authorName = authorResponse.data.recruiter.name;
+          }
+        }
+      } catch (error) {
+        console.log("상대방 정보 조회 실패:", error);
+        // 실패 시 기존 값 사용
+      }
+
       // 채팅방 생성 API 호출
       const response = await axios.post("/api/chat-rooms", {
         user1Id: userId,
@@ -223,11 +251,11 @@ const NoticeDetailPage = () => {
       setTimeout(() => {
         socket.disconnect(); // 페이지 이동 전 연결 해제
 
-        // 채팅방으로 이동
+        // 채팅방으로 이동 - 이제 정확한 상대방 이름 전달
         navigate(`/chat/chatting?roomId=${roomId}&userId=${userId}`, {
           state: {
             roomId: roomId,
-            otherName: postData.recruiter?.name || "공고 등록자",
+            otherName: authorName, // 정확한 이름으로 업데이트
           },
         });
       }, 500);
@@ -236,7 +264,6 @@ const NoticeDetailPage = () => {
       alert("채팅방 생성에 실패했습니다.");
     }
   };
-
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (section) {

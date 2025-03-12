@@ -155,51 +155,291 @@ const Drop = styled.ul`
 interface PostData {
   _id: string;
   title: string;
-  companyInfo: {
-    exposedArea: { goo: string };
-    companyName: string;
+  jobType: string;
+  pay: {
+    type: string;
+    value: number;
   };
-  payType: string;
-  pay: number;
-  workingPeriod: string;
-  endOfNotice: Date;
+  hireType: string[];
+  period: {
+    start: Date;
+    end: Date;
+    discussion: boolean;
+  };
+  hour: {
+    start: Date;
+    end: Date;
+    discussion: boolean;
+  };
+  day: string[];
+  deadline: {
+    date: Date;
+    time: Date;
+  };
+  address: {
+    zipcode: string;
+    street: string;
+    detail?: string;
+    lat?: number;
+    lng?: number;
+  };
+  createdAt: Date;
 }
+
 export function NoticeListPage() {
   const location = useLocation();
+  const searchParams = location.state || {};
+
   const [hasNotice, setNotice] = useState(true);
-  const [isOpen, setOpen] = useState(false); // 드롭다운 메뉴 열림 상태
-  const [itemsPerPage, setItemsPerPage] = useState(5); // 드롭다운에서 선택한 아이템 수
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const [pageGroup, setPageGroup] = useState(0); // 현재 보이는 페이지 그룹(0부터 시작)
+  const [isOpen, setOpen] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageGroup, setPageGroup] = useState(0);
 
   const dropMenuRef = useRef<HTMLUListElement | null>(null);
   const minusIconRef = useRef<HTMLDivElement | null>(null);
 
-  const [posts, setPosts] = useState<PostData[]>([]);
+  const [allPosts, setAllPosts] = useState<PostData[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
+  // API에서 공고 데이터 가져오기
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/post/get/notice/lists"
+          "http://localhost:8080/api/post/lists"
         );
-        console.log("0");
+        setAllPosts(response.data);
 
-        setPosts(response.data); // 받아온 데이터를 상태에 저장
-        setNotice(!!posts.length);
+        // 초기 필터 설정 및 적용
+        setupInitialFilters(response.data);
       } catch (error) {
         console.error("데이터 가져오기 실패:", error);
+        setNotice(false);
       }
     };
 
     fetchPosts();
-  });
+  }, [location]);
+
+  // 활성화된 필터 카테고리 설정
+  const setupInitialFilters = (posts: PostData[]) => {
+    const activeFiltersArr = [];
+
+    // 검색어가 있을 경우
+    if (searchParams.search && searchParams.search.trim() !== "") {
+      activeFiltersArr.push(`검색어: ${searchParams.search}`);
+    }
+
+    // 지역 정보가 있을 경우
+    if (searchParams.sido && searchParams.sido !== "전체") {
+      if (searchParams.sigungu && searchParams.sigungu !== "전체") {
+        activeFiltersArr.push(`${searchParams.sido} ${searchParams.sigungu}`);
+      } else {
+        activeFiltersArr.push(`${searchParams.sido}`);
+      }
+    }
+
+    // 직종 정보가 있을 경우
+    if (searchParams.jobType && searchParams.jobType !== "직종 전체") {
+      activeFiltersArr.push(`${searchParams.jobType}`);
+    }
+
+    // 급여 정보가 있을 경우
+    if (searchParams.pay && searchParams.pay > 0) {
+      activeFiltersArr.push(
+        `${searchParams.payType}: ${searchParams.pay.toLocaleString()}원 이상`
+      );
+    }
+
+    // 고용 형태가 있을 경우
+    if (searchParams.hireType) {
+      const selectedTypes = Object.keys(searchParams.hireType).filter(
+        (key) => searchParams.hireType[key]
+      );
+
+      if (selectedTypes.length > 0) {
+        activeFiltersArr.push(`고용형태: ${selectedTypes.join(", ")}`);
+      }
+    }
+
+    // 근무 기간이 있을 경우
+    if (searchParams.startDate || searchParams.endDate) {
+      const formatDate = (date: Date) => {
+        return date ? new Date(date).toISOString().split("T")[0] : "";
+      };
+
+      const startDateStr = formatDate(searchParams.startDate);
+      const endDateStr = formatDate(searchParams.endDate);
+
+      if (startDateStr && endDateStr) {
+        activeFiltersArr.push(`근무기간: ${startDateStr} ~ ${endDateStr}`);
+      }
+    }
+
+    setActiveFilters(activeFiltersArr);
+
+    // 필터 적용
+    applyFilters(posts);
+  };
+
+  // 필터 제거 핸들러
+  const handleRemoveFilter = (index: number) => {
+    // 필터 카테고리 제거
+    const newFilters = [...activeFilters];
+    const removedFilter = newFilters.splice(index, 1)[0];
+    setActiveFilters(newFilters);
+
+    // 필터 종류에 따라 searchParams 업데이트
+    let updatedParams = { ...searchParams };
+
+    if (removedFilter.startsWith("검색어:")) {
+      updatedParams.search = "";
+    } else if (removedFilter.startsWith("고용형태:")) {
+      updatedParams.hireType = { 일일: false, 단기: false, 장기: false };
+    } else if (removedFilter.includes(":")) {
+      // 급여 필터 제거
+      if (
+        removedFilter.includes("시급:") ||
+        removedFilter.includes("일급:") ||
+        removedFilter.includes("주급:") ||
+        removedFilter.includes("월급:") ||
+        removedFilter.includes("총 급여:")
+      ) {
+        updatedParams.pay = 0;
+      }
+    } else if (removedFilter.startsWith("근무기간:")) {
+      updatedParams.startDate = null;
+      updatedParams.endDate = null;
+    } else if (jobTypes.includes(removedFilter)) {
+      // 직종 필터 제거
+      updatedParams.jobType = "직종 전체";
+    } else {
+      // 지역 필터 제거 (시도/시군구)
+      const parts = removedFilter.split(" ");
+      if (parts.length > 1) {
+        // 시군구까지 포함된 필터
+        updatedParams.sigungu = "전체";
+      } else {
+        // 시도만 포함된 필터
+        updatedParams.sido = "전체";
+        updatedParams.sigungu = "전체";
+      }
+    }
+
+    // 새 파라미터로 필터 적용
+    applyFilters(allPosts, updatedParams);
+  };
+
+  // 검색 조건에 따라 공고 필터링
+  const applyFilters = (posts: PostData[], params = searchParams) => {
+    if (!posts.length) {
+      setFilteredPosts([]);
+      setNotice(false);
+      return;
+    }
+
+    let result = [...posts]; // 모든 공고에서 시작
+
+    // 검색어 필터링
+    if (params.search && params.search.trim() !== "") {
+      const searchTerm = params.search.toLowerCase();
+      result = result.filter(
+        (post) => post.title.toLowerCase().includes(searchTerm)
+        // 회사 이름이 스키마에 있다면 추가적으로 검색 가능
+      );
+    }
+
+    // 지역 필터링
+    if (params.sido && params.sido !== "전체") {
+      result = result.filter((post) => {
+        const postAddress = post.address.street || "";
+
+        if (params.sigungu && params.sigungu !== "전체") {
+          // 시/도와 시/군/구 모두 필터링
+          return (
+            postAddress.includes(params.sido) &&
+            postAddress.includes(params.sigungu)
+          );
+        } else {
+          // 시/도만 필터링
+          return postAddress.includes(params.sido);
+        }
+      });
+    }
+
+    // 직종 필터링
+    if (params.jobType && params.jobType !== "직종 전체") {
+      result = result.filter((post) => post.jobType === params.jobType);
+    }
+
+    // 급여 필터링
+    if (params.pay && params.pay > 0) {
+      result = result.filter((post) => {
+        // 급여 타입이 일치하고 금액이 검색 조건 이상인 공고 필터링
+        if (params.payType === post.pay.type) {
+          return post.pay.value >= params.pay;
+        }
+        return false;
+      });
+    }
+
+    // 고용 형태 필터링
+    if (params.hireType) {
+      const selectedTypes = Object.keys(params.hireType).filter(
+        (key) => params.hireType[key]
+      );
+
+      if (selectedTypes.length > 0) {
+        result = result.filter((post) => {
+          // 공고의 hireType 배열에 선택된 고용형태 중 하나라도 포함되어 있는지 확인
+          return post.hireType.some((type) => selectedTypes.includes(type));
+        });
+      }
+    }
+
+    // 근무 기간 필터링
+    if (params.startDate || params.endDate) {
+      result = result.filter((post) => {
+        const postStartDate = new Date(post.period.start);
+        const postEndDate = new Date(post.period.end);
+
+        if (params.startDate && params.endDate) {
+          const startDate = new Date(params.startDate);
+          const endDate = new Date(params.endDate);
+
+          // 공고의 근무 기간이 검색 조건의 기간과 겹치는지 확인
+          return (
+            (postStartDate >= startDate && postStartDate <= endDate) ||
+            (postEndDate >= startDate && postEndDate <= endDate) ||
+            (postStartDate <= startDate && postEndDate >= endDate)
+          );
+        } else if (params.startDate) {
+          const startDate = new Date(params.startDate);
+          return postEndDate >= startDate;
+        } else if (params.endDate) {
+          const endDate = new Date(params.endDate);
+          return postStartDate <= endDate;
+        }
+        return true;
+      });
+    }
+
+    setFilteredPosts(result);
+    setNotice(result.length > 0);
+    setCurrentPage(1); // 필터 적용 시 첫 페이지로 이동
+    setPageGroup(0); // 페이지 그룹도 초기화
+  };
 
   // 총 페이지 수 계산
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
   // 현재 페이지에 해당하는 아이템들
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentNotices = posts.slice(startIndex, startIndex + itemsPerPage);
+  const currentNotices = filteredPosts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // 페이지 그룹 당 보여줄 페이지 개수
   const pagesToShow = 5;
@@ -221,22 +461,36 @@ export function NoticeListPage() {
   const handleSelectItem = (num: number) => {
     setItemsPerPage(num);
     setCurrentPage(1);
-    setPageGroup(0); // 페이지 그룹도 초기화
+    setPageGroup(0);
     setOpen(false);
   };
 
-  // 초기 카테고리 배열 (원하는 만큼 추가 가능)
-  const [categories, setCategories] = useState([
-    "서울 용산구",
-    "서울 강남구",
-    "서울 종로구",
-    "부산 해운대구",
-    "제주도",
-  ]);
+  // 직종 리스트 (필터 제거 로직에 사용)
+  const jobTypes = [
+    "직종 전체",
+    "관리자",
+    "전문가 및 관련 종사자",
+    "사무 종사자",
+    "서비스 종사자",
+    "판매 종사자",
+    "농림어업 숙련 종사자",
+    "기능원 및 관련 기능 종사자",
+    "장치ㆍ기계 조작 및 조립 종사자",
+    "단순 노무 종사자",
+    "군인",
+  ];
 
-  // 특정 카테고리 제거 핸들러
-  const handleRemoveCategory = (index: number) => {
-    setCategories((prev) => prev.filter((_, i) => i !== index));
+  // 날짜를 yyyy-MM-dd 형식으로 변환하는 함수
+  const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    return date
+      .toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\. /g, "-")
+      .replace(".", "");
   };
 
   return (
@@ -256,15 +510,17 @@ export function NoticeListPage() {
             <>
               <Head>
                 <div className="font-bold text-[20px] mb-2">검색 결과</div>
-                {/* categories 배열이 존재할 때만 카테고리 아이템 렌더링 */}
-                {categories.length > 0 && (
+                {/* 활성화된 필터 카테고리 표시 */}
+                {activeFilters.length > 0 && (
                   <CetegoryContiner>
-                    {categories.map((cat, index) => (
+                    {activeFilters.map((filter, index) => (
                       <CategoryItem key={index} className="bg-selected-box">
-                        <div className="flex w-fit text-main-color">{cat}</div>
+                        <div className="flex w-fit text-main-color">
+                          {filter}
+                        </div>
                         <div
                           className="flex w-fit h-fit ml-2"
-                          onClick={() => handleRemoveCategory(index)}
+                          onClick={() => handleRemoveFilter(index)}
                         >
                           <CancelIcon color="#0B798B" />
                         </div>
@@ -279,7 +535,7 @@ export function NoticeListPage() {
                     <div className="flex flex-row">
                       <span>총 </span>
                       <span className="text-main-color">
-                        {posts.length} 건{" "}
+                        {filteredPosts.length} 건{" "}
                       </span>
                       <span>공고</span>
                     </div>
@@ -307,14 +563,10 @@ export function NoticeListPage() {
                       </div>
                       <ListInfo>
                         <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
-                          <span>{notice.companyInfo.companyName}</span>
+                          <span>{notice.title}</span>
                           <div>
                             <span>마감일 </span>
-                            <span>
-                              {new Date(
-                                notice.endOfNotice
-                              ).toLocaleDateString()}
-                            </span>
+                            <span>{formatDate(notice.deadline.date)}</span>
                           </div>
                         </div>
                         <div className="w-[95%] text-[16px] font-bold flex-wrap">
@@ -322,18 +574,18 @@ export function NoticeListPage() {
                         </div>
                         <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
                           <div className="text-main-darkGray">
-                            {notice.companyInfo.exposedArea.goo}
+                            {notice.address.street}
                           </div>
                           <div>
                             <span className="text-[#1D8738] font-bold">
-                              {notice.payType}
+                              {notice.pay.type}
                             </span>
                             <span className="text-main-darkGray">
-                              {notice.pay.toLocaleString()} 원
+                              {notice.pay.value.toLocaleString()} 원
                             </span>
                           </div>
                           <div className="text-main-darkGray">
-                            {notice.workingPeriod}
+                            {notice.hireType.join(", ")}
                           </div>
                         </div>
                       </ListInfo>
