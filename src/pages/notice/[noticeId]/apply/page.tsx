@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
+import BirthIcon from "@/components/icons/Birth";
+import CallIcon from "@/components/icons/Call";
 import Main from "@/components/Main";
 import { Resume } from "@/hooks/fetchResume";
 import Notice from "@/types/Notice";
@@ -73,6 +75,7 @@ const NoticeApplyPage = () => {
     navigate(`/notice/${noticeId}/apply/${resumeId}`);
   };
 
+  console.log(resumes);
   return (
     <>
       <Header>
@@ -121,7 +124,7 @@ const NoticeApplyPage = () => {
                     return (
                       <button
                         key={idx + "지원자"}
-                        className="w-full bg-white border border-main-gray flex gap-[10px] rounded-[10px] px-[15px] py-[10px]"
+                        className="w-full bg-white border border-main-gray flex gap-[10px] rounded-[10px] p-[10px]"
                         onClick={() => handleClickUser(resume._id.toString())}
                       >
                         <img
@@ -132,17 +135,28 @@ const NoticeApplyPage = () => {
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">
                             <span className="font-bold text-[14px] text-black">
-                              김김김 (남)
+                              {resume.name} (
+                              {resume.sex === "male" ? "남" : "여"})
                             </span>
                             <ArrowRightIcon color="#717171" />
                           </p>
-                          <span>생년월일</span>
-                          <span>
-                            {resume?.phone?.replace(
-                              /(\d{3})(\d{4})(\d{4})/,
-                              "$1-$2-$3"
-                            )}
-                          </span>
+                          <div className="flex gap-[4px] items-center">
+                            <BirthIcon width={12} height={12} color="#717171" />
+                            <span>
+                              {resume.residentId
+                                .split("-")[0]
+                                .replace(/^(\d{2})(\d{2})(\d{2})/, "$1.$2.$3.")}
+                            </span>
+                          </div>
+                          <div className="flex gap-[4px] items-center">
+                            <CallIcon width={12} height={12} color="#717171" />
+                            <span>
+                              {resume?.phone?.replace(
+                                /(\d{3})(\d{4})(\d{4})/,
+                                "$1-$2-$3"
+                              )}
+                            </span>
+                          </div>
                           <span>{resume?.address}</span>
                         </div>
                       </button>
