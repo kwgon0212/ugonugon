@@ -11,7 +11,7 @@ interface Props {
   placeholder?: string;
   selected?: Date | null;
   setSelectedDate: (date: Date | null) => void;
-  mode?: "date" | "time"; // 날짜 선택 또는 시간 선택 모드
+  mode: "date" | "time"; // 날짜 선택 또는 시간 선택 모드
 }
 
 const CustomDatePicker = ({
@@ -24,22 +24,49 @@ const CustomDatePicker = ({
   setSelectedDate,
   mode = "date", // 기본값은 날짜 선택 모드
 }: Props) => {
+  // const formattedValue =
+  //   value instanceof Date
+  //     ? mode === "date"
+  //       ? value.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
+  //       : value.toLocaleTimeString("ko-KR", {
+  //           hour: "2-digit",
+  //           minute: "2-digit",
+  //         }) // HH:mm 형식
+  //     : value
+  //     ? new Date(value).toLocaleDateString("ko-KR") // `string`일 경우 Date 변환 후 표시
+  //     : "";
+  // console.log(formattedValue);
+  // 🔥 시간만 유지하는 함수 추가
+  const handleTimeChange = (date: Date | null) => {
+    if (!date) return setSelectedDate(null);
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    // 현재 날짜로 설정하되, 시간만 유지
+    const newTime = new Date();
+    newTime.setHours(hours);
+    newTime.setMinutes(minutes);
+    newTime.setSeconds(0);
+    newTime.setMilliseconds(0);
+
+    setSelectedDate(newTime);
+  };
+
+  // 🔥 선택된 값 표시 형식 변경 (날짜/시간 구분)
   const formattedValue =
-    value instanceof Date
+    selected instanceof Date
       ? mode === "date"
-        ? value.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
-        : value.toLocaleTimeString("ko-KR", {
+        ? selected.toLocaleDateString("ko-KR") // YYYY-MM-DD 형식
+        : selected.toLocaleTimeString("ko-KR", {
             hour: "2-digit",
             minute: "2-digit",
           }) // HH:mm 형식
-      : value
-      ? new Date(value).toLocaleDateString("ko-KR") // `string`일 경우 Date 변환 후 표시
       : "";
-
   return (
     <DatePicker
       selected={selected}
-      onChange={setSelectedDate}
+      onChange={mode === "time" ? handleTimeChange : setSelectedDate}
       locale={ko}
       className="w-full"
       customInput={

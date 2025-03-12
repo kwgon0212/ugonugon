@@ -16,7 +16,7 @@ export const payOptions = ["시급", "일급", "주급", "월급", "총 급여"]
 
 export const hireOptions = ["일일", "단기", "장기"];
 
-export const dayOptions = ["월", "화", "수", "목", "금"];
+export const dayOptions = ["월", "화", "수", "목", "금", "토", "일"];
 
 export const schoolOptions = [
   "무관",
