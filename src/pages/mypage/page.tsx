@@ -49,7 +49,7 @@ const MyPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex justify-center items-center">
+        <div className="size-full flex justify-center items-center font-bold">
           <span>마이페이지</span>
         </div>
       </Header>
