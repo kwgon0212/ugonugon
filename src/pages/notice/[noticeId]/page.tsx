@@ -44,6 +44,7 @@ const NoticeDetailPage = () => {
   const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
   const [isCheckedAccept, setIsCheckedAccept] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -115,7 +116,14 @@ const NoticeDetailPage = () => {
     try {
       const response = await axios.get(`/api/post/${noticeId}`);
       const data = response.data;
-      setPostData(data);
+      const dayOrder = ["월", "화", "수", "목", "금", "토", "일"];
+      const sortedDays = data.day.sort(
+        (a: string, b: string) => dayOrder.indexOf(a) - dayOrder.indexOf(b)
+      );
+      setPostData({
+        ...data,
+        day: sortedDays,
+      });
       setIsNotFound(false);
       setIsEmployer(data.author === userId);
     } catch (error) {
@@ -173,16 +181,6 @@ const NoticeDetailPage = () => {
       fetchData();
     }
   }, [userId]);
-
-  const imageArr = [
-    "https://placehold.co/500",
-    "https://placehold.co/500x225",
-    "https://placehold.co/560x200",
-    "https://placehold.co/560x175",
-    "https://placehold.co/560x150",
-    "https://placehold.co/560x125",
-    "https://placehold.co/560x100",
-  ];
 
   const handleClickShare = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -287,8 +285,14 @@ const NoticeDetailPage = () => {
     setIsOpenApplyResultModal(true);
   };
 
-  const handleDeleteNotice = () => {
-    // 해당 공고 삭제
+  const handleDeleteNotice = async () => {
+    try {
+      await axios.delete(`/api/post/${noticeId}`);
+      setIsDeleted(true);
+    } catch (error) {
+      setIsDeleted(false);
+      console.log(error);
+    }
   };
 
   if (isNotFound) {
@@ -340,7 +344,7 @@ const NoticeDetailPage = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <ImageSlider imageArr={imageArr} />
+          {postData && <ImageSlider imageArr={postData.images} />}
           <div
             ref={contentRef}
             className="w-full h-full flex flex-col relative"
@@ -558,9 +562,7 @@ const NoticeDetailPage = () => {
                   "근무지역",
                   `(${postData?.address.zipcode}) ${postData?.address.street} ${postData?.address.detail}`
                 )}
-                <WorkPlaceMap
-                  address={`${postData?.address.street} ${postData?.address.detail}`}
-                />
+                {postData && <WorkPlaceMap address={postData.address.street} />}
               </div>
 
               <div className="flex flex-col gap-[10px]">
@@ -780,22 +782,41 @@ const NoticeDetailPage = () => {
             clickOutsideClose={false}
           >
             <div className="w-full flex flex-col gap-[20px]">
-              <p className="text-xl font-bold">공고 삭제</p>
-              <p className="text-center">정말 해당 공고를 삭제하시겠습니까?</p>
-              <div className="flex gap-[20px]">
-                <button
-                  onClick={() => setIsOpenDeleteModal(false)}
-                  className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleDeleteNotice}
-                  className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
-                >
-                  삭제
-                </button>
-              </div>
+              {isDeleted ? (
+                <>
+                  <p className="text-xl font-bold">공고 삭제</p>
+                  <p className="text-center">삭제되었습니다</p>
+                  <div className="flex gap-[20px]">
+                    <button
+                      onClick={() => navigate("/")}
+                      className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      확인
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-bold">공고 삭제</p>
+                  <p className="text-center">
+                    정말 해당 공고를 삭제하시겠습니까?
+                  </p>
+                  <div className="flex gap-[20px]">
+                    <button
+                      onClick={() => setIsOpenDeleteModal(false)}
+                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleDeleteNotice}
+                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </DeleteModal>
         </div>

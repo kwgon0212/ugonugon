@@ -51,7 +51,7 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_123456",
-    img: ["https://placehold.co/600x400", "https://placehold.co/600x400"],
+    images: ["https://placehold.co/600x400", "https://placehold.co/600x400"],
     company: "스타벅스 코리아",
     applies: [
       {
@@ -117,7 +117,7 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_789101",
-    img: ["https://placehold.co/600x400"],
+    images: ["https://placehold.co/600x400"],
     company: "GS25 테헤란점",
     applies: [
       {
@@ -177,7 +177,7 @@ const dummyNotice: Notice[] = [
     },
     createdAt: new Date().toISOString(),
     author: "기업ID_555666",
-    img: [],
+    images: [],
     company: "쿠팡",
     applies: [],
   },
