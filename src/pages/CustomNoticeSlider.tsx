@@ -16,6 +16,7 @@ const CustomNoticeSlider = ({ notices }: Props) => {
     autoplay: true,
     slidesToScroll: 1,
     arrows: false,
+    // infinite: notices.length > 1,
     infinite: true,
     slidesToShow: 1,
     speed: 1000,
@@ -23,6 +24,14 @@ const CustomNoticeSlider = ({ notices }: Props) => {
   };
 
   const navigate = useNavigate();
+
+  if (notices.length <= 0) {
+    return (
+      <p className="px-[20px] text-main-darkGray text-[14px] h-[110px] flex justify-center items-center">
+        추천 공고가 없습니다.
+      </p>
+    );
+  }
 
   return (
     <div className="slider-container">
@@ -72,7 +81,7 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                         </span>
                       </div>
                       <span className="text-main-darkGray text-[12px]">
-                        ~ {notice.deadline.date.toLocaleDateString()}
+                        ~ {new Date(notice.deadline.date).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
