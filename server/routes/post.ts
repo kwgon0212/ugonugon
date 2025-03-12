@@ -635,12 +635,10 @@ router.get("/lists", async (req, res) => {
  *                     example: "get notice success"
  */
 // router.get("/get/oneNotice/:postId", async (req, res) => {
-router.get("/:postId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { postId } = req.params;
-    const post = await JobPosting.findById(postId);
-
-    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+    const post = await JobPosting.findById(req.query.postId);
+    if (!req.query.postId) {
       return res.status(400).json({ message: "해당 공고를 찾을 수 없습니다." });
     }
 
@@ -650,7 +648,6 @@ router.get("/:postId", async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
-// get("/:postId" 로 바꾸기
 
 router.post("/:postId/apply", async (req, res) => {
   try {

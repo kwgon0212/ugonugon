@@ -1,4 +1,6 @@
+// NoticeSearchPage.jsx 파일 수정
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "@/components/Header";
 import Main from "@/components/Main";
@@ -91,31 +93,63 @@ const SubTitle = styled.label`
   margin-bottom: -10px;
 `;
 
-type Location = {
-  [key: string]: string[];
-};
-
 function NoticeSearchPage() {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState<string>("");
   const [sido, setSido] = useState<string>("전체");
   const [sigungu, setSigungu] = useState<string>("전체");
-  const [jobType, setJobType] = useState<string>("");
-  const [payType, setPayType] = useState<string>("");
+  const [jobType, setJobType] = useState<string>("직종 전체");
+  const [payType, setPayType] = useState<string>("시급");
   const [pay, setPay] = useState<number>(0);
-  const hireType: ObjType = { 일일: false, 단기: false, 장기: false };
+  const [hireType, setHireType] = useState<{ [key: string]: boolean }>({
+    일일: false,
+    단기: false,
+    장기: false,
+  });
   const [startDate, setStartDate] = useState<Date | null>(new Date()); // 오늘 날짜
   const [endDate, setEndDate] = useState<Date | null>(
     new Date(new Date().setMonth(new Date().getMonth() + 1))
   ); // 1개월 뒤 날짜
 
+  // 고용 형태 선택 핸들러
   function handleClick(e: React.MouseEvent<HTMLLIElement>) {
-    "border-main-gray bg-white text-main-darkGray border-main-color bg-main-color text-white"
-      .split(" ")
-      .forEach((v) => {
-        e.currentTarget.classList.toggle(v);
-      });
-    hireType[e.currentTarget.innerText] = !hireType[e.currentTarget.innerText];
+    const typeText = e.currentTarget.innerText;
+
+    // 상태 업데이트
+    setHireType((prevState) => ({
+      ...prevState,
+      [typeText]: !prevState[typeText],
+    }));
   }
+
+  // 검색 폼 제출 핸들러
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // 검색 파라미터 준비
+    // hireType에서 선택된 값만 배열로 변환
+    const selectedHireTypes = Object.entries(hireType)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([type]) => type);
+
+    // 검색 조건을 state로 전달
+    navigate("/notice/list", {
+      state: {
+        search,
+        sido,
+        sigungu,
+        jobType,
+        payType,
+        pay,
+        hireType: selectedHireTypes, // 배열로 변환된 선택된 고용 형태
+        period: {
+          start: startDate,
+          end: endDate,
+        },
+      },
+    });
+  };
 
   const jobTypes = [
     "직종 전체",
@@ -130,18 +164,24 @@ function NoticeSearchPage() {
     "단순 노무 종사자",
     "군인",
   ];
+
   const payTypes = ["시급", "일급", "주급", "월급", "총 급여"];
 
   return (
     <>
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
+          <div onClick={() => navigate(-1)}>
+            <ArrowLeftIcon width={24} height={24} />
+          </div>
           <Title>공고 검색</Title>
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <form className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]">
+        <form
+          className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]"
+          onSubmit={handleSearchSubmit}
+        >
           <div className="relative">
             <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
               <SearchIcon />
@@ -150,8 +190,8 @@ function NoticeSearchPage() {
               type="text"
               placeholder="원하는 정보를 검색해주세요"
               padding="0 50px"
+              value={search}
               onChange={(e) => setSearch(e.target.value)}
-              required
             />
           </div>
           <hr />
@@ -162,7 +202,11 @@ function NoticeSearchPage() {
             </p>
             <SelectBox
               className="mr-[-0.5px]"
-              onChange={(e) => setSido(e.target.value)}
+              value={sido}
+              onChange={(e) => {
+                setSido(e.target.value);
+                setSigungu("전체"); // 시/도 변경 시 시/군/구 초기화
+              }}
               width="50%"
               padding="0 0 0 45px"
               radius="10px 0 0 10px"
@@ -175,6 +219,7 @@ function NoticeSearchPage() {
             </SelectBox>
             <SelectBox
               className="ml-[-0.5px]"
+              value={sigungu}
               onChange={(e) => setSigungu(e.target.value)}
               width="50%"
               radius="0 10px 10px 0"
@@ -188,7 +233,10 @@ function NoticeSearchPage() {
           </div>
           <SubTitle>직종</SubTitle>
           <div>
-            <SelectBox onChange={(e) => setJobType(e.target.value)}>
+            <SelectBox
+              value={jobType}
+              onChange={(e) => setJobType(e.target.value)}
+            >
               {jobTypes.map((value, index) => (
                 <option key={index} value={value}>
                   {value}
@@ -200,6 +248,7 @@ function NoticeSearchPage() {
           <div className="flex w-full relative">
             <SelectBox
               id="dropdown"
+              value={payType}
               onChange={(e) => setPayType(e.target.value)}
               className="mr-[10px]"
               width="30%"
@@ -214,15 +263,16 @@ function NoticeSearchPage() {
               <InsertTextInput
                 type="text"
                 padding="0 69px 0 20px"
-                value={pay}
+                value={pay === 0 ? "" : pay.toLocaleString()}
                 onChange={(e) =>
                   setPay(Number(e.target.value.replace(/[^\d]/g, "")))
                 }
                 onFocus={(e) => {
                   e.target.value = pay === 0 ? "" : pay.toString();
                 }}
-                onBlur={(e) => (e.target.value = pay.toLocaleString())}
-                required
+                onBlur={(e) =>
+                  (e.target.value = pay ? pay.toLocaleString() : "")
+                }
               />
               <span className="absolute right-[15px] text-main-darkGray top-1/2 -translate-y-1/2">
                 원 이상
@@ -231,10 +281,14 @@ function NoticeSearchPage() {
           </div>
           <SubTitle>고용 형태</SubTitle>
           <ul className="flex w-full gap-x-[5px] h-10 list-none relative">
-            {Object.keys(hireType).map((value, index) => (
+            {Object.entries(hireType).map(([value, isActive], index) => (
               <li
                 key={index}
-                className="w-1/3 text-sm flex justify-center items-center border border-main-gray bg-white rounded-[10px] text-main-darkGray"
+                className={`w-1/3 text-sm flex justify-center items-center border rounded-[10px] cursor-pointer ${
+                  isActive
+                    ? "border-main-color bg-main-color text-white"
+                    : "border-main-gray bg-white text-main-darkGray"
+                }`}
                 onClick={handleClick}
               >
                 {value}
@@ -350,7 +404,9 @@ function NoticeSearchPage() {
               onChange={(date) => setEndDate(date)}
             />
           </div>
-          <BottomButton bottom="31px">검색 결과 보기</BottomButton>
+          <BottomButton bottom="31px" type="submit">
+            검색 결과 보기
+          </BottomButton>
         </form>
       </Main>
       <BottomNav />

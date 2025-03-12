@@ -9,6 +9,8 @@ import authRoutes from "./routes/auth.ts";
 import postRoutes from "./routes/post.ts";
 import contractRoutes from "./routes/contract.ts";
 import resumeRoutes from "./routes/resume.ts";
+import attendanceRoutes from "./routes/attendance.ts";
+
 import imageRoutes from "./routes/image.ts";
 import emailRoutes from "./routes/email.ts";
 import chatRoutes from "./routes/chatServer.ts";
@@ -50,6 +52,7 @@ app.use("/api/email", emailRoutes);
 app.use("/api/contract", contractRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/scrap", scrapRoutes);
+app.use("/api/attendance", attendanceRoutes);
 app.use("/api/scrap", scrapRoutes);
 app.use("/api/image", imageRoutes);
 
