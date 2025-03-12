@@ -92,6 +92,7 @@ const WorkApplyPage = () => {
         <>
           <div className="size-full flex flex-col gap-[20px] p-[20px]">
             {applies &&
+              applies.length > 0 &&
               posts &&
               posts.map((post, idx) => {
                 return (
@@ -144,6 +145,11 @@ const WorkApplyPage = () => {
                   </button>
                 );
               })}
+            {applies && applies?.length <= 0 && (
+              <p className="size-full flex justify-center items-center text-main-darkGray">
+                지원한 공고가 없습니다
+              </p>
+            )}
           </div>
         </>
       </Main>

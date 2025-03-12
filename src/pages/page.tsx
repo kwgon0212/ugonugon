@@ -12,6 +12,7 @@ import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
 import Notice from "@/types/Notice";
 import axios from "axios";
+import MapIcon from "@/components/icons/Map";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -84,12 +85,14 @@ const RootPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full px-[20px] flex items-center">
+        <div className="size-full px-[20px] flex items-center justify-between">
           <img src="https://placehold.co/200x50" alt="logo" />
+          <Link to={"/map"}>
+            <MapIcon width={24} height={24} />
+          </Link>
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        {/* 인사 문구 */}
         <div className="bg-white size-full">
           <div className="px-[20px] py-[20px]">
             <h1 className="text-[16px] font-regular">
@@ -99,7 +102,6 @@ const RootPage = () => {
               오늘은 <span className="text-main-color">이런 알바</span> 어때요?
             </p>
           </div>
-          {/* 검색창 */}
           <Link to="/notice/search" className="block pr-4 pl-4 pb-6">
             <div className="flex items-center border border-main-gray rounded-[10px] px-4 py-3 bg-white focus-within:border-main-darkGray">
               <SearchIcon color="#717171" />
