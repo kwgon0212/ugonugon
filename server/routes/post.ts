@@ -639,4 +639,163 @@ router.get("/recruit/manage/:authorId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get("/search", async (req, res) => {
+  try {
+    // 페이지네이션 파라미터
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // 필터 조건 구성
+    const query: any = {};
+
+    // 검색어 필터링 (제목)
+    if (req.query.search && typeof req.query.search === "string") {
+      query.title = { $regex: req.query.search, $options: "i" }; // 대소문자 구분 없이 검색
+    }
+
+    // 직종 필터링
+    if (
+      req.query.jobType &&
+      typeof req.query.jobType === "string" &&
+      req.query.jobType !== "직종 전체" &&
+      req.query.jobType !== "전체"
+    ) {
+      query.jobType = req.query.jobType;
+    }
+
+    // 지역 필터링
+    if (
+      req.query.sido &&
+      typeof req.query.sido === "string" &&
+      req.query.sido !== "전체"
+    ) {
+      const addressRegex: string[] = [];
+      addressRegex.push(req.query.sido);
+
+      if (
+        req.query.sigungu &&
+        typeof req.query.sigungu === "string" &&
+        req.query.sigungu !== "전체"
+      ) {
+        addressRegex.push(req.query.sigungu);
+      }
+
+      // 주소 필드의 street에 시도/시군구가 포함되어 있는지 검색
+      query["address.street"] = {
+        $regex: addressRegex.join(".*"),
+        $options: "i",
+      };
+    }
+
+    // 급여 필터링
+    if (
+      req.query.payType &&
+      typeof req.query.payType === "string" &&
+      req.query.payValue &&
+      typeof req.query.payValue === "string" &&
+      parseInt(req.query.payValue) > 0
+    ) {
+      query["pay.type"] = req.query.payType;
+      query["pay.value"] = { $gte: parseInt(req.query.payValue) };
+    }
+
+    // 고용 형태 필터링
+    if (req.query.hireType && typeof req.query.hireType === "string") {
+      // 쉼표로 구분된 문자열을 배열로 분할
+      const hireTypes = req.query.hireType.split(",");
+      if (hireTypes.length > 0) {
+        query.hireType = { $in: hireTypes };
+      }
+    }
+
+    // 근무 기간 필터링
+    if (req.query.startDate || req.query.endDate) {
+      const periodQuery: any = {};
+
+      if (req.query.startDate && typeof req.query.startDate === "string") {
+        // 협의 가능하거나, 종료일이 startDate 이후인 공고
+        periodQuery.$or = [
+          { "period.discussion": true },
+          { "period.end": { $gte: new Date(req.query.startDate) } },
+        ];
+      }
+
+      if (req.query.endDate && typeof req.query.endDate === "string") {
+        // 협의 가능하거나, 시작일이 endDate 이전인 공고
+        periodQuery.$or = periodQuery.$or || [];
+        periodQuery.$or.push(
+          { "period.discussion": true },
+          { "period.start": { $lte: new Date(req.query.endDate) } }
+        );
+      }
+
+      // 기존 쿼리에 병합
+      if (Object.keys(periodQuery).length > 0) {
+        query.$and = query.$and || [];
+        query.$and.push(periodQuery);
+      }
+    }
+
+    // 총 결과 수 계산
+    const total = await JobPosting.countDocuments(query);
+
+    // 필터링된 결과 조회 (필요한 필드만 가져옴)
+    const posts = await JobPosting.find(query, {
+      title: 1,
+      jobType: 1,
+      pay: 1,
+      hireType: 1,
+      period: 1,
+      deadline: 1,
+      address: 1,
+      images: { $slice: 1 }, // 대표 이미지 하나만 가져옴
+      createdAt: 1,
+    })
+      .sort({ createdAt: -1 }) // 최신순으로 정렬
+      .skip(skip)
+      .limit(limit);
+
+    // 응답 데이터
+    res.json({
+      posts,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("공고 검색 오류:", error);
+    res.status(500).json({ error: "서버 오류가 발생했습니다." });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    // ID 형식 검증
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ error: "유효하지 않은 공고 ID입니다." });
+    }
+
+    const post = await JobPosting.findById(postId)
+      .populate("author", "name") // 작성자 정보 가져오기
+      .populate("applies.userId", "name") // 지원자 정보 가져오기
+      .exec();
+
+    if (!post) {
+      return res.status(404).json({ error: "공고를 찾을 수 없습니다." });
+    }
+
+    res.json(post);
+  } catch (error) {
+    console.error("공고 상세 조회 오류:", error);
+    res.status(500).json({ error: "서버 오류가 발생했습니다." });
+  }
+});
+
 export default router;
