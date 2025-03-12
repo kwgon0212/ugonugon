@@ -78,7 +78,12 @@ const WorkApplyPage = () => {
       <Header>
         <div className="size-full flex justify-center items-center relative">
           <span>내가 지원한 공고</span>
-          <button className="absolute left-[20px] top-1/2 -translate-y-1/2">
+          <button
+            className="absolute left-[20px] top-1/2 -translate-y-1/2"
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
             <ArrowLeftIcon color="#717171" />
           </button>
         </div>

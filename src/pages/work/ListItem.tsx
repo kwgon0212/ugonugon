@@ -653,14 +653,10 @@ export function ListItem({ userInfo }: { userInfo: UserData[] | null }) {
       ))}
 
       <MenuContainer>
-        <Link to="#" className="flex flex-row justify-between w-[90%]">
-          <div className="flex flex-row">
-            <CalendarIcon color="#717171" />
-            <span className="ml-2">나의 근무 스케줄</span>
-          </div>
-          <ArrowRightIcon color="#717171" />
-        </Link>
-        <Link to="#" className="flex flex-row justify-between w-[90%]">
+        <Link
+          to="/work/apply"
+          className="flex flex-row justify-between w-[90%]"
+        >
           <div className="flex flex-row">
             <SendIcon color="#717171" />
             <span className="ml-2">내가 지원한 공고</span>
