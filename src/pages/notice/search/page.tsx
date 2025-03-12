@@ -21,10 +21,6 @@ interface Props {
   bgSize?: string;
 }
 
-type ObjType = {
-  [key: string]: string | boolean;
-};
-
 const BottomButton = styled.button<Props>`
   position: absolute;
   bottom: ${(props) => props.bottom || "60px"};
