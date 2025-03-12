@@ -225,6 +225,8 @@ const NoticeEditPage = () => {
     e.preventDefault();
     if (
       !title ||
+      hireType.length <= 0 ||
+      day.length <= 0 ||
       pay.value <= 0 ||
       person <= 0 ||
       !address.zipcode ||
@@ -285,8 +287,16 @@ const NoticeEditPage = () => {
     <>
       <Header>
         <div className="p-layout h-full flex flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
-          <span>공고 등록</span>
+          <div
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon width={24} height={24} />
+          </div>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-base">
+            공고 수정
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
@@ -425,29 +435,35 @@ const NoticeEditPage = () => {
                 </div>
               </div>
               <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={period?.start || null}
-                  setSelectedDate={(date) =>
-                    setPeriod((prev) =>
-                      prev ? { ...prev, start: date! } : null
-                    )
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="시작 날짜"
-                  mode="date"
-                  value={period?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={period?.end || null}
-                  setSelectedDate={(date) =>
-                    setPeriod((prev) => (prev ? { ...prev, end: date! } : null))
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="종료 날짜"
-                  mode="date"
-                  value={period?.end}
-                />
+                {period && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(period.start) || null}
+                      setSelectedDate={(date) =>
+                        setPeriod((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="시작 날짜"
+                      mode="date"
+                      value={period.start}
+                    />
+                    <span>~</span>
+                    <CustomDatePicker
+                      selected={new Date(period.end) || null}
+                      setSelectedDate={(date) =>
+                        setPeriod((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="종료 날짜"
+                      mode="date"
+                      value={period.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -472,27 +488,35 @@ const NoticeEditPage = () => {
                 </div>
               </div>
               <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={hour?.start || null}
-                  setSelectedDate={(date) =>
-                    setHour((prev) => (prev ? { ...prev, start: date! } : null))
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="출근 시각"
-                  mode="time"
-                  value={hour?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={hour?.end || null}
-                  setSelectedDate={(date) =>
-                    setHour((prev) => (prev ? { ...prev, end: date! } : null))
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="퇴근 시각"
-                  mode="time"
-                  value={hour?.end}
-                />
+                {hour && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(hour.start) || null}
+                      setSelectedDate={(date) =>
+                        setHour((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="출근 시각"
+                      mode="time"
+                      value={hour.start}
+                    />
+                    <span>~</span>
+                    <CustomDatePicker
+                      selected={new Date(hour.end) || null}
+                      setSelectedDate={(date) =>
+                        setHour((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="퇴근 시각"
+                      mode="time"
+                      value={hour?.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -501,31 +525,35 @@ const NoticeEditPage = () => {
                 휴게시간 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={restTime?.start || null}
-                  setSelectedDate={(date) =>
-                    setRestTime((prev) =>
-                      prev ? { ...prev, start: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="휴식 시작"
-                  mode="time"
-                  value={restTime?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={restTime?.end || null}
-                  setSelectedDate={(date) =>
-                    setRestTime((prev) =>
-                      prev ? { ...prev, end: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="휴식 종료"
-                  mode="time"
-                  value={restTime?.end}
-                />
+                {restTime && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(restTime.start) || null}
+                      setSelectedDate={(date) =>
+                        setRestTime((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="휴식 시작"
+                      mode="time"
+                      value={restTime.start}
+                    />
+                    <span>~</span>
+                    <CustomDatePicker
+                      selected={new Date(restTime.end) || null}
+                      setSelectedDate={(date) =>
+                        setRestTime((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="휴식 종료"
+                      mode="time"
+                      value={restTime.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -589,31 +617,35 @@ const NoticeEditPage = () => {
                 모집마감 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={deadline?.date || null}
-                  setSelectedDate={(date) =>
-                    setDeadline((prev) =>
-                      prev ? { ...prev, date: date! } : null
-                    )
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="모집 마감날짜"
-                  mode="date"
-                  value={deadline?.date}
-                />
-                <span>-</span>
-                <CustomDatePicker
-                  selected={deadline?.time || null}
-                  setSelectedDate={(date) =>
-                    setDeadline((prev) =>
-                      prev ? { ...prev, time: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="모집 마감시간"
-                  mode="time"
-                  value={deadline?.time}
-                />
+                {deadline && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(deadline.date) || null}
+                      setSelectedDate={(date) =>
+                        setDeadline((prev) =>
+                          prev ? { ...prev, date: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="모집 마감날짜"
+                      mode="date"
+                      value={deadline.date}
+                    />
+                    <span>-</span>
+                    <CustomDatePicker
+                      selected={new Date(deadline.time) || null}
+                      setSelectedDate={(date) =>
+                        setDeadline((prev) =>
+                          prev ? { ...prev, time: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="모집 마감시간"
+                      mode="time"
+                      value={deadline.time}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -788,63 +820,62 @@ const NoticeEditPage = () => {
                   />
                 </div>
               </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <input
+                id="post-images"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleNewImages}
+              />
+              <label
+                className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
+                htmlFor="post-images"
+              >
+                <PlusIcon />
+                <span className="text-main-color">이미지 추가</span>
+              </label>
 
-              <div className="flex flex-col gap-[10px]">
-                <input
-                  id="post-images"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleNewImages}
-                />
-                <label
-                  className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
-                  htmlFor="post-images"
-                >
-                  <PlusIcon />
-                  <span className="text-main-color">이미지 추가</span>
-                </label>
-
-                <div className="flex gap-[10px]">
-                  {existingImages.map((img, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer bg-main-bg"
-                      onClick={() => handleDeleteExistingImage(img)}
-                    >
-                      <img
-                        src={img}
-                        alt="기존 이미지"
-                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
-                      />
-                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
-                        <CancelIcon color="red" />
-                      </div>
+              <div className="flex gap-[10px]">
+                {existingImages.map((img, index) => (
+                  <div
+                    key={index}
+                    className="relative cursor-pointer bg-main-bg"
+                    onClick={() => handleDeleteExistingImage(img)}
+                  >
+                    <img
+                      src={img}
+                      alt="기존 이미지"
+                      className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                    />
+                    <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                      <CancelIcon color="red" />
                     </div>
-                  ))}
-                  {imagePreviews.map((preview, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer bg-main-bg"
-                      onClick={() => handleDeleteNewImage(index)}
-                    >
-                      <img
-                        src={preview}
-                        alt="preview"
-                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
-                      />
-                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
-                        <CancelIcon color="red" />
-                      </div>
+                  </div>
+                ))}
+                {imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    className="relative cursor-pointer bg-main-bg"
+                    onClick={() => handleDeleteNewImage(index)}
+                  >
+                    <img
+                      src={preview}
+                      alt="preview"
+                      className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                    />
+                    <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                      <CancelIcon color="red" />
                     </div>
-                  ))}
-                </div>
-
-                <p className="w-full text-right text-main-darkGray">
-                  {existingImages.length + imagePreviews.length} / 5
-                </p>
+                  </div>
+                ))}
               </div>
+
+              <p className="w-full text-right text-main-darkGray">
+                {existingImages.length + imagePreviews.length} / 5
+              </p>
             </div>
 
             <button className="w-full h-[50px] bg-main-color rounded-[10px] text-white">
