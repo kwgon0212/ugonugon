@@ -114,7 +114,7 @@ const NoticeDetailPage = () => {
     if (!noticeId) return;
 
     try {
-      const response = await axios.get(`/api/post/${noticeId}`);
+      const response = await axios.get(`/api/post?postId=${noticeId}`);
       const data = response.data;
       const dayOrder = ["월", "화", "수", "목", "금", "토", "일"];
       const sortedDays = data.day.sort(
