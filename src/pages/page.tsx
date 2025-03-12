@@ -7,12 +7,12 @@ import SearchIcon from "../components/icons/Search";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
 import CustomNoticeSlider from "./CustomNoticeSlider";
-import dummy from "./DummyNotices";
 import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
 import Notice from "@/types/Notice";
 import axios from "axios";
 import MapIcon from "@/components/icons/Map";
+import { AnimatePresence, motion } from "framer-motion";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -55,6 +55,14 @@ const RootPage = () => {
     null
   );
   const [newNotices, setNewNotices] = useState<Notice[] | null>(null);
+
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const handleTooltipClick = () => {
+    setShowTooltip(true);
+    setTimeout(() => setShowTooltip(false), 2000);
+  };
+
   useEffect(() => {
     const fetchCustomPosts = async () => {
       if (!userId) return;
@@ -86,7 +94,12 @@ const RootPage = () => {
     <>
       <Header>
         <div className="size-full px-[20px] flex items-center justify-between">
-          <img src="https://placehold.co/200x50" alt="logo" />
+          <img
+            src="/payrunner-logo.png"
+            alt="logo"
+            width={150}
+            className="object-contain"
+          />
           <Link to={"/map"}>
             <MapIcon width={24} height={24} />
           </Link>
@@ -127,7 +140,24 @@ const RootPage = () => {
                 <span className="text-[16px] font-medium ">
                   맞춤형 추천공고
                 </span>
-                <HelpCircleIcon color="#717171" width={14} height={14} />
+                <div className="relative flex items-center">
+                  <button onClick={handleTooltipClick}>
+                    <HelpCircleIcon color="#717171" width={14} height={14} />
+                  </button>
+                  <AnimatePresence>
+                    {showTooltip && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -5 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute left-[20px] -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-[12px] px-3 py-1 rounded-md shadow-lg z-10"
+                      >
+                        회원님의 거주지 주변 공고입니다
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
               {customNotices && <CustomNoticeSlider notices={customNotices} />}
             </div>

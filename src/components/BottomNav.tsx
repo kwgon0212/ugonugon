@@ -24,7 +24,7 @@ const BottomNav = () => {
   );
 
   return (
-    <nav className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-[80px] bg-white pt-[10px] px-[20px] z-10">
+    <nav className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-[80px] border-t-1 border-main-bg bg-white pt-[10px] px-[20px] z-10">
       <div className="flex gap-[10px] justify-around items-center">
         <Link to={"/"} className="flex flex-col items-center gap-[4px]">
           <HomeIcon width={24} height={24} color={colors.home} />
