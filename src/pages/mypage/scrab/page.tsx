@@ -158,7 +158,7 @@ export function MypageScrabPage() {
 
           // 해당 ID의 공고 정보 가져오기
           const postsResponse = await Promise.all(
-            scrapIds.map((id: string) => axios.get(`/api/post/${id}`))
+            scrapIds.map((id: string) => axios.get(`/api/post?postId=${id}`))
           );
 
           // 공고 데이터를 GetNoticeInfo 형식으로 변환
