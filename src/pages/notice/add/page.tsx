@@ -20,6 +20,8 @@ import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useGeocode from "@/hooks/useGeocode";
+import PlusIcon from "@/components/icons/Plus";
+import CancelIcon from "@/components/icons/Cancel";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -105,6 +107,8 @@ const NoticeAddPage = () => {
     useState(false);
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false); // 팝업 열림 상태
   const [postId, setPostId] = useState("");
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const handleSetType = (
     state: string[],
@@ -124,6 +128,29 @@ const NoticeAddPage = () => {
     setIsPostcodeOpen(false);
   };
 
+  const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+
+      // 🔥 5개 초과하면 업로드 불가
+      if (selectedFiles.length + images.length > 5) {
+        alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+        return;
+      }
+
+      setImages((prev) => [...prev, ...selectedFiles]);
+      setImagePreviews((prev) => [
+        ...prev,
+        ...selectedFiles.map((file) => URL.createObjectURL(file)),
+      ]);
+    }
+  };
+
+  const handleImageDelete = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index)); // 선택한 이미지 제거
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index)); // 미리보기 이미지도 제거
+  };
+
   const handleSubmitNotice = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
@@ -141,37 +168,49 @@ const NoticeAddPage = () => {
 
     if (userId) {
       try {
-        const response = await axios.post("/api/post/notice", {
-          title,
-          jobType,
-          pay,
-          hireType,
-          period,
-          hour,
-          restTime,
-          day,
-          workDetail,
-          welfare,
-          postDetail,
-          deadline,
-          person,
-          preferences,
-          education,
-          address: {
+        // 🔥 FormData 객체 생성
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("jobType", jobType);
+        formData.append("pay", JSON.stringify(pay));
+        formData.append("hireType", JSON.stringify(hireType));
+        formData.append("period", JSON.stringify(period));
+        formData.append("hour", JSON.stringify(hour));
+        formData.append("restTime", JSON.stringify(restTime));
+        formData.append("day", JSON.stringify(day));
+        formData.append("workDetail", workDetail);
+        formData.append("welfare", JSON.stringify(welfare));
+        formData.append("postDetail", postDetail);
+        formData.append("deadline", JSON.stringify(deadline));
+        formData.append("person", person.toString());
+        formData.append("preferences", JSON.stringify(preferences));
+        formData.append("education", JSON.stringify(education));
+        formData.append(
+          "address",
+          JSON.stringify({
             ...address,
             lat: coords?.lat,
             lng: coords?.lng,
-          },
-          recruiter,
-          author: userId,
-        });
-        const { postId } = response.data;
+          })
+        );
+        formData.append("recruiter", JSON.stringify(recruiter));
+        formData.append("author", userId);
 
+        // 🔥 이미지 개별 추가
+        images.forEach((image) => {
+          formData.append("images", image);
+        });
+
+        const response = await axios.post("/api/post/notice", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const { postId } = response.data;
         setIsOpenAddNoticeResultModal(true);
         setPostId(postId.toString());
       } catch (error) {
-        alert("error");
-        console.log(error);
+        console.error("공고 등록 오류:", error);
+        alert("공고 등록 중 오류가 발생했습니다.");
       }
     } else {
       alert("잠시 후에 시도해주세요");
@@ -693,6 +732,47 @@ const NoticeAddPage = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-[10px]">
+              <input
+                id="post-images"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleImages}
+              />
+              <label
+                className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
+                htmlFor="post-images"
+              >
+                <PlusIcon />
+                <span className="text-main-color">이미지 추가</span>
+              </label>
+
+              <div className="flex gap-[10px]">
+                {imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    className="relative cursor-pointer bg-main-bg"
+                    onClick={() => handleImageDelete(index)}
+                  >
+                    <img
+                      src={preview}
+                      alt="preview"
+                      className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                    />
+                    <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                      <CancelIcon color="red" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="w-full text-right text-main-darkGray">
+                {images.length} / 5
+              </p>
             </div>
 
             <button className="w-full h-[50px] bg-main-color rounded-[10px] text-white">

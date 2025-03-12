@@ -49,7 +49,7 @@ export default interface Notice {
   };
   createdAt?: string;
   author: string;
-  img?: string[];
+  images: string[];
   company?: string;
   applies?: {
     userId: Types.ObjectId;
