@@ -118,7 +118,7 @@ const NoticeEditPage = () => {
     if (noticeId) {
       const fetchPost = async () => {
         try {
-          const response = await axios.get(`/api/post/${noticeId}`);
+          const response = await axios.get(`/api/post?postId=${noticeId}`);
           const data = response.data;
 
           setIsEmployer(data.author === userId);
