@@ -36,7 +36,7 @@ const CenterDiv = styled.div`
 export function WorkPage() {
   const user = useAppSelector((state) => state.auth.user);
   const [userInfo, setUserInfo] = useState<UserData[] | null>(null);
-  const [hasWorkItem, setWorkItem] = useState(false);
+  const [hasWorkItem, setHasWorkItem] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +69,10 @@ export function WorkPage() {
           Array.isArray(userData) &&
           userData.some((item) => item.status === "accepted");
 
-        setUserInfo(userData);
-        setWorkItem(hasNotices);
+        setUserInfo(
+          userData.filter((item: UserData) => item.status === "accepted")
+        );
+        setHasWorkItem(hasNotices);
         console.log("근무 항목 있음:", hasNotices, "데이터:", userData);
       } catch (error: any) {
         console.error("데이터 가져오기 실패:", error);
