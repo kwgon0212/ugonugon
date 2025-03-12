@@ -1,4 +1,3 @@
-// NoticeSearchPage.jsx 파일 수정
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -7,7 +6,6 @@ import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import SearchIcon from "@/components/icons/Search";
-import PinLocationIcon from "@/components/icons/PinLocation";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale/ko";
 import "react-datepicker/dist/react-datepicker.css";
@@ -70,6 +68,27 @@ const SelectBox = styled.select<Props>`
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
   background-repeat: no-repeat;
   background-position: right 10px center;
+  background-size: ${(props) => props.bgSize || "20px"};
+  outline: none;
+
+  &:focus {
+    border: 1px solid #0b798b;
+    z-index: 1;
+  }
+`;
+
+const LocationSelectBox = styled.select<Props>`
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "40px"};
+  border: 1px solid #d9d9d9;
+  border-radius: ${(props) => props.radius || "10px"};
+  padding: ${(props) => props.padding || "0 20px"};
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%3E%20%3Ccircle%20cx%3D%2212%22%20cy%3D%226%22%20r%3D%224%22%20stroke%3D%22%23717171%22%20stroke-width%3D%221.5%22%20%2F%3E%20%3Cpath%20d%3D%22M5%2016C3.7492%2016.6327%203%2017.4385%203%2018.3158C3%2020.3505%207.02944%2022%2012%2022C16.9706%2022%2021%2020.3505%2021%2018.3158C21%2017.4385%2020.2508%2016.6327%2019%2016%22%20stroke%3D%22%23717171%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%2F%3E%20%3Cpath%20d%3D%22M12%2010L12%2018%22%20stroke%3D%22%23717171%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%2F%3E%20%3C%2Fsvg%3E"),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="%23d9d9d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left 15px center, right 10px center;
   background-size: ${(props) => props.bgSize || "20px"};
   outline: none;
 
@@ -197,10 +216,7 @@ function NoticeSearchPage() {
           <hr />
           <SubTitle>지역 / 동네</SubTitle>
           <div className="flex w-full relative">
-            <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
-              <PinLocationIcon />
-            </p>
-            <SelectBox
+            <LocationSelectBox
               className="mr-[-0.5px]"
               value={sido}
               onChange={(e) => {
@@ -216,7 +232,7 @@ function NoticeSearchPage() {
                   {value}
                 </option>
               ))}
-            </SelectBox>
+            </LocationSelectBox>
             <SelectBox
               className="ml-[-0.5px]"
               value={sigungu}
