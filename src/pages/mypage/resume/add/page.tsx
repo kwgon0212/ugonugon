@@ -118,17 +118,8 @@ function MypageResumeAdd() {
   const schoolStateTypes = ["졸업", "재학", "휴학", "중퇴"];
   const [introduction, setIntroduction] = useState("");
   const [careers, setcareers] = useState<
-    {
-      [key: string]: string | null | undefined;
-    }[]
-    // >([]);
-  >([
-    {
-      company: "회사",
-      dates: "25.01-25.02",
-      careerDetail: "사무",
-    },
-  ]);
+    { [key: string]: string | null | undefined }[]
+  >([]);
   const [modal, setModal] = useState(false);
   const [resumeTitle, setResumeTitle] = useState("");
   const [company, setCompany] = useState("");
@@ -150,8 +141,6 @@ function MypageResumeAdd() {
 
   const [profile, setProfile] = useState<string | null>(null);
   const profileInputRef = useRef<HTMLInputElement>(null);
-  // const [profile, setProfile] = useState(null);
-  // const profileInputRef = useRef(null);
 
   const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -248,6 +237,7 @@ function MypageResumeAdd() {
                 <InsertTextInput
                   onBlur={(e) => setCompany(e.target.value)}
                   placeholder="근무지명을 입력해주세요"
+                  defaultValue={company}
                   required
                 />
                 <div className="w-full mt-5 flex flex-col mb-[10px]">
@@ -312,6 +302,15 @@ function MypageResumeAdd() {
                     selected={startDate}
                     onChange={(date) => setStartDate(date)}
                     required
+                    value={
+                      startDate
+                        ? startDate?.getFullYear() +
+                          "/" +
+                          (startDate?.getMonth() + 1)
+                            .toString()
+                            .padStart(2, "0")
+                        : ""
+                    }
                   />
                   <span className="text-base font-semibold">-</span>
                   <DatePicker
@@ -369,6 +368,13 @@ function MypageResumeAdd() {
                     selected={endDate}
                     onChange={(date) => setEndDate(date)}
                     required
+                    value={
+                      endDate
+                        ? endDate?.getFullYear() +
+                          "/" +
+                          (endDate?.getMonth() + 1).toString().padStart(2, "0")
+                        : ""
+                    }
                   />
                 </div>
                 <div className="w-full mt-5 flex flex-col gap-[10px]">
@@ -379,6 +385,7 @@ function MypageResumeAdd() {
                     height="100%"
                     placeholder="근무 시 담당했던 업무에 대해 작성해주세요"
                     onBlur={(e) => setcareerDetail(e.target.value)}
+                    defaultValue={careerDetail}
                     required
                   ></InsertTextarea>
                 </div>
@@ -618,33 +625,68 @@ function MypageResumeAdd() {
                 <div className="w-full flex flex-col gap-[10px]">
                   <p className="basis-full font-bold">경력 사항</p>
                   <ul className="list-none">
-                    {careers.map(({ company, dates }, index) => {
-                      return (
-                        <li
-                          key={index}
-                          className="w-full relative flex justify-start gap-[10px]"
-                        >
-                          <span className="text-main-darkGray text-xs">
-                            {dates}
-                          </span>
-                          <span className="text-main-darkGray text-xs">
-                            {company}
-                          </span>
-                          <span
-                            className="absolute right-0"
-                            onClick={() =>
-                              setcareers(careers.filter((v, i) => i !== index))
-                            }
+                    {careers &&
+                      careers.map(({ company, dates, careerDetail }, index) => {
+                        return (
+                          <li
+                            key={index}
+                            className="w-full relative flex justify-start gap-[10px]"
+                            onClick={() => {
+                              setCompany(company as string);
+                              if (typeof dates === "string") {
+                                let year = Number("20" + dates.slice(0, 2));
+                                setStartDate(
+                                  new Date(
+                                    year,
+                                    Number(dates.slice(3, 5)) - 1,
+                                    1
+                                  )
+                                );
+                                let year2 = Number("20" + dates.slice(6, 8));
+                                setEndDate(
+                                  new Date(
+                                    year2,
+                                    Number(dates.slice(10)) - 1,
+                                    1
+                                  )
+                                );
+                              }
+                              setcareerDetail(careerDetail as string);
+                              setModal(!modal);
+                            }}
                           >
-                            <MinusIcon />
-                          </span>
-                        </li>
-                      );
-                    })}
+                            <span className="text-main-darkGray text-xs min-w-[64px]">
+                              {dates}
+                            </span>
+                            <span className="text-main-darkGray text-xs min-w-[64px] truncate">
+                              {company}
+                            </span>
+                            <span className="text-main-darkGray text-xs min-w-[64px] truncate pr-5">
+                              {careerDetail}
+                            </span>
+                            <span
+                              className="absolute right-0"
+                              onClick={() =>
+                                setcareers(
+                                  careers.filter((v, i) => i !== index)
+                                )
+                              }
+                            >
+                              <MinusIcon />
+                            </span>
+                          </li>
+                        );
+                      })}
                   </ul>
                   <button
                     className="w-full h-10 rounded-[10px] border border-dashed border-main-color bg-selected-box flex items-center justify-center text-xs text-main-color"
-                    onClick={() => setModal(!modal)}
+                    onClick={() => {
+                      setModal(!modal);
+                      setCompany("");
+                      setStartDate(null);
+                      setEndDate(null);
+                      setcareerDetail("");
+                    }}
                     type="button"
                   >
                     <span>
