@@ -17,12 +17,20 @@ const NewNoticeSlider = ({ notices }: Props) => {
     autoplay: true,
     slidesToScroll: 1,
     arrows: false,
-    infinite: true,
+    infinite: notices.length > 1,
     slidesToShow: 1,
     speed: 1000,
     centerMode: true,
     centerPadding: "100px",
   };
+
+  if (notices.length <= 0) {
+    return (
+      <p className="px-[20px] text-main-darkGray text-[14px] h-[110px] flex justify-center items-center">
+        긴급 공고가 없습니다.
+      </p>
+    );
+  }
 
   return (
     <div className="slider-container">
@@ -48,6 +56,9 @@ const NewNoticeSlider = ({ notices }: Props) => {
                 )}
                 <div className="flex flex-col gap-[5px] text-left w-full">
                   <div>
+                    <p className="text-[12px] text-main-darkGray">
+                      {new Date(notice.createdAt).toLocaleDateString()}에 등록
+                    </p>
                     <p className="font-bold overflow-hidden truncate whitespace-nowrap w-full">
                       {notice.title}
                     </p>
@@ -69,7 +80,7 @@ const NewNoticeSlider = ({ notices }: Props) => {
                         </span>
                       </div>
                       <span className="text-main-darkGray text-[12px]">
-                        ~ {notice.deadline.date.toLocaleDateString()}
+                        ~ {new Date(notice.deadline.date).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

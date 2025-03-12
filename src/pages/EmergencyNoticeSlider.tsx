@@ -88,14 +88,22 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
     autoplay: true,
     slidesToScroll: 1,
     arrows: false,
-    infinite: true,
-    slidesToShow: 2,
+    infinite: notices.length > 4,
+    slidesToShow: Math.min(2, notices.length),
     speed: 400,
     rows: 2,
     slidesPerRow: 1,
   };
 
   const navigate = useNavigate();
+
+  if (notices.length <= 0) {
+    return (
+      <p className="px-[20px] text-main-darkGray text-[14px] h-[110px] flex justify-center items-center">
+        긴급 공고가 없습니다.
+      </p>
+    );
+  }
 
   return (
     <SliderContainer>
@@ -105,6 +113,9 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
             <NoticeButton onClick={() => navigate(`/notice/${notice._id}`)}>
               <NoticeContent>
                 <div>
+                  <p className="text-[12px] text-main-darkGray">
+                    {new Date(notice.createdAt).toLocaleDateString()}에 등록
+                  </p>
                   <p className="font-bold overflow-hidden truncate whitespace-nowrap">
                     {notice.title}
                   </p>
@@ -114,15 +125,15 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
                 </div>
                 <div>
                   <AddressText>{notice.address.street}</AddressText>
-                  <div className="flex justify-between">
-                    <PayInfo>
+                  <div className="flex justify-between items-center">
+                    <PayInfo className="flex items-center">
                       <PayType>{notice.pay.type}</PayType>
                       <PayAmount>
                         {notice.pay.value.toLocaleString()}원
                       </PayAmount>
                     </PayInfo>
                     <span className="text-main-darkGray text-[12px]">
-                      ~ {notice.deadline.date.toLocaleDateString()}
+                      ~ {new Date(notice.deadline.date).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
