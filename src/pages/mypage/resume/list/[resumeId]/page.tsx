@@ -258,7 +258,7 @@ function MypageResumeListId() {
                     <span className="text-[#ff0000]">*</span>
                   </p>
                 </div>
-                <div className="w-full h-10 flex gap-[16px] items-center datepicker-css">
+                <div className="w-full h-10 flex items-center datepicker-css">
                   <DatePicker
                     locale={ko}
                     showIcon
@@ -324,7 +324,7 @@ function MypageResumeListId() {
                         : ""
                     }
                   />
-                  <span className="text-base font-semibold">-</span>
+                  <span className="mx-4 text-base font-semibold">-</span>
                   <DatePicker
                     locale={ko}
                     showIcon

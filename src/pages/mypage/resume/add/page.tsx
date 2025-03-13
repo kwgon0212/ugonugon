@@ -246,7 +246,7 @@ function MypageResumeAdd() {
                     <span className="text-[#ff0000]">*</span>
                   </p>
                 </div>
-                <div className="w-full h-10 flex gap-[16px] items-center datepicker-css">
+                <div className="w-full h-10 flex items-center datepicker-css">
                   <DatePicker
                     locale={ko}
                     showIcon
@@ -312,7 +312,7 @@ function MypageResumeAdd() {
                         : ""
                     }
                   />
-                  <span className="text-base font-semibold">-</span>
+                  <span className="text-base mx-4 font-semibold">-</span>
                   <DatePicker
                     locale={ko}
                     showIcon

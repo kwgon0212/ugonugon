@@ -1,3 +1,11 @@
+.react-datepicker-wrapper,
+.react-datepicker__input-container.react-datepicker__view-calendar-icon {
+  /* width: 155.688px;
+  margin: 0;
+  padding: 0; */
+}
+/* .react-datepicker  아님*/
+/* .react-datepicker-popper 아님*/
 .datepicker-css .react-datepicker-wrapper {
   width: 100%;
   height: 40px;

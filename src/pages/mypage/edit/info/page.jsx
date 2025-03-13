@@ -140,7 +140,7 @@ function MyPageEditInfoPage() {
                 <ul className="flex flex-col gap-[10px] text-[12px] ml-[10px]">
                   {[
                     userData.name,
-                    userData.sex,
+                    userData.sex === "male" ? "남성" : "여성",
                     userData.residentId.slice(0, 6) +
                       "-" +
                       userData.residentId[6] +
