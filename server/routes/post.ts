@@ -796,7 +796,8 @@ router.get("/search", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const postId = req.params.id;
+    const { id: postId } = req.params;
+    console.log(postId);
 
     // ID 형식 검증
     if (!mongoose.Types.ObjectId.isValid(postId)) {
