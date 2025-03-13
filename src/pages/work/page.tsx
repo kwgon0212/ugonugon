@@ -6,6 +6,17 @@ import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
 import Notice from "@/types/Notice";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
+const CenterDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
 
 interface Attendance {
   checkInTime: string | null;
@@ -15,6 +26,7 @@ interface Attendance {
 
 const WorkPage: React.FC = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
+  const userEmail = useAppSelector((state) => state.auth.user?.email);
   const [workPosts, setWorkPosts] = useState<Notice[] | null>(null);
   const [attendances, setAttendances] = useState<Record<string, Attendance>>(
     {}
@@ -23,6 +35,7 @@ const WorkPage: React.FC = () => {
     null
   );
   const [currentTime, setCurrentTime] = useState(new Date());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,13 +47,17 @@ const WorkPage: React.FC = () => {
         .filter((apply: any) => apply.status === "accepted")
         .map((apply: any) => apply.postId);
 
-      const postsData = await Promise.all(
-        postIds.map((postId: string) =>
-          axios.get(`/api/post?postId=${postId}`).then((res) => res.data)
-        )
-      );
-
-      setWorkPosts(postsData);
+      try {
+        const postsData = await Promise.all(
+          postIds.map((postId: string) =>
+            axios.get(`/api/post?postId=${postId}`).then((res) => res.data)
+          )
+        );
+        setWorkPosts(postsData);
+      } catch (error) {
+        console.error("error 발생 :", error);
+        setWorkPosts(null);
+      }
 
       const attendanceData = await axios.post(`/api/attendance/check`, {
         postIds,
@@ -113,9 +130,17 @@ const WorkPage: React.FC = () => {
   return (
     <>
       <Header>
-        <p className="flex justify-center items-center h-full font-bold text-lg">
-          근무 현황
-        </p>
+        <>
+          <p className="flex justify-center items-center h-full font-bold text-lg">
+            근무 현황
+          </p>
+          <button
+            className="absolute left-[20px] top-1/2 -translate-y-1/2"
+            onClick={() => {
+              navigate(-1);
+            }}
+          ></button>
+        </>
       </Header>
 
       <Main hasBottomNav={true}>
@@ -125,15 +150,7 @@ const WorkPage: React.FC = () => {
               workPosts.map((post) => {
                 const workStart = new Date(post.hour.start);
                 const workEnd = new Date(post.hour.end);
-                const progress = Math.min(
-                  100,
-                  Math.max(
-                    0,
-                    ((currentTime.getTime() - workStart.getTime()) /
-                      (workEnd.getTime() - workStart.getTime())) *
-                      100
-                  )
-                );
+
                 const distance = location
                   ? getDistance(
                       location.lat,
@@ -163,6 +180,18 @@ const WorkPage: React.FC = () => {
                 const buttonColor = isActive
                   ? "bg-main-color"
                   : "bg-selected-box";
+
+                const progress = attendance?.checkInTime
+                  ? Math.min(
+                      100,
+                      Math.max(
+                        0,
+                        ((currentTime.getTime() - workStart.getTime()) /
+                          (workEnd.getTime() - workStart.getTime())) *
+                          100
+                      )
+                    )
+                  : 0;
 
                 return (
                   <div
@@ -235,7 +264,22 @@ const WorkPage: React.FC = () => {
                 );
               })
             ) : (
-              <p>근무가 존재하지 않습니다</p>
+              <CenterDiv className="text-main-darkGray">
+                <div className="text-xl">
+                  <span>현재 </span>
+                  <span className="text-main-color font-bold">{userEmail}</span>
+                  <span>님의</span>
+                </div>
+                <div className="text-xl mb-5">근무가 존재하지 않아요</div>
+                <div className="flex flex-row justify-center w-full">
+                  <Link to="/work/apply">
+                    <span className="text-main-color">
+                      내가 지원한 공고 페이지
+                    </span>
+                  </Link>
+                  <span>로 이동</span>
+                </div>
+              </CenterDiv>
             )}
           </div>
         </div>
