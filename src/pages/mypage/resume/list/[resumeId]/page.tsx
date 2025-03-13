@@ -324,7 +324,7 @@ function MypageResumeListId() {
                         : ""
                     }
                   />
-                  <span className="mx-4 text-base font-semibold">-</span>
+                  <span className="text-base mx-4">~</span>
                   <DatePicker
                     locale={ko}
                     showIcon

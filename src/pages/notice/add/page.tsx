@@ -370,7 +370,7 @@ const NoticeAddPage = () => {
                   />
                 </div>
               </p>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
                   selected={period?.start || null}
                   setSelectedDate={(date) =>
@@ -383,7 +383,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={period?.start}
                 />
-                <span>~</span>
+                <span className="mx-[10px]">~</span>
                 <CustomDatePicker
                   selected={period?.end || null}
                   setSelectedDate={(date) =>
@@ -417,7 +417,7 @@ const NoticeAddPage = () => {
                   />
                 </div>
               </p>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
                   selected={hour?.start || null}
                   setSelectedDate={(date) =>
@@ -428,7 +428,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={hour?.start}
                 />
-                <span>~</span>
+                <span className="mx-[10px]">~</span>
                 <CustomDatePicker
                   selected={hour?.end || null}
                   setSelectedDate={(date) =>
@@ -446,7 +446,7 @@ const NoticeAddPage = () => {
               <b>
                 휴게시간 <b className="text-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
                   selected={restTime?.start || null}
                   setSelectedDate={(date) =>
@@ -459,7 +459,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={restTime?.start}
                 />
-                <span>~</span>
+                <span className="mx-[10px]">~</span>
                 <CustomDatePicker
                   selected={restTime?.end || null}
                   setSelectedDate={(date) =>
@@ -534,7 +534,7 @@ const NoticeAddPage = () => {
               <b>
                 모집마감 <b className="text-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
                   selected={deadline?.date || null}
                   setSelectedDate={(date) =>
@@ -547,7 +547,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={deadline?.date}
                 />
-                <span>-</span>
+                <span className="mx-[10px]">-</span>
                 <CustomDatePicker
                   selected={deadline?.time || null}
                   setSelectedDate={(date) =>

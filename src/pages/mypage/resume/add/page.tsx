@@ -312,7 +312,7 @@ function MypageResumeAdd() {
                         : ""
                     }
                   />
-                  <span className="text-base mx-4 font-semibold">-</span>
+                  <span className="text-base mx-4">~</span>
                   <DatePicker
                     locale={ko}
                     showIcon
