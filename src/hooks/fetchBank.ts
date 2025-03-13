@@ -6,22 +6,11 @@ export interface Bank extends Document {
   response: { [key: string]: string | Object };
 }
 
-// export const postBank = async (ApiNm: string, data: object) => {
-//   try {
-//     const res = await fetch("/api/resume", {
-//       method: "POST",
-//       body: JSON.stringify({ data }),
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     return res.json();
-//   } catch (err: any) {
-//     console.log(err, err?.messages);
-//   }
-// };
-
-export const postBank = async (ApiNm: string, data: object) => {
+export const postBank = async (
+  ApiNm: string,
+  data: object,
+  account: string = "3020000012646"
+) => {
   try {
     const today = new Date();
     const toRequest = {
@@ -42,6 +31,7 @@ export const postBank = async (ApiNm: string, data: object) => {
         AccessToken: "",
       },
       ...data,
+      account,
     };
     const res = await fetch("/api/bank", {
       method: "POST",

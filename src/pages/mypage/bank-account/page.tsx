@@ -8,12 +8,13 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Slider from "react-slick";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
-import { User } from "@/hooks/fetchUser";
+import getUser, { type User } from "@/hooks/fetchUser";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import CloseEyeIcon from "@/components/icons/CloseEye";
 import OpenEyeIcon from "@/components/icons/OpenEye";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
+import postBank from "@/hooks/fetchBank";
 
 interface Transaction {
   id: number;
@@ -24,18 +25,18 @@ interface Transaction {
 }
 
 const transactions: Record<string, Record<string, Transaction[]>> = {
-  "2023": {
+  "2024": {
     "01": [
       {
         id: 1,
-        date: "2023-01-05",
+        date: "2024-01-05",
         amount: 45000,
         receiver: "김민수",
         type: "입금",
       },
       {
         id: 2,
-        date: "2023-01-15",
+        date: "2024-01-15",
         amount: 75000,
         receiver: "박지윤",
         type: "출금",
@@ -44,25 +45,25 @@ const transactions: Record<string, Record<string, Transaction[]>> = {
     "02": [
       {
         id: 3,
-        date: "2023-02-10",
+        date: "2024-02-10",
         amount: 98000,
         receiver: "이영호",
         type: "입금",
       },
     ],
   },
-  "2024": {
+  "2025": {
     "01": [
       {
         id: 4,
-        date: "2024-01-05",
+        date: "2025-01-05",
         amount: 50000,
         receiver: "김철수",
         type: "입금",
       },
       {
         id: 5,
-        date: "2024-01-10",
+        date: "2025-01-10",
         amount: 30000,
         receiver: "박영희",
         type: "출금",
@@ -71,14 +72,14 @@ const transactions: Record<string, Record<string, Transaction[]>> = {
     "02": [
       {
         id: 6,
-        date: "2024-02-02",
+        date: "2025-02-02",
         amount: 20000,
         receiver: "이민호",
         type: "입금",
       },
       {
         id: 7,
-        date: "2024-02-15",
+        date: "2025-02-15",
         amount: 100000,
         receiver: "최지은",
         type: "출금",
@@ -87,105 +88,188 @@ const transactions: Record<string, Record<string, Transaction[]>> = {
     "03": [
       {
         id: 8,
-        date: "2024-03-03",
+        date: "2025-03-03",
         amount: 150000,
         receiver: "오정우",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "출금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "출금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
       {
         id: 9,
-        date: "2024-03-20",
+        date: "2025-03-20",
         amount: 50000,
         receiver: "강나래",
         type: "입금",
       },
     ],
+    "04": [
+      {
+        id: 6,
+        date: "2025-02-02",
+        amount: 20000,
+        receiver: "이민호",
+        type: "입금",
+      },
+      {
+        id: 7,
+        date: "2025-02-15",
+        amount: 100000,
+        receiver: "최지은",
+        type: "출금",
+      },
+    ],
   },
 };
 
+interface History {
+  Header: {};
+  Iqtcnt: string;
+  REC: { [key: string]: string }[];
+  Totcnt: string;
+}
+
 const BankAccountPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [selectedYear, setSelectedYear] = useState<string>("2024");
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(0);
-  const [isHiddenBalance, setIsHiddenBalance] = useState(false);
+  const [isHiddenhistory, setIsHiddenhistory] = useState(false);
   const [userBank, setUserBank] = useState<User["bankAccount"] | null>(null);
   const sliderRef = useRef<Slider | null>(null);
   const navigate = useNavigate();
 
-  const years = Object.keys(transactions);
-  const months = Object.keys(transactions[selectedYear]);
+  const years: number[] = [];
+  for (let i = new Date().getFullYear(); i > 1999; i--) {
+    years.push(i);
+  }
+  const months = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
+
+  // const years = Object.keys(transactions);
+  // const months = Object.keys(transactions[selectedYear]);
+
+  const [userData, setUserData] = useState<User | null>(null);
+  const [history, setHistory] = useState<History>();
+  const [balance, setBalance] = useState();
 
   useEffect(() => {
     const fetchUserBankAccount = async () => {
       if (!userId) return;
-      try {
-        const response = await axios.get(`/api/users?userId=${userId}`);
-        const userDoc = response.data;
-        setUserBank(userDoc.bankAccount);
-      } catch (error) {
-        console.log(error);
-        setUserBank(null);
-      }
+      const response = await getUser(userId);
+      setUserData(response);
+      setUserBank(response.bankAccount);
     };
 
     fetchUserBankAccount();
   }, [userId]);
+
+  useEffect(() => {
+    const fetchUserBankAccount = async () => {
+      if (!userData) return;
+      let Ineymd = new Date(
+        Number(selectedYear),
+        Number(months[selectedMonthIndex]),
+        0
+      );
+      Ineymd = Ineymd > new Date() ? new Date() : Ineymd;
+      const tmpData = {
+        Bncd: "011",
+        Acno: userData.bankAccount.account,
+        Insymd: selectedYear + months[selectedMonthIndex] + "01",
+        Ineymd: selectedYear + months[selectedMonthIndex] + Ineymd.getDate(),
+        TrnsDsnc: "A",
+        Lnsq: "DESC",
+        PageNo: "1",
+        Dmcnt: "100",
+      };
+
+      const historyInfo = await postBank(
+        "InquireTransactionHistory",
+        tmpData,
+        userData.bankAccount.account
+      );
+      if (!historyInfo.Header.Rsms) return;
+      if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
+        alert("조회기간이 잘못되었습니다.");
+      } else {
+        setHistory(historyInfo);
+      }
+      const Ldbl = await postBank(
+        "InquireBalance",
+        { FinAcno: true },
+        userData.bankAccount.account
+      );
+      setBalance(Ldbl.Ldbl);
+    };
+
+    fetchUserBankAccount();
+  }, [userData, selectedYear, months[selectedMonthIndex]]);
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newYear = e.target.value;
@@ -214,6 +298,8 @@ const BankAccountPage = () => {
     slidesToScroll: 1,
     afterChange: handleAfterChange,
   };
+  console.log(history);
+  // console.log(history?.REC);
 
   return (
     <>
@@ -228,9 +314,9 @@ const BankAccountPage = () => {
           </button>
         </div>
       </Header>
-      <Main hasBottomNav={false}>
-        <div className="size-full flex flex-col gap-[20px] p-[20px]">
-          {userBank && (
+      {userBank && (
+        <Main hasBottomNav={false}>
+          <div className="size-full flex flex-col gap-[20px] p-[20px]">
             <div className="w-full bg-white rounded-[10px] flex flex-col gap-[5px] px-[20px] py-[20px]">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-[10px]">
@@ -254,13 +340,17 @@ const BankAccountPage = () => {
               </p>
               <div className="flex gap-[10px] items-center">
                 <div className="flex gap-[4px] items-center">
-                  <span className="text-[20px] font-bold">
-                    {isHiddenBalance ? "---,---,---" : "300,422,521"}
-                  </span>
+                  {balance && (
+                    <span className="text-[20px] font-bold">
+                      {isHiddenhistory
+                        ? "---,---,---"
+                        : Number(balance).toLocaleString()}
+                    </span>
+                  )}
                   <span className="font-light">원</span>
                 </div>
-                <button onClick={() => setIsHiddenBalance((prev) => !prev)}>
-                  {isHiddenBalance ? (
+                <button onClick={() => setIsHiddenhistory((prev) => !prev)}>
+                  {isHiddenhistory ? (
                     <CloseEyeIcon color="#717171" />
                   ) : (
                     <OpenEyeIcon color="#717171" />
@@ -268,87 +358,127 @@ const BankAccountPage = () => {
                 </button>
               </div>
             </div>
-          )}
 
-          <span className="text-[18px]">거래 내역</span>
-          <div className="w-full flex flex-col gap-[10px]">
-            <div className="flex justify-between items-center">
-              <button onClick={() => sliderRef.current?.slickPrev()}>
-                <ArrowLeftIcon width={24} height={24} color="#717171" />
-              </button>
-              <div className="flex gap-[10px] items-center">
-                <div className="relative">
-                  <select
-                    value={selectedYear}
-                    onChange={handleYearChange}
-                    className="appearance-none pl-[20px] pr-[40px] h-[40px] text-center rounded-[10px] border border-main-gray"
-                  >
-                    {years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}년
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-[10px] top-1/2 -translate-y-1/2 z-5">
-                    <ArrowDownIcon color="#717171" />
+            <span className="text-[18px]">거래 내역</span>
+            <div className="w-full flex flex-col gap-[10px]">
+              <div className="flex justify-between items-center">
+                <button onClick={() => sliderRef.current?.slickPrev()}>
+                  <ArrowLeftIcon width={24} height={24} color="#717171" />
+                </button>
+                <div className="flex gap-[10px] items-center">
+                  <div className="relative">
+                    <select
+                      value={selectedYear}
+                      onChange={handleYearChange}
+                      className="appearance-none pl-[20px] pr-[40px] h-[40px] text-center rounded-[10px] border border-main-gray"
+                    >
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}년
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-[10px] top-1/2 -translate-y-1/2 z-5">
+                      <ArrowDownIcon color="#717171" />
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <select
+                      value={months[selectedMonthIndex]}
+                      onChange={handleMonthChange}
+                      className="appearance-none pl-[20px] pr-[40px] h-[40px] text-center rounded-[10px] border border-main-gray"
+                    >
+                      {months.map((month, index) => (
+                        <option key={month} value={month}>
+                          {month}월
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
+                      <ArrowDownIcon color="#717171" />
+                    </div>
                   </div>
                 </div>
-
-                <div className="relative">
-                  <select
-                    value={months[selectedMonthIndex]}
-                    onChange={handleMonthChange}
-                    className="appearance-none pl-[20px] pr-[40px] h-[40px] text-center rounded-[10px] border border-main-gray"
-                  >
-                    {months.map((month, index) => (
-                      <option key={month} value={month}>
-                        {month}월
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                    <ArrowDownIcon color="#717171" />
-                  </div>
-                </div>
+                <button onClick={() => sliderRef.current?.slickNext()}>
+                  <ArrowRightIcon width={24} height={24} color="#717171" />
+                </button>
               </div>
-              <button onClick={() => sliderRef.current?.slickNext()}>
-                <ArrowRightIcon width={24} height={24} color="#717171" />
-              </button>
-            </div>
 
-            <Slider ref={sliderRef} {...settings}>
-              {months.map((month) => (
-                <div
-                  key={month}
-                  className="px-[20px] bg-white rounded-[10px] max-h-[500px] overflow-y-scroll"
-                >
-                  {transactions[selectedYear][month].length > 0 ? (
-                    transactions[selectedYear][month].map((tx) => (
-                      <div
-                        key={tx.id}
-                        className="py-[20px] border-b last:border-none"
-                      >
-                        <p className="text-sm text-gray-500">{tx.date}</p>
-                        <p className="text-lg font-medium">{tx.receiver}</p>
-                        <p
-                          className={`${
-                            tx.type === "입금" ? "text-main-color" : "text-warn"
-                          } font-semibold`}
+              <Slider ref={sliderRef} {...settings}>
+                {months.map((month) => (
+                  <div
+                    key={month}
+                    className="px-[20px] bg-white rounded-[10px] max-h-[500px] overflow-y-scroll"
+                  >
+                    {/* {transactions[selectedYear][month].length > 0 ? (
+                      transactions[selectedYear][month].map((tx) => (
+                        <div
+                          key={tx.id}
+                          className="py-[20px] border-b last:border-none"
                         >
-                          {tx.type === "입금" ? "+" : "-"}
-                          {tx.amount.toLocaleString()}원
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-center text-gray-400">거래 내역 없음</p>
-                  )}
-                </div>
-              ))}
-            </Slider>
+                          <p className="text-sm text-gray-500">{tx.date}</p>
+                          <p className="text-lg font-medium">{tx.receiver}</p>
+                          <p
+                            className={`${
+                              tx.type === "입금"
+                                ? "text-main-color"
+                                : "text-warn"
+                            } font-semibold`}
+                          >
+                            {tx.type === "입금" ? "+" : "-"}
+                            {tx.amount.toLocaleString()}원
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-400">
+                        거래 내역 없음
+                      </p>
+                    )} */}
+                    {history?.REC.length ? (
+                      history.REC.map(
+                        ({
+                          BnprCntn,
+                          Tram,
+                          Trdd,
+                          TrnsAfAcntBlncSmblCd,
+                          MnrcDrotDsnc,
+                          Tuno,
+                        }) => (
+                          <div
+                            key={Tuno}
+                            className="py-[20px] border-b last:border-none"
+                          >
+                            <p className="text-sm text-gray-500">
+                              {Trdd.slice(0, 4)}-{Trdd.slice(4, 6)}-
+                              {Trdd.slice(6)}
+                            </p>
+                            <p className="text-lg font-medium">{BnprCntn}</p>
+                            <p
+                              className={`${
+                                Number(MnrcDrotDsnc) < 3
+                                  ? "text-main-color"
+                                  : "text-warn"
+                              } font-semibold`}
+                            >
+                              {Number(MnrcDrotDsnc) < 3 ? "+" : "-"}
+                              {Number(Tram).toLocaleString()}원
+                            </p>
+                          </div>
+                        )
+                      )
+                    ) : (
+                      <p className="text-center text-gray-400">
+                        거래 내역 없음
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </Slider>
+            </div>
           </div>
-        </div>
-      </Main>
+        </Main>
+      )}
     </>
   );
 };

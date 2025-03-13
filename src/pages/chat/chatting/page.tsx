@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
-
 import Header from "@/components/Header";
 import Main from "@/components/Main";
 import AlertModal from "./AlertModal";
