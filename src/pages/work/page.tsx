@@ -197,16 +197,21 @@ const WorkPage: React.FC = () => {
     today.setHours(0, 0, 0, 0);
 
     return workPosts.filter((post) => {
-      const workDate = new Date(post.period.start);
-      workDate.setHours(0, 0, 0, 0);
+      const workStartDate = new Date(post.period.start);
+      const workEndDate = new Date(post.period.end);
+      workStartDate.setHours(0, 0, 0, 0);
+      workEndDate.setHours(0, 0, 0, 0);
 
       if (activeTab === "today") {
-        return workDate.getTime() === today.getTime();
+        return workStartDate.getTime() === today.getTime();
       } else if (activeTab === "past") {
-        return workDate.getTime() < today.getTime();
+        return workEndDate.getTime() < today.getTime();
       } else {
         // upcoming
-        return workDate.getTime() > today.getTime();
+        return (
+          workStartDate.getTime() > today.getTime() ||
+          workEndDate.getTime() > today.getTime()
+        );
       }
     });
   };
@@ -238,7 +243,7 @@ const WorkPage: React.FC = () => {
     const canCheckIn =
       currentTime >= new Date(workStart.getTime() - 10 * 60 * 1000) &&
       distance <= 2;
-    const canCheckOut = currentTime >= workEnd && distance <= 1;
+    const canCheckOut = currentTime >= workEnd && distance <= 2;
     const attendance = attendances[post._id.toString()];
     const attendanceStatus = attendance?.checkOutTime
       ? "근무 완료"
@@ -264,6 +269,29 @@ const WorkPage: React.FC = () => {
         )
       : 0;
 
+    // 헬퍼 함수: 버튼 비활성화 시 그 이유를 반환
+    const getDisabledReason = () => {
+      // 퇴근인 경우 (체크인은 했으나 체크아웃은 안 함)
+      if (attendance?.checkInTime && !attendance?.checkOutTime) {
+        if (currentTime < workEnd) {
+          return "근무 종료 시간이 되지 않았습니다.";
+        }
+        if (distance > 1) {
+          return "근무지와의 거리가 너무 멉니다.";
+        }
+      }
+      // 출근인 경우 (체크인하지 않은 경우)
+      else if (!attendance?.checkInTime) {
+        if (currentTime < new Date(workStart.getTime() - 10 * 60 * 1000)) {
+          return "출근 가능 시간이 되지 않았습니다.";
+        }
+        if (distance > 2) {
+          return "근무지와의 거리가 너무 멉니다.";
+        }
+      }
+      return "";
+    };
+
     return (
       <div
         key={post._id.toString()}
@@ -277,10 +305,10 @@ const WorkPage: React.FC = () => {
               (근무지와의 거리:{" "}
               <b
                 className={`font-bold ${
-                  distance <= 2 ? "text-main-color" : "text-warn"
+                  distance <= 2.5 ? "text-main-color" : "text-warn"
                 }`}
               >
-                {distance === Infinity ? "..." : distance.toFixed(2)}km
+                {distance === Infinity ? "..." : distance.toFixed(2.5)}km
               </b>
               )
             </span>
@@ -313,20 +341,26 @@ const WorkPage: React.FC = () => {
           </span>
         </div>
         {activeTab === "today" && (
-          <button
-            className={`w-full text-white h-[50px] rounded-[10px] ${buttonColor}`}
-            onClick={() =>
-              handleAttendance(
-                post._id.toString(),
-                attendance?.checkInTime && !attendance?.checkOutTime
-                  ? "check-out"
-                  : "check-in"
-              )
-            }
-            disabled={!isActive}
-          >
-            {attendanceStatus}
-          </button>
+          <>
+            <button
+              className={`w-full text-white h-[50px] rounded-[10px] ${buttonColor}`}
+              onClick={() =>
+                handleAttendance(
+                  post._id.toString(),
+                  attendance?.checkInTime && !attendance?.checkOutTime
+                    ? "check-out"
+                    : "check-in"
+                )
+              }
+              disabled={!isActive}
+            >
+              {attendanceStatus}
+            </button>
+            {/* 버튼이 비활성화되어 있다면, 그 이유를 표시 */}
+            {!isActive && (
+              <p className="mt-2 text-xs text-red-500">{getDisabledReason()}</p>
+            )}
+          </>
         )}
         {activeTab === "past" && attendance?.checkOutTime && (
           <div className="w-full text-center text-main-color font-bold py-2">
