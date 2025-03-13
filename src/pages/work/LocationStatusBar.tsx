@@ -6,12 +6,14 @@ interface LocationStatusBarProps {
   locationEnabled: boolean;
   locationError: string | null;
   onUpdateLocation: () => void;
+  isLoading?: boolean;
 }
 
 export const LocationStatusBar: React.FC<LocationStatusBarProps> = ({
   locationEnabled,
   locationError,
   onUpdateLocation,
+  isLoading = false,
 }) => {
   return (
     <LocationStatusContainer>
@@ -24,9 +26,14 @@ export const LocationStatusBar: React.FC<LocationStatusBarProps> = ({
         </div>
         <button
           onClick={onUpdateLocation}
-          className="bg-main-color text-white px-3 py-1 rounded-md text-sm"
+          className={`px-3 py-1 rounded-md text-sm ${
+            isLoading
+              ? "bg-gray-400 text-white cursor-wait"
+              : "bg-main-color text-white hover:bg-blue-600"
+          }`}
+          disabled={isLoading}
         >
-          위치 갱신
+          {isLoading ? "갱신 중..." : "위치 갱신"}
         </button>
       </div>
       {locationError && (
@@ -47,6 +54,7 @@ const LocationStatusContainer = styled.div`
   background-color: white;
   margin-bottom: 16px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 export default LocationStatusBar;

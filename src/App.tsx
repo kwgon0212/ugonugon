@@ -27,7 +27,7 @@ import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
 import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
-import MypageScrabPage from "./pages/mypage/scrab/page";
+import MypageScrabPage from "./pages/mypage/scrap/page";
 import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
 import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";

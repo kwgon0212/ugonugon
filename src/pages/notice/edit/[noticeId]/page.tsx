@@ -434,7 +434,7 @@ const NoticeEditPage = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 {period && (
                   <>
                     <CustomDatePicker
@@ -449,7 +449,7 @@ const NoticeEditPage = () => {
                       mode="date"
                       value={period.start}
                     />
-                    <span>~</span>
+                    <span className="mx-[10px]">~</span>
                     <CustomDatePicker
                       selected={new Date(period.end) || null}
                       setSelectedDate={(date) =>
@@ -487,7 +487,7 @@ const NoticeEditPage = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 {hour && (
                   <>
                     <CustomDatePicker
@@ -502,7 +502,7 @@ const NoticeEditPage = () => {
                       mode="time"
                       value={hour.start}
                     />
-                    <span>~</span>
+                    <span className="mx-[10px]">~</span>
                     <CustomDatePicker
                       selected={new Date(hour.end) || null}
                       setSelectedDate={(date) =>
@@ -524,7 +524,7 @@ const NoticeEditPage = () => {
               <b>
                 휴게시간 <b className="text-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 {restTime && (
                   <>
                     <CustomDatePicker
@@ -539,7 +539,7 @@ const NoticeEditPage = () => {
                       mode="time"
                       value={restTime.start}
                     />
-                    <span>~</span>
+                    <span className="mx-[10px]">~</span>
                     <CustomDatePicker
                       selected={new Date(restTime.end) || null}
                       setSelectedDate={(date) =>
@@ -616,7 +616,7 @@ const NoticeEditPage = () => {
               <b>
                 모집마감 <b className="text-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
+              <div className="w-full flex justify-between items-center">
                 {deadline && (
                   <>
                     <CustomDatePicker
@@ -631,7 +631,7 @@ const NoticeEditPage = () => {
                       mode="date"
                       value={deadline.date}
                     />
-                    <span>-</span>
+                    <span className="mx-[10px]">-</span>
                     <CustomDatePicker
                       selected={new Date(deadline.time) || null}
                       setSelectedDate={(date) =>

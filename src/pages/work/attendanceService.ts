@@ -10,14 +10,14 @@ export interface CheckInData {
   userId: string;
   noticeId: string;
   checkInTime?: Date;
-  location?: Location;
+  checkInLocation?: Location;
 }
 
 export interface CheckOutData {
   userId: string;
   noticeId: string;
   checkOutTime?: Date;
-  location?: Location;
+  checkOutLocation?: Location;
 }
 
 export interface AttendanceRecord {
@@ -27,10 +27,8 @@ export interface AttendanceRecord {
   checkInTime: string;
   checkOutTime?: string;
   status: "checked-in" | "checked-out" | "completed";
-  location?: {
-    checkIn?: Location;
-    checkOut?: Location;
-  };
+  checkInLocation?: Location;
+  checkOutLocation?: Location;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,15 +36,22 @@ export interface AttendanceRecord {
 // 출근 처리 API 호출
 export const checkIn = async (data: CheckInData): Promise<AttendanceRecord> => {
   try {
-    const response = await axios.post("/api/attendance/check-in", {
+    // req.body 형식에 맞게 데이터 변환
+    const requestData = {
       userId: data.userId,
       noticeId: data.noticeId,
       checkInTime: data.checkInTime
         ? data.checkInTime.toISOString()
         : undefined,
-      location: data.location,
-    });
+      checkInLocation: data.checkInLocation, // 새 API에서는 checkInLocation 필드 사용
+    };
 
+    console.log("출근 API 요청 데이터:", requestData);
+
+    const response = await axios.post(
+      "/api/newAttendance/check-in",
+      requestData
+    );
     return response.data.attendance;
   } catch (error: any) {
     // 이미 출근한 경우 처리
@@ -62,109 +67,56 @@ export const checkOut = async (
   data: CheckOutData
 ): Promise<AttendanceRecord> => {
   try {
-    const response = await axios.post("/api/attendance/check-out", {
+    // 요청 데이터 준비
+    const requestData = {
       userId: data.userId,
       noticeId: data.noticeId,
       checkOutTime: data.checkOutTime
         ? data.checkOutTime.toISOString()
         : undefined,
-      location: data.location,
-    });
+      checkOutLocation: data.checkOutLocation, // 새 API에서는 checkOutLocation 필드 사용
+    };
 
+    console.log("퇴근 API 요청 데이터:", requestData);
+
+    const response = await axios.post(
+      "/api/newAttendance/check-out",
+      requestData
+    );
     return response.data.attendance;
   } catch (error) {
+    console.error("퇴근 처리 요청 오류:", error);
     throw error;
   }
 };
 
-// 출근 상태 조회 API 호출
+// 출근 상태 조회 API 호출 - 새 API는 findById를 사용
 export const getAttendanceStatus = async (
-  userId: string,
-  noticeIds?: Object[]
-): Promise<AttendanceRecord[]> => {
+  userId: string
+): Promise<AttendanceRecord | null> => {
   try {
-    const response = await axios.get("/api/attendance/status", {
+    console.log("출근 상태 조회 요청:", userId);
+
+    const response = await axios.get("/api/newAttendance/status", {
       params: {
-        userId,
-        noticeIds: noticeIds?.join(","),
+        userId, // 새 API는 userId 파라미터만 받음
       },
     });
 
+    console.log("출근 상태 조회 응답:", response.data);
     return response.data;
   } catch (error) {
+    console.error("출근 상태 조회 오류:", error);
     throw error;
   }
 };
 
-// 출근 이력 조회 API 호출
-export const getAttendanceHistory = async (
-  userId: string,
-  page = 1,
-  limit = 10,
-  startDate?: Date,
-  endDate?: Date
-): Promise<{
-  records: AttendanceRecord[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    pages: number;
-  };
-}> => {
-  try {
-    const response = await axios.get("/api/attendance/history", {
-      params: {
-        userId,
-        page,
-        limit,
-        startDate: startDate?.toISOString(),
-        endDate: endDate?.toISOString(),
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 특정 출근 기록 조회 API 호출 - 고용주 (공고->저장된 근로자 ->id로 조회)
+// 특정 출근 기록 조회 API 호출
 export const getAttendanceById = async (
   id: string
 ): Promise<AttendanceRecord> => {
   try {
-    const response = await axios.get(`/api/attendance/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 근무 통계 조회 API 호출
-export const getUserStats = async (
-  userId: string,
-  period: "week" | "month" | "year" = "month"
-): Promise<{
-  period: {
-    start: string;
-    end: string;
-  };
-  stats: {
-    totalWorkDuration: string;
-    totalMinutes: number;
-    recordsCount: number;
-    averageWorkDuration: string;
-  };
-}> => {
-  try {
-    const response = await axios.get("/api/attendance/stats/user", {
-      params: {
-        userId,
-        period,
-      },
-    });
-
+    const response = await axios.get(`/api/newAttendance/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -190,13 +142,3 @@ export const calculateWorkProgress = (
   // 진행률 계산 (최대 100%)
   return Math.min(Math.round((elapsedMinutes / totalMinutes) * 100), 100);
 };
-
-// export default {
-//   checkIn,
-//   checkOut,
-//   getAttendanceStatus,
-//   getAttendanceHistory,
-//   getAttendanceById,
-//   getUserStats,
-//   calculateWorkProgress,
-// };
