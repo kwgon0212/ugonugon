@@ -17,6 +17,7 @@ interface Post {
   _id: string;
   title: string;
   address?: {
+    zipcode?: string;
     street: string;
     detail?: string;
   };
@@ -36,22 +37,27 @@ interface Post {
   day?: string[];
   applies?: Array<{
     userId: string;
-    status: string;
+    status: "pending" | "accepted" | "rejected";
     resumeId: string;
     postId: string;
     appliedAt: string;
   }>;
 }
 
+// 업데이트된 Attendance 인터페이스 (새 스키마에 맞춤)
 interface Attendance {
   _id: string;
   userId: string;
-  noticeId: string;
-  checkInTime: string;
+  postId: string;
+  checkInTime?: string;
   checkOutTime?: string;
   status: "checked-in" | "checked-out" | "completed";
   createdAt: string;
-  updatedAt: string;
+}
+
+// AttendanceMap 인터페이스 (새 API 응답 형식)
+interface AttendanceMap {
+  [postId: string]: Attendance;
 }
 
 interface User {
@@ -61,7 +67,7 @@ interface User {
   sex?: "male" | "female";
   phone: string;
   profileImage?: string;
-  profile?: string; // 추가: users에 profile 필드에 이미지 URL이 있을 수 있음
+  profile?: string;
   residentId?: string;
   email?: string;
   address?: any;
@@ -99,8 +105,10 @@ interface DebugState {
 }
 
 // 날짜 포맷팅 함수
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString?: string): string => {
   try {
+    if (!dateString) return "날짜 정보 없음";
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "날짜 정보 없음";
 
@@ -119,8 +127,10 @@ const formatDate = (dateString: string): string => {
 };
 
 // 시간 포맷팅 함수
-const formatTime = (dateString: string): string => {
+const formatTime = (dateString?: string): string => {
   try {
+    if (!dateString) return "시간 정보 없음";
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "시간 정보 없음";
 
@@ -238,7 +248,7 @@ const getProfileImageUrl = (user: User): string | undefined => {
     );
 
     // 문자열 변환 시도
-    if (user.profile.toString) {
+    if (user.profile && typeof user.profile.toString === "function") {
       const profileStr = user.profile.toString();
       if (
         profileStr.startsWith("http") ||
@@ -251,7 +261,13 @@ const getProfileImageUrl = (user: User): string | undefined => {
 
   return undefined;
 };
-
+type ApplyType = {
+  userId: string;
+  status: string;
+  resumeId: string;
+  postId: string;
+  appliedAt: string;
+};
 // 기본 사용자 정보 생성 함수
 const createDefaultUser = (userId: string): User => ({
   _id: userId,
@@ -315,19 +331,63 @@ const ReCruitPage: React.FC = () => {
             day: post.day,
           });
 
-          // 지원자 필터링 - applies 배열이 없는 경우 대비
-          const acceptedApplies =
-            post.applies?.filter((apply: any) => apply.status === "accepted") ||
-            [];
+          // Post 스키마를 건드리지 않고 인라인 타입으로 문제 해결하기
 
-          console.log(
-            `[DEBUG] 공고 ID: ${post._id}, 채택된 지원자 수: ${acceptedApplies.length}`
-          );
+          // 1. acceptedApplies 필터 부분 수정
+          const acceptedApplies =
+            post.applies?.filter(
+              (apply: ApplyType) => apply.status === "accepted"
+            ) || [];
 
           const workersData: WorkerWithAttendance[] = [];
 
-          // 3. 각 지원자에 대해 사용자 정보와 출석 정보 불러오기
-          for (const apply of acceptedApplies) {
+          if (acceptedApplies.length === 0) {
+            // 채택된 지원자가 없는 경우 빈 배열 추가하고 다음 공고로
+            workerGroupsData.push({
+              post: post,
+              workers: [],
+              isExpanded: false,
+            });
+            continue;
+          }
+
+          // 2. map 함수에서도 apply 매개변수에 타입을 명시
+          const userIds = acceptedApplies.map(
+            (apply: ApplyType) => apply.userId
+          );
+
+          // 3-0. 먼저 출석 정보를 일괄적으로 가져오기 (새 API 사용)
+          const postIds = [post._id];
+          console.log("[DEBUG] 공고 ID 배열:", postIds);
+
+          // 새 API로 출석 정보 조회
+          console.log(`[DEBUG] 출석 정보 요청 (새 API): /api/attendance/check`);
+          let attendanceMapByUser: Record<string, AttendanceMap> = {};
+
+          try {
+            // 각 사용자별로 출석 정보 요청
+            for (const userId of userIds) {
+              const attendanceResponse = await axios.post(
+                `/api/attendance/check`,
+                {
+                  userId,
+                  postIds,
+                }
+              );
+              console.log(
+                `[DEBUG] 출석 데이터 응답 (사용자 ${userId}):`,
+                attendanceResponse.data
+              );
+              attendanceMapByUser[userId] = attendanceResponse.data;
+              attendanceResponses[userId] = attendanceResponse.data;
+            }
+          } catch (err) {
+            console.error("[ERROR] 출석 정보 요청 실패:", err);
+            // 오류 발생 시에도 계속 진행
+          }
+
+          // 3. 각 지원자에 대해 사용자 정보 불러오기
+          for (const apply of acceptedApplies as ApplyType[]) {
             try {
               // 3-1. 사용자 정보 불러오기
               const userId = apply.userId.toString();
@@ -351,30 +411,10 @@ const ReCruitPage: React.FC = () => {
                 profile: userData.profile,
               });
 
-              // 3-2. 출석 정보 불러오기
-              console.log(
-                `[DEBUG] 출석 정보 요청: /api/attendance/status?userId=${userId}&noticeIds=${post._id}`
-              );
-              const attendanceResponse = await axios.get(
-                `/api/attendance/status`,
-                {
-                  params: {
-                    userId: userId,
-                    noticeIds: post._id,
-                  },
-                }
-              );
-
-              console.log(`[DEBUG] 출석 데이터 응답:`, attendanceResponse.data);
-              attendanceResponses[`${userId}_${post._id}`] =
-                attendanceResponse.data;
-
-              // 가장 최근 출석 정보 사용 (있는 경우)
-              const attendanceRecords = attendanceResponse.data || [];
-              const hasAttendance = attendanceRecords.length > 0;
-              const attendanceData = hasAttendance
-                ? attendanceRecords[0]
-                : null;
+              // 3-2. 이미 가져온 출석 정보 사용
+              const attendanceData =
+                attendanceMapByUser[userId]?.[post._id] || null;
+              const hasAttendance = !!attendanceData;
 
               // 디버깅: 출석 상태 로그
               if (hasAttendance) {
@@ -492,7 +532,7 @@ const ReCruitPage: React.FC = () => {
       {/* 메인 콘텐츠 */}
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="p-4 space-y-4 rounded-t-[30px] bg-main-bg">
+          <div className="p-4 space-y-4 h-full rounded-t-[30px] bg-main-bg">
             {/* 상단 제목 */}
             <h2 className="text-[18px] font-bold">나의 근로자 관리</h2>
 
@@ -588,8 +628,9 @@ const ReCruitPage: React.FC = () => {
                                       worker.attendance.checkInTime
                                     )} ${formatTime(
                                       worker.post.hour?.start || ""
-                                    )}
-                                  -${formatTime(worker.post.hour?.end || "")}`
+                                    )}-${formatTime(
+                                      worker.post.hour?.end || ""
+                                    )}`
                                   : // 출석 정보가 없으면 공고 정보에서 가져옴
                                     formatWorkDate(worker.post)}
                               </p>
@@ -635,12 +676,16 @@ const ReCruitPage: React.FC = () => {
                                     출근
                                     <span
                                       className={
-                                        worker.hasAttendance
+                                        worker.hasAttendance &&
+                                        worker.attendance?.checkInTime
                                           ? "text-main-color"
                                           : "text-main-darkGray"
                                       }
                                     >
-                                      {worker.hasAttendance ? "완료" : "미완료"}
+                                      {worker.hasAttendance &&
+                                      worker.attendance?.checkInTime
+                                        ? "완료"
+                                        : "미완료"}
                                     </span>
                                   </p>
                                   <p className="flex gap-[7px] text-[14px]">
@@ -648,19 +693,13 @@ const ReCruitPage: React.FC = () => {
                                     <span
                                       className={
                                         worker.hasAttendance &&
-                                        (worker.attendance?.status ===
-                                          "checked-out" ||
-                                          worker.attendance?.status ===
-                                            "completed")
+                                        worker.attendance?.checkOutTime
                                           ? "text-main-color"
                                           : "text-main-darkGray"
                                       }
                                     >
                                       {worker.hasAttendance &&
-                                      (worker.attendance?.status ===
-                                        "checked-out" ||
-                                        worker.attendance?.status ===
-                                          "completed")
+                                      worker.attendance?.checkOutTime
                                         ? "완료"
                                         : "미완료"}
                                     </span>
@@ -673,17 +712,13 @@ const ReCruitPage: React.FC = () => {
                                 onClick={(e) => handleSettlement(worker, e)}
                                 className={`mt-4 w-full font-semibold text-[14px] py-2 rounded-[10px] text-white ${
                                   worker.hasAttendance &&
-                                  (worker.attendance?.status ===
-                                    "checked-out" ||
-                                    worker.attendance?.status === "completed")
+                                  worker.attendance?.status === "completed"
                                     ? "bg-main-color"
                                     : "bg-selected-box"
                                 }`}
                                 disabled={
                                   !worker.hasAttendance ||
-                                  (worker.attendance?.status !==
-                                    "checked-out" &&
-                                    worker.attendance?.status !== "completed")
+                                  worker.attendance?.status !== "completed"
                                 }
                               >
                                 정산하기
