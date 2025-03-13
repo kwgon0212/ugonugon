@@ -31,11 +31,7 @@ const AttendanceSchema = new mongoose.Schema({
   },
 });
 
-const Attendance = mongoose.model(
-  "Attendance",
-  AttendanceSchema,
-  "attendanceTest"
-);
+const Attendance = mongoose.model("Attendance", AttendanceSchema);
 
 // 출퇴근 기록 조회
 router.post("/check", async (req, res) => {
