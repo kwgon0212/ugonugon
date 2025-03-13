@@ -1,39 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useRef } from "react";
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
 import CancelIcon from "../../../components/icons/Cancel";
-import SuccessIcon from "../../../components/icons/Success";
 import { useAppSelector } from "@/hooks/useRedux";
 import { Link, useNavigate } from "react-router-dom";
 import JSConfetti from "js-confetti";
 import StatusBar from "@/components/StatusBar";
 import axios from "axios";
-
-const BottomButton = styled.button`
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
-  height: 50px;
-  border-radius: 10px;
-  background: #0b798b;
-  color: white;
-`;
+import SubmitButton from "@/components/SubmitButton";
 
 function RegisterSuccessPage() {
   const registerUserInfo = useAppSelector((state) => state.registerUserInfo);
-  const {
-    businessNumber,
-    emailCert,
-    emailCode,
-    address,
-    bankAccount,
-    signature,
-    ...userInfo
-  } = registerUserInfo;
+  const { emailCert, emailCode, address, bankAccount, signature, ...userInfo } =
+    registerUserInfo;
   const confettiRef = useRef(null);
   const navigate = useNavigate();
 
@@ -82,7 +62,6 @@ function RegisterSuccessPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        businessNumber,
         address,
         bankAccount,
         ...userInfo,
@@ -114,16 +93,13 @@ function RegisterSuccessPage() {
             <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
             </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
           </div>
           <StatusBar percent={100} />
         </div>
       </Header>
       <Main hasBottomNav={false}>
         <div
-          className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]"
+          className="size-full p-layout flex flex-col gap-layout bg-white"
           ref={confettiRef}
         >
           <p className="font-semibold text-xl">환영합니다!</p>
@@ -141,7 +117,12 @@ function RegisterSuccessPage() {
               className="size-[200px]"
             />
           </div>
-          <BottomButton onClick={handleClickNext}>로그인</BottomButton>
+
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+            <SubmitButton onClick={handleClickNext} type="button">
+              로그인
+            </SubmitButton>
+          </div>
         </div>
       </Main>
     </>

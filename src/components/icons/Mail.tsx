@@ -3,7 +3,8 @@ import IconOptions from "../../types/IconOptions";
 const MailIcon = ({
   width = 20,
   height = 20,
-  color = "#0B798B",
+  color = "#0475f5",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const MailIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M2 6L8.91302 9.91697C11.4616 11.361 12.5384 11.361 15.087 9.91697L22 6"

@@ -1,6 +1,5 @@
 export default interface RegisterUserInfo {
   name: string;
-  businessNumber: string[];
   sex: string;
   residentId: string;
   phone: string;

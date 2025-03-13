@@ -3,7 +3,8 @@ import IconOptions from "../../types/IconOptions";
 const LockIcon = ({
   width = 20,
   height = 20,
-  color = "#0B798B",
+  color = "#0475f5",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const LockIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M12 16.5V14.5"

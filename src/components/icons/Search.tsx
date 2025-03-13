@@ -3,7 +3,8 @@ import IconOptions from "../../types/IconOptions";
 const SearchIcon = ({
   width = 20,
   height = 20,
-  color = "#717171",
+  color = "#0475f5",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const SearchIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M17.5 17.5L22 22"

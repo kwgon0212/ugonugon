@@ -3,7 +3,8 @@ import IconOptions from "../../types/IconOptions";
 const PinLocationIcon = ({
   width = 20,
   height = 20,
-  color = "#717171",
+  color = "#0475f5",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const PinLocationIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <circle cx="12" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" />
     <path
