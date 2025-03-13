@@ -192,27 +192,27 @@ const BankAccountPage = () => {
   const sliderRef = useRef<Slider | null>(null);
   const navigate = useNavigate();
 
-  // const years: number[] = [];
-  // for (let i = new Date().getFullYear(); i > 1999; i--) {
-  //   years.push(i);
-  // }
-  // const months = [
-  //   "01",
-  //   "02",
-  //   "03",
-  //   "04",
-  //   "05",
-  //   "06",
-  //   "07",
-  //   "08",
-  //   "09",
-  //   "10",
-  //   "11",
-  //   "12",
-  // ];
+  const years: number[] = [];
+  for (let i = new Date().getFullYear(); i > 1999; i--) {
+    years.push(i);
+  }
+  const months = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
 
-  const years = Object.keys(transactions);
-  const months = Object.keys(transactions[selectedYear]);
+  // const years = Object.keys(transactions);
+  // const months = Object.keys(transactions[selectedYear]);
 
   const [userData, setUserData] = useState<User | null>(null);
   const [history, setHistory] = useState<History>();
@@ -249,13 +249,22 @@ const BankAccountPage = () => {
         Dmcnt: "100",
       };
 
-      const historyInfo = await postBank("InquireTransactionHistory", tmpData);
+      const historyInfo = await postBank(
+        "InquireTransactionHistory",
+        tmpData,
+        userData.bankAccount.account
+      );
+      if (!historyInfo.Header.Rsms) return;
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
         alert("조회기간이 잘못되었습니다.");
       } else {
         setHistory(historyInfo);
       }
-      const Ldbl = await postBank("InquireBalance", { FinAcno: true });
+      const Ldbl = await postBank(
+        "InquireBalance",
+        { FinAcno: true },
+        userData.bankAccount.account
+      );
       setBalance(Ldbl.Ldbl);
     };
 
@@ -289,7 +298,8 @@ const BankAccountPage = () => {
     slidesToScroll: 1,
     afterChange: handleAfterChange,
   };
-  console.log(history?.REC);
+  console.log(history);
+  // console.log(history?.REC);
 
   return (
     <>
@@ -432,6 +442,7 @@ const BankAccountPage = () => {
                           Tram,
                           Trdd,
                           TrnsAfAcntBlncSmblCd,
+                          MnrcDrotDsnc,
                           Tuno,
                         }) => (
                           <div
@@ -445,12 +456,12 @@ const BankAccountPage = () => {
                             <p className="text-lg font-medium">{BnprCntn}</p>
                             <p
                               className={`${
-                                TrnsAfAcntBlncSmblCd === "+"
+                                Number(MnrcDrotDsnc) < 3
                                   ? "text-main-color"
                                   : "text-warn"
                               } font-semibold`}
                             >
-                              {TrnsAfAcntBlncSmblCd}
+                              {Number(MnrcDrotDsnc) < 3 ? "+" : "-"}
                               {Number(Tram).toLocaleString()}원
                             </p>
                           </div>
