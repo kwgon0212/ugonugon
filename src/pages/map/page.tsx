@@ -7,7 +7,6 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import useKakaoLoader from "./useKakaoLoader";
 import axios from "axios";
-
 interface Post {
   _id: string;
   title: string;
@@ -56,7 +55,6 @@ export default function MapPage(): ReactElement {
   const [nearbyPosts, setNearbyPosts] = useState<Post[]>([]);
   const [markerGroups, setMarkerGroups] = useState<MarkerGroup[]>([]);
   const [radius, setRadius] = useState<number>(3); // km 단위 검색 반경
-
   // 지도 확대 레벨 상태 추가
   const [mapLevel, setMapLevel] = useState<number>(6);
 
@@ -251,7 +249,13 @@ export default function MapPage(): ReactElement {
     <div>
       <Header>
         <div className="flex items-center h-full ml-2">
-          <ArrowLeftIcon />
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon />
+          </button>
           <span className="font-bold flex justify-center w-full mr-3">
             내 주변 채용정보
           </span>
