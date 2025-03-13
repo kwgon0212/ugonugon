@@ -42,18 +42,22 @@ const NewNoticeSlider = ({ notices }: Props) => {
                 onClick={() => navigate(`/notice/${notice._id}`)}
                 className="bg-white rounded-[10px] p-[10px] w-full"
               >
-                {/* <div className="w-full h-[120px] bg-main-gray rounded-[10px] mb-[10px]" /> */}
-                {notice.images.length > 0 ? (
-                  <img
-                    src={notice.images[0]}
-                    alt="img"
-                    className="w-full h-[120px] rounded-[10px] object-cover mb-[10px]"
-                  />
-                ) : (
-                  <p className="w-full h-[120px] rounded-[10px] mb-[10px] bg-main-gray text-main-darkGray text-[12px] flex justify-center items-center">
-                    이미지 없음
-                  </p>
-                )}
+                <div className="w-full relative">
+                  {notice.images.length > 0 ? (
+                    <img
+                      src={notice.images[0]}
+                      alt="img"
+                      className="w-full h-[120px] rounded-[10px] object-cover mb-[10px]"
+                    />
+                  ) : (
+                    <p className="w-full h-[120px] rounded-[10px] mb-[10px] bg-main-gray text-main-darkGray text-[12px] flex justify-center items-center">
+                      이미지 없음
+                    </p>
+                  )}
+                  <span className="text-white text-[12px] absolute top-0 right-0 px-[10px] bg-black/50 rounded-[10px]">
+                    ~ {new Date(notice.deadline.date).toLocaleDateString()}
+                  </span>
+                </div>
                 <div className="flex flex-col gap-[5px] text-left w-full">
                   <div>
                     <p className="text-[12px] text-main-darkGray">
@@ -79,9 +83,6 @@ const NewNoticeSlider = ({ notices }: Props) => {
                           {notice.pay.value.toLocaleString()}원
                         </span>
                       </div>
-                      <span className="text-main-darkGray text-[12px]">
-                        ~ {new Date(notice.deadline.date).toLocaleDateString()}
-                      </span>
                     </div>
                   </div>
                 </div>

@@ -74,12 +74,20 @@ const MyPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col max-w-[calc(100%_-_120px)]">
-                  <span className="text-[18px]">
-                    안녕하세요!&nbsp;
-                    <b className="text-main-color">{userData?.name}</b>님
-                  </span>
-                  <span className="text-main-darkGray">{userData?.email}</span>
-                  <span className="text-main-darkGray truncate">
+                  <div className="flex text-[18px] gap-[4px] items-center">
+                    <span>안녕하세요!</span>
+                    <span>
+                      <b className="text-main-color">{userData?.name}</b>님
+                    </span>
+                    <img
+                      src="https://em-content.zobj.net/source/microsoft-teams/363/waving-hand_light-skin-tone_1f44b-1f3fb_1f3fb.png"
+                      loading="lazy"
+                      alt="15.0"
+                      className="size-[24px]"
+                    />
+                  </div>
+                  <span className="text-main-gray">{userData?.email}</span>
+                  <span className="text-main-gray truncate">
                     {userData?.address?.street}
                   </span>
                 </div>
@@ -194,24 +202,26 @@ const MyPage = () => {
               setIsOpen={setIsOpenWithdrawModal}
             >
               <div className="size-full flex flex-col items-center gap-[20px]">
-                <p>
-                  정말 <span className="text-main-color">회원 탈퇴</span>{" "}
-                  하시겠어요?
-                </p>
-                <p className="text-sm -mt-[15px]">
-                  탈퇴 시 모든{" "}
-                  <span className="text-main-color">회원 정보</span>는
-                  <span className="text-warn">삭제</span>
-                  됩니다.
-                </p>
-                <p className="text-xs -mt-[15px] ">
-                  ※&nbsp;
-                  <span className="text-main-color">
-                    지원 및 근무 이력 관련 정보
-                  </span>
-                  는<span className="text-warn">보관</span>
-                  됩니다.
-                </p>
+                <div className="flex flex-col items-center gap-[10px]">
+                  <img
+                    src="https://em-content.zobj.net/source/microsoft-teams/363/crying-face_1f622.png"
+                    loading="lazy"
+                    alt="15.0"
+                    className="size-[120px]"
+                  />
+                  <p className="text-[18px]">
+                    정말 <b className="text-main-color">탈퇴</b> 하시겠어요?
+                  </p>
+                  <div className="text-sm flex flex-col items-center">
+                    <span>
+                      탈퇴 시 모든 회원 정보는 <b className="text-warn">삭제</b>
+                      됩니다
+                    </span>
+                    <span className="text-sm text-main-darkGray">
+                      ※ 지원 및 근무 이력 관련 정보는 보관됩니다
+                    </span>
+                  </div>
+                </div>
                 <div className="w-full flex gap-[10px]">
                   <button
                     onClick={() => setIsOpenWithdrawModal(false)}
@@ -226,7 +236,7 @@ const MyPage = () => {
                     }}
                     className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
                   >
-                    회원 탈퇴
+                    탈퇴
                   </button>
                 </div>
               </div>

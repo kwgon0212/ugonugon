@@ -10,6 +10,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+// posts스키마의 apply
 interface Apply {
   // userId: String;
   resumeId: String;
@@ -125,26 +126,37 @@ const NoticeApplyPage = () => {
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">
                             <span className="font-bold text-[14px] text-black">
-                              {resume.name} (
-                              {resume.sex === "male" ? "남" : "여"})
+                              {resume.name === null
+                                ? resume.name
+                                : "이름 정보가 없습니다."}{" "}
+                              ({resume.sex === "male" ? "남" : "여"})
                             </span>
                             <ArrowRightIcon color="#717171" />
                           </p>
                           <div className="flex gap-[4px] items-center">
                             <BirthIcon width={12} height={12} color="#717171" />
                             <span>
-                              {resume.residentId
-                                .split("-")[0]
-                                .replace(/^(\d{2})(\d{2})(\d{2})/, "$1.$2.$3.")}
+                              <span>
+                                {resume?.residentId
+                                  ? resume.residentId
+                                      .split("-")[0]
+                                      .replace(
+                                        /^(\d{2})(\d{2})(\d{2})/,
+                                        "$1.$2.$3."
+                                      )
+                                  : "주민번호 정보 없음"}
+                              </span>
                             </span>
                           </div>
                           <div className="flex gap-[4px] items-center">
                             <CallIcon width={12} height={12} color="#717171" />
                             <span>
-                              {resume?.phone?.replace(
-                                /(\d{3})(\d{4})(\d{4})/,
-                                "$1-$2-$3"
-                              )}
+                              {resume?.phone
+                                ? resume.phone?.replace(
+                                    /(\d{3})(\d{4})(\d{4})/,
+                                    "$1-$2-$3"
+                                  )
+                                : "핸드폰 정보 없음"}
                             </span>
                           </div>
                           <span>{resume?.address}</span>

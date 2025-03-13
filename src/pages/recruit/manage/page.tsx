@@ -195,7 +195,7 @@ const ReCruitManagePage: React.FC = () => {
       </Header>
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="p-4 space-y-4 rounded-t-[30px] bg-main-bg pb-28">
+          <div className="p-4 space-y-4 rounded-t-[30px] h-full bg-main-bg pb-28">
             {/* 상단 제목 */}
             <h2 className="text-[18px] font-bold">나의 공고 관리</h2>
 
@@ -210,18 +210,6 @@ const ReCruitManagePage: React.FC = () => {
             ) : (
               <div className="flex flex-col gap-5">
                 {/* 새 공고 등록 버튼 */}
-                <Link to="/notice/add">
-                  <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
-                    <div className="bg-selected-box rounded-[10px] flex-1 m-4 h-[80%] border-2 border-main-color border-dashed cursor-pointer">
-                      <div className="flex flex-col justify-center h-full items-center">
-                        <AddIcon />
-                        <p className="text-main-color text-[12px]">
-                          새 공고 등록하기
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
 
                 {/* 공고 목록 */}
                 {myPosts.length > 0 ? (

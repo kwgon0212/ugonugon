@@ -113,9 +113,9 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
             <NoticeButton onClick={() => navigate(`/notice/${notice._id}`)}>
               <NoticeContent>
                 <div>
-                  <p className="text-[12px] text-main-darkGray">
-                    {new Date(notice.createdAt).toLocaleDateString()}에 등록
-                  </p>
+                  <span className="text-main-darkGray text-[12px]">
+                    ~ {new Date(notice.deadline.date).toLocaleDateString()}
+                  </span>
                   <p className="font-bold overflow-hidden truncate whitespace-nowrap">
                     {notice.title}
                   </p>
@@ -132,9 +132,6 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
                         {notice.pay.value.toLocaleString()}원
                       </PayAmount>
                     </PayInfo>
-                    <span className="text-main-darkGray text-[12px]">
-                      ~ {new Date(notice.deadline.date).toLocaleDateString()}
-                    </span>
                   </div>
                 </div>
               </NoticeContent>
