@@ -95,7 +95,7 @@ const RootPage = () => {
       <Header>
         <div className="size-full px-[20px] flex items-center justify-between">
           <img
-            src="/payrunner-logo.png"
+            src="/logo.png"
             alt="logo"
             width={150}
             className="object-contain"

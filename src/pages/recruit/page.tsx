@@ -525,7 +525,7 @@ const ReCruitPage: React.FC = () => {
     <>
       {/* 헤더 영역 */}
       <Header>
-        <p className="flex justify-center items-center h-full font-bold text-lg">
+        <p className="flex justify-center items-center h-full font-bold">
           고용 현황
         </p>
       </Header>
