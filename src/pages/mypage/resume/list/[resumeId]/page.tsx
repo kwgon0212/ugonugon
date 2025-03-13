@@ -148,6 +148,7 @@ function MypageResumeListId() {
     }
   }, [userId]);
 
+  const [exitModalOpen, setExitModalOpen] = useState(false); // 나가기 모달 상태
   const [name, setName] = useState<string | undefined>("");
   const [sex, setSex] = useState<string | undefined>("");
   const [residentId, setResidentId] = useState<string | undefined>("");
@@ -257,7 +258,7 @@ function MypageResumeListId() {
                     <span className="text-[#ff0000]">*</span>
                   </p>
                 </div>
-                <div className="w-full h-10 flex gap-[16px] items-center datepicker-css">
+                <div className="w-full h-10 flex items-center datepicker-css">
                   <DatePicker
                     locale={ko}
                     showIcon
@@ -323,7 +324,7 @@ function MypageResumeListId() {
                         : ""
                     }
                   />
-                  <span className="text-base font-semibold">-</span>
+                  <span className="text-base mx-4">~</span>
                   <DatePicker
                     locale={ko}
                     showIcon
@@ -717,14 +718,7 @@ function MypageResumeListId() {
                     color="#0b798b"
                     className="border border-main-color"
                     type="button"
-                    onClick={async () => {
-                      await deleteResume(
-                        resumeData?._id as string,
-                        userId as string,
-                        resumeData?.applyIds as string[]
-                      );
-                      navigate("/mypage/resume/list");
-                    }}
+                    onClick={() => setExitModalOpen(true)}
                   >
                     이력서 삭제
                   </BottomButton>
@@ -735,6 +729,40 @@ function MypageResumeListId() {
             <div className="w-full min-h-[38px] h-auto -mt-5 bg-white absolute" />
           </>
         </Main>
+      )}
+      {exitModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white p-5 rounded-[10px] w-[362px] text-center">
+            <p className="font-bold text-lg">정말로 삭제하시겠습니까?</p>
+            <p className="text-[14px]  mt-2">
+              삭제된 이력서는 복구할 수 없습니다.
+            </p>
+            <div className="flex gap-3 justify-between mt-5">
+              <button
+                className="flex-1 border border-main-color rounded-[10px] text-main-color font-semibold p-2"
+                onClick={() => setExitModalOpen(false)}
+              >
+                취소
+              </button>
+              <Link to="/mypage/resume/list" className="flex-1">
+                <button
+                  className="w-[151px] p-2 rounded-[10px] bg-main-color text-white"
+                  onClick={async () => {
+                    await deleteResume(
+                      resumeData?._id as string,
+                      userId as string,
+                      resumeData?.applyIds as string[]
+                    );
+                    setExitModalOpen(false);
+                    navigate("/mypage/resume/list");
+                  }}
+                >
+                  삭제하기
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

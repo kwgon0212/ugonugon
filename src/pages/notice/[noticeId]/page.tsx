@@ -614,7 +614,13 @@ const NoticeDetailPage = () => {
             isOpen={isOpenAlreadyApplyModal}
             setIsOpen={setIsOpenAlreadyApplyModal}
           >
-            <div className="size-full flex flex-col gap-[20px] text-center">
+            <div className="size-full flex flex-col items-center gap-[20px]">
+              <img
+                src="https://em-content.zobj.net/source/microsoft-teams/363/sad-but-relieved-face_1f625.png"
+                loading="lazy"
+                alt="15.0"
+                className="size-[120px]"
+              />
               <p>이미 지원한 공고입니다.</p>
               <button
                 onClick={() => setIsOpenAlreadyApplyModal(false)}
@@ -754,11 +760,12 @@ const NoticeDetailPage = () => {
             setIsOpen={setIsOpenApplyResultModal}
             clickOutsideClose={false}
           >
-            <div className="size-full flex flex-col items-center gap-[20px] pt-[20px]">
+            <div className="size-full flex flex-col items-center gap-[20px]">
               <img
-                src="https://placehold.co/100"
-                alt="success"
-                className="size-[100px]"
+                src="https://em-content.zobj.net/source/microsoft-teams/363/rocket_1f680.png"
+                loading="lazy"
+                alt="15.0"
+                className="size-[120px]"
               />
               <div className="text-center">
                 <p>정상적으로</p>
@@ -781,12 +788,20 @@ const NoticeDetailPage = () => {
             setIsOpen={setIsOpenDeleteModal}
             clickOutsideClose={false}
           >
-            <div className="w-full flex flex-col gap-[20px]">
+            <div className="size-full flex flex-col items-center gap-[20px]">
               {isDeleted ? (
                 <>
-                  <p className="text-xl font-bold">공고 삭제</p>
-                  <p className="text-center">삭제되었습니다</p>
-                  <div className="flex gap-[20px]">
+                  <img
+                    src="https://em-content.zobj.net/source/microsoft-teams/363/smiling-face-with-tear_1f972.png"
+                    loading="lazy"
+                    alt="15.0"
+                    className="size-[120px]"
+                  />
+                  <div className="text-center">
+                    <p>정상적으로</p>
+                    <p>공고를 삭제하였습니다</p>
+                  </div>
+                  <div className="w-full flex gap-[20px]">
                     <button
                       onClick={() => navigate("/")}
                       className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
@@ -797,20 +812,25 @@ const NoticeDetailPage = () => {
                 </>
               ) : (
                 <>
-                  <p className="text-xl font-bold">공고 삭제</p>
+                  <img
+                    src="https://em-content.zobj.net/source/microsoft-teams/363/eyes_1f440.png"
+                    loading="lazy"
+                    alt="15.0"
+                    className="size-[120px]"
+                  />
                   <p className="text-center">
                     정말 해당 공고를 삭제하시겠습니까?
                   </p>
-                  <div className="flex gap-[20px]">
+                  <div className="w-full flex gap-[20px]">
                     <button
                       onClick={() => setIsOpenDeleteModal(false)}
-                      className="flex flex-grow h-[50px] border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
+                      className="flex flex-grow h-[50px] w-full border border-main-color justify-center items-center px-[10px] bg-white text-main-color rounded-[10px]"
                     >
                       취소
                     </button>
                     <button
                       onClick={handleDeleteNotice}
-                      className="flex flex-grow h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
+                      className="flex w-full h-[50px] bg-main-color justify-center items-center text-white rounded-[10px]"
                     >
                       삭제
                     </button>

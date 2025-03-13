@@ -133,7 +133,13 @@ function RegisterSuccessPage() {
             다양한 서비스를 자유롭게 이용해보세요
           </p>
           <div className="mt-[81px] flex justify-center">
-            <SuccessIcon />
+            {/* <SuccessIcon /> */}
+            <img
+              src="https://em-content.zobj.net/source/microsoft-teams/363/party-popper_1f389.png"
+              loading="lazy"
+              alt="15.0"
+              className="size-[200px]"
+            />
           </div>
           <BottomButton onClick={handleClickNext}>로그인</BottomButton>
         </div>
