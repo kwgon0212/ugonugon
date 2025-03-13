@@ -1,6 +1,6 @@
 import React from "react";
 
-const ChatLoading: React.FC = () => {
+const Loading: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full p-5">
       {/* Replace this with your actual loading image */}
@@ -17,4 +17,4 @@ const ChatLoading: React.FC = () => {
   );
 };
 
-export default ChatLoading;
+export default Loading;

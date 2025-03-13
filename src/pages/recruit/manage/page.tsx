@@ -9,7 +9,7 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import { Link } from "react-router-dom";
 import AddIcon from "@/components/icons/Plus";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
-
+import Loading from "@/loading/page";
 // 타입 정의
 interface User {
   _id: string;
@@ -200,9 +200,7 @@ const ReCruitManagePage: React.FC = () => {
             <h2 className="text-[18px] font-bold">나의 공고 관리</h2>
 
             {loading ? (
-              <div className="flex justify-center items-center h-40">
-                <p>공고 목록을 불러오는 중...</p>
-              </div>
+              <Loading />
             ) : error ? (
               <div className="flex justify-center items-center h-40">
                 <p className="text-red-500">{error}</p>
