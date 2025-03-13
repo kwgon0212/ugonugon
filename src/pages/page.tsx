@@ -11,6 +11,8 @@ import dummy from "./DummyNotices";
 import EmergencyNoticeSlider from "./EmergencyNoticeSlider";
 import NewNoticeSlider from "./NewNoticeSlider";
 import Notice from "@/types/Notice";
+import axios from "axios";
+import MapIcon from "@/components/icons/Map";
 
 const RootPage = () => {
   const searchKeywords = [
@@ -30,6 +32,7 @@ const RootPage = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   const userName = useAppSelector((state) => state.auth.user?.name);
+  const userId = useAppSelector((state) => state.auth.user?._id);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,20 +56,43 @@ const RootPage = () => {
   );
   const [newNotices, setNewNotices] = useState<Notice[] | null>(null);
   useEffect(() => {
-    setCustomNotices(dummy);
-    setEmergencyNotices(dummy);
-    setNewNotices(dummy);
-  }, []);
+    const fetchCustomPosts = async () => {
+      if (!userId) return;
+
+      const userResponse = await axios.get(`/api/users?userId=${userId}`);
+      const userAddress = userResponse.data.address.street.split(" ")[0];
+
+      const response = await axios.get(`/api/post?street=${userAddress}`);
+      const customPosts = response.data;
+      setCustomNotices(customPosts);
+    };
+    const fetchEmergencyPosts = async () => {
+      const response = await axios.get("/api/post?urgent=true");
+      const emergencyPosts = response.data;
+      setEmergencyNotices(emergencyPosts);
+    };
+    const fetchNewPosts = async () => {
+      const response = await axios.get("/api/post?latest=true");
+      const newPosts = response.data;
+      setNewNotices(newPosts);
+    };
+
+    fetchCustomPosts();
+    fetchEmergencyPosts();
+    fetchNewPosts();
+  }, [userId]);
 
   return (
     <>
       <Header>
-        <div className="size-full px-[20px] flex items-center">
+        <div className="size-full px-[20px] flex items-center justify-between">
           <img src="https://placehold.co/200x50" alt="logo" />
+          <Link to={"/map"}>
+            <MapIcon width={24} height={24} />
+          </Link>
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        {/* 인사 문구 */}
         <div className="bg-white size-full">
           <div className="px-[20px] py-[20px]">
             <h1 className="text-[16px] font-regular">
@@ -76,7 +102,6 @@ const RootPage = () => {
               오늘은 <span className="text-main-color">이런 알바</span> 어때요?
             </p>
           </div>
-          {/* 검색창 */}
           <Link to="/notice/search" className="block pr-4 pl-4 pb-6">
             <div className="flex items-center border border-main-gray rounded-[10px] px-4 py-3 bg-white focus-within:border-main-darkGray">
               <SearchIcon color="#717171" />

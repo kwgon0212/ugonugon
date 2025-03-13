@@ -78,7 +78,12 @@ const WorkApplyPage = () => {
       <Header>
         <div className="size-full flex justify-center items-center relative">
           <span>내가 지원한 공고</span>
-          <button className="absolute left-[20px] top-1/2 -translate-y-1/2">
+          <button
+            className="absolute left-[20px] top-1/2 -translate-y-1/2"
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
             <ArrowLeftIcon color="#717171" />
           </button>
         </div>
@@ -87,6 +92,7 @@ const WorkApplyPage = () => {
         <>
           <div className="size-full flex flex-col gap-[20px] p-[20px]">
             {applies &&
+              applies.length > 0 &&
               posts &&
               posts.map((post, idx) => {
                 return (
@@ -139,6 +145,11 @@ const WorkApplyPage = () => {
                   </button>
                 );
               })}
+            {applies && applies?.length <= 0 && (
+              <p className="size-full flex justify-center items-center text-main-darkGray">
+                지원한 공고가 없습니다
+              </p>
+            )}
           </div>
         </>
       </Main>

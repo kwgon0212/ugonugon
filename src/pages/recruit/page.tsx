@@ -28,6 +28,12 @@ interface Post {
     start: string;
     end: string;
   };
+  period?: {
+    start: string;
+    end: string;
+    discussion?: boolean;
+  };
+  day?: string[];
   applies?: Array<{
     userId: string;
     status: string;
@@ -125,6 +131,32 @@ const formatTime = (dateString: string): string => {
   } catch (error) {
     console.error("시간 포맷팅 오류:", error);
     return "시간 정보 없음";
+  }
+};
+
+// 근무일자 포맷팅 함수 (공고 데이터 사용)
+const formatWorkDate = (post: Post): string => {
+  try {
+    // 오늘 날짜 기준으로 표시 (출근 데이터가 없는 경우)
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+    const weekDay = weekDays[today.getDay()];
+
+    let dateStr = `${year}년 ${month}월 ${day}일 ${weekDay}요일`;
+
+    // 시간 정보가 있으면 추가
+    if (post.hour?.start && post.hour?.end) {
+      dateStr += ` ${formatTime(post.hour.start)}-${formatTime(post.hour.end)}`;
+    }
+
+    return dateStr;
+  } catch (error) {
+    console.error("근무일자 포맷팅 오류:", error);
+    return "근무일자 정보 없음";
   }
 };
 
@@ -277,6 +309,11 @@ const ReCruitPage: React.FC = () => {
         // 2. 각 공고별로 처리
         for (const post of myPosts) {
           console.log(`[DEBUG] 공고 처리: ${post._id} - ${post.title}`);
+          console.log("[DEBUG] 공고 근무 정보:", {
+            hour: post.hour,
+            period: post.period,
+            day: post.day,
+          });
 
           // 지원자 필터링 - applies 배열이 없는 경우 대비
           const acceptedApplies =
@@ -546,14 +583,15 @@ const ReCruitPage: React.FC = () => {
                               </h4>
                               <p className="text-[14px] text-main-color font-semibold">
                                 {worker.attendance?.checkInTime
-                                  ? formatDate(worker.attendance.checkInTime)
-                                  : "근무일자 정보 없음"}{" "}
-                                {worker.post.hour && (
-                                  <>
-                                    {formatTime(worker.post.hour.start)}-
-                                    {formatTime(worker.post.hour.end)}
-                                  </>
-                                )}
+                                  ? // 출석 정보가 있으면 그 날짜 사용
+                                    `${formatDate(
+                                      worker.attendance.checkInTime
+                                    )} ${formatTime(
+                                      worker.post.hour?.start || ""
+                                    )}
+                                  -${formatTime(worker.post.hour?.end || "")}`
+                                  : // 출석 정보가 없으면 공고 정보에서 가져옴
+                                    formatWorkDate(worker.post)}
                               </p>
 
                               <hr className="my-2 border-main-color/30" />

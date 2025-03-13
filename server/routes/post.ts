@@ -484,13 +484,34 @@ router.get("/lists", async (req, res) => {
  */
 // router.get("/get/oneNotice/:postId", async (req, res) => {
 router.get("/", async (req, res) => {
+  const { postId, latest, urgent, street } = req.query;
+
   try {
-    const post = await JobPosting.findById(req.query.postId);
-    if (!req.query.postId) {
-      return res.status(400).json({ message: "해당 공고를 찾을 수 없습니다." });
+    if (postId) {
+      const post = await JobPosting.findById(postId);
+      if (!post) {
+        return res
+          .status(404)
+          .json({ message: "해당 공고를 찾을 수 없습니다." });
+      }
+      return res.status(200).json(post);
     }
 
-    res.status(200).json(post);
+    let query: any = {};
+
+    if (urgent) {
+      query.hireType = { $in: ["긴급"] };
+    }
+
+    if (street) {
+      query["address.street"] = { $regex: `^${street}`, $options: "i" };
+    }
+
+    let posts = await JobPosting.find(query)
+      .sort({ createdAt: -1 })
+      .limit(latest ? 10 : 100);
+
+    res.status(200).json(posts);
   } catch (err) {
     console.error("에러 발생: ", err);
     res.status(500).json({ err: err.message });

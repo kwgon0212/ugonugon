@@ -213,11 +213,11 @@ function MypageResumeListId() {
       )}
       <Header>
         <Link
-          to="/mypage"
+          to="/mypage/resume/list"
           className="p-layout h-full flex flex-wrap content-center"
         >
           <ArrowLeftIcon width={24} height={24} />
-          <Title>이력서 등록</Title>
+          <Title>이력서 수정</Title>
         </Link>
       </Header>
       {resumeData && (
@@ -248,6 +248,7 @@ function MypageResumeListId() {
                 <InsertTextInput
                   onBlur={(e) => setCompany(e.target.value)}
                   placeholder="근무지명을 입력해주세요"
+                  defaultValue={company}
                   required
                 />
                 <div className="w-full mt-5 flex flex-col mb-[10px]">
@@ -312,6 +313,15 @@ function MypageResumeListId() {
                     selected={startDate}
                     onChange={(date) => setStartDate(date)}
                     required
+                    value={
+                      startDate
+                        ? startDate?.getFullYear() +
+                          "/" +
+                          (startDate?.getMonth() + 1)
+                            .toString()
+                            .padStart(2, "0")
+                        : ""
+                    }
                   />
                   <span className="text-base font-semibold">-</span>
                   <DatePicker
@@ -369,6 +379,13 @@ function MypageResumeListId() {
                     selected={endDate}
                     onChange={(date) => setEndDate(date)}
                     required
+                    value={
+                      endDate
+                        ? endDate?.getFullYear() +
+                          "/" +
+                          (endDate?.getMonth() + 1).toString().padStart(2, "0")
+                        : ""
+                    }
                   />
                 </div>
                 <div className="w-full mt-5 flex flex-col gap-[10px]">
@@ -379,6 +396,7 @@ function MypageResumeListId() {
                     height="100%"
                     placeholder="근무 시 담당했던 업무에 대해 작성해주세요"
                     onBlur={(e) => setcareerDetail(e.target.value)}
+                    defaultValue={careerDetail}
                     required
                   ></InsertTextarea>
                 </div>
@@ -422,6 +440,7 @@ function MypageResumeListId() {
                 e.preventDefault();
                 await putResume(resumeData?._id as string, {
                   userId,
+                  profile,
                   title: resumeTitle,
                   name,
                   sex,
@@ -610,17 +629,43 @@ function MypageResumeListId() {
                   <p className="basis-full font-bold">경력 사항</p>
                   <ul className="list-none">
                     {careers &&
-                      careers.map(({ company, dates }, index) => {
+                      careers.map(({ company, dates, careerDetail }, index) => {
                         return (
                           <li
                             key={index}
                             className="w-full relative flex justify-start gap-[10px]"
+                            onClick={() => {
+                              setCompany(company as string);
+                              if (typeof dates === "string") {
+                                let year = Number("20" + dates.slice(0, 2));
+                                setStartDate(
+                                  new Date(
+                                    year,
+                                    Number(dates.slice(3, 5)) - 1,
+                                    1
+                                  )
+                                );
+                                let year2 = Number("20" + dates.slice(6, 8));
+                                setEndDate(
+                                  new Date(
+                                    year2,
+                                    Number(dates.slice(10)) - 1,
+                                    1
+                                  )
+                                );
+                              }
+                              setcareerDetail(careerDetail as string);
+                              setModal(!modal);
+                            }}
                           >
-                            <span className="text-main-darkGray text-xs">
+                            <span className="text-main-darkGray text-xs min-w-[64px]">
                               {dates}
                             </span>
-                            <span className="text-main-darkGray text-xs">
+                            <span className="text-main-darkGray text-xs min-w-[64px] truncate">
                               {company}
+                            </span>
+                            <span className="text-main-darkGray text-xs min-w-[64px] truncate pr-5">
+                              {careerDetail}
                             </span>
                             <span
                               className="absolute right-0"
@@ -638,7 +683,13 @@ function MypageResumeListId() {
                   </ul>
                   <button
                     className="w-full h-10 rounded-[10px] border border-dashed border-main-color bg-selected-box flex items-center justify-center text-xs text-main-color"
-                    onClick={() => setModal(!modal)}
+                    onClick={() => {
+                      setModal(!modal);
+                      setCompany("");
+                      setStartDate(null);
+                      setEndDate(null);
+                      setcareerDetail("");
+                    }}
                     type="button"
                   >
                     <span>
