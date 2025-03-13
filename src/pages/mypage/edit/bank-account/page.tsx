@@ -53,7 +53,6 @@ const SaveBtn = styled.button`
 
 export function EditBankAccountPage() {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [userData, setUserData] = useState<User | null>(null);
 
   const [account, setAccount] = useState("");
   const [bank, setBank] = useState("");
@@ -141,8 +140,8 @@ export function EditBankAccountPage() {
           <div className="flex justify-center w-full h-[10%]">
             <SaveBtn
               className="bg-main-color"
-              onClick={() => {
-                putUser(userId, {
+              onClick={async () => {
+                await putUser(userId, {
                   bankAccount: {
                     bank,
                     account,
