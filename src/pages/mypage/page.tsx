@@ -17,6 +17,7 @@ import { deleteUser } from "@/hooks/fetchUser";
 import ProfileIcon from "@/components/icons/Profile";
 import postBank from "@/hooks/fetchBank";
 import Loading from "@/loading/page";
+import FlagIcon from "@/components/icons/Flag";
 
 const LogoutModal = Modal;
 const WithdrawModal = Modal;
@@ -69,7 +70,7 @@ const MyPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex justify-center items-center font-bold">
+        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white">
           <span>마이페이지</span>
         </div>
       </Header>
@@ -80,110 +81,97 @@ const MyPage = () => {
             <Loading />
           ) : (
             userData && (
-              <div className="size-full flex flex-col gap-[20px] pt-[20px]">
-                <div className="w-full flex gap-[10px] px-[20px]">
-                  <div className="w-[80px] h-[80px] rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden">
-                    {userData.profile ? (
-                      <img
-                        src={userData.profile}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <ProfileIcon />
-                    )}
-                  </div>
-                  <div className="flex flex-col max-w-[calc(100%_-_120px)]">
-                    <div className="flex text-[18px] gap-[4px] items-center">
-                      <span>안녕하세요!</span>
-                      <span>
-                        <b className="text-main-color">{userData?.name}</b>님
-                      </span>
-                      <img
-                        src="https://em-content.zobj.net/source/microsoft-teams/363/waving-hand_light-skin-tone_1f44b-1f3fb_1f3fb.png"
-                        loading="lazy"
-                        alt="15.0"
-                        className="size-[24px]"
-                      />
+              <div className="size-full flex flex-col gap-[20px] bg-white">
+                <div className="w-full flex flex-col gap-[20px] p-[20px] pt-0 bg-main-color rounded-b-[20px]">
+                  <div className="w-full flex flex-col gap-[20px] bg-white rounded-[10px] p-[20px]">
+                    <div className="w-full flex gap-[20px]">
+                      <div className="size-[80px] rounded-full border border-main-gray flex items-center justify-center cursor-pointer overflow-hidden">
+                        {userData.profile ? (
+                          <img
+                            src={userData.profile}
+                            alt="Profile"
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <ProfileIcon />
+                        )}
+                      </div>
+                      <div className="flex flex-col justify-around max-w-[calc(100%_-_120px)]">
+                        <div className="flex gap-[4px]">
+                          <span>안녕하세요!</span>
+                          <span>
+                            <b className="text-main-color">{userData?.name}</b>
+                            님
+                          </span>
+                          <img
+                            src="https://em-content.zobj.net/source/microsoft-teams/363/waving-hand_light-skin-tone_1f44b-1f3fb_1f3fb.png"
+                            loading="lazy"
+                            alt="15.0"
+                            className="size-[24px]"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-main-darkGray text-sm">
+                            {userData?.email}
+                          </p>
+                          <p className="text-main-darkGray text-sm truncate">
+                            {userData?.address?.street}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-main-gray">{userData?.email}</span>
-                    <span className="text-main-gray truncate">
-                      {userData?.address?.street}
-                    </span>
+                    <Link
+                      to="/mypage/edit/info"
+                      className="w-full h-[50px] rounded-[10px] flex gap-[10px] justify-center items-center border-main-gray border bg-white"
+                    >
+                      <EditIcon color="#717171" width={18} height={18} />
+                      <span className="text-main-darkGray">내 정보 수정</span>
+                    </Link>
                   </div>
                 </div>
 
-                <div className="px-[20px]">
-                  <Link
-                    to="/mypage/edit/info"
-                    className="w-full h-[50px] rounded-[10px] flex gap-[10px] justify-center items-center border-main-gray border bg-white"
-                  >
-                    <EditIcon color="#717171" width={18} height={18} />
-                    <span className="text-main-darkGray">내 정보 수정</span>
-                  </Link>
-                </div>
-
-                <div className="size-full flex flex-col gap-[20px] rounded-t-[30px] bg-white p-[20px]">
-                  <div className="w-full rounded-[10px] bg-selected-box p-[20px] flex flex-col gap-[10px]">
-                    <p className="text-[18px] font-bold text-main-color mb-[10px]">
-                      나의 이력서
-                    </p>
+                <div className="size-full flex flex-col justify-between p-[20px]">
+                  <div className="size-full flex flex-col gap-[10px]">
                     <Link
                       to="/mypage/resume/add"
-                      className="flex gap-[10px] items-center"
+                      className="flex gap-[10px] items-center border-b border-b-main-gray p-[10px] text-main-darkGray"
                     >
-                      <ResumeEditIcon />
-                      <span className="text-selected-text">이력서 등록</span>
+                      <ResumeEditIcon className="text-main-darkGray" />
+                      <span>이력서 등록</span>
                     </Link>
                     <Link
                       to="/mypage/resume/list"
-                      className="flex gap-[10px] items-center"
+                      className="flex gap-[10px] items-center border-b border-b-main-gray p-[10px] text-main-darkGray"
                     >
-                      <ResumeIcon />
-                      <span className="text-selected-text">이력서 관리</span>
+                      <ResumeIcon className="text-main-darkGray" />
+                      <span>이력서 관리</span>
                     </Link>
-                  </div>
-
-                  <div className="w-full p-[20px] flex flex-col gap-[10px]">
                     <Link
                       to="/mypage/bank-account"
-                      className="flex justify-between items-center"
+                      className="flex gap-[10px] items-center border-b border-b-main-gray p-[10px] text-main-darkGray"
                     >
-                      <div className="flex gap-[10px] items-center">
-                        <WalletIcon color="#717171" />
-                        <span className="text-main-darkGray">
-                          {userData?.bankAccount?.bank || ""}
-                          {userData?.bankAccount?.bank &&
-                          userData?.bankAccount?.account
-                            ? "\u00A0"
-                            : ""}
-                          {userData?.bankAccount?.account || ""}
-                          {(userData?.bankAccount?.bank ||
-                            userData?.bankAccount?.account) && <br />}
-                          잔액:{" "}
-                          {balance ? Number(balance).toLocaleString() : "0"} 원
-                        </span>
-                      </div>
-                      <ArrowRightIcon color="#717171" />
+                      <WalletIcon className="text-main-darkGray" />
+                      <span>
+                        {userData?.bankAccount?.bank}{" "}
+                        {userData?.bankAccount?.account}
+                      </span>
                     </Link>
                     <Link
                       to="/mypage/scrab"
-                      className="flex justify-between items-center"
+                      className="flex gap-[10px] items-center border-b border-b-main-gray p-[10px] text-main-darkGray"
                     >
-                      <div className="flex gap-[10px] items-center">
-                        <StarIcon color="#717171" />
-                        <span className="text-main-darkGray">
-                          내가 스크랩한 공고
-                        </span>
-                      </div>
-                      <ArrowRightIcon color="#717171" />
+                      <StarIcon className="text-main-darkGray" />
+                      <span>내가 스크랩한 공고</span>
                     </Link>
+                    <p className="flex gap-[10px] items-center border-b border-b-main-gray p-[10px] text-main-gray">
+                      <FlagIcon className="text-main-gray" />
+                      <span>v1.0.0</span>
+                    </p>
                   </div>
-
-                  <div className="w-full flex justify-center gap-[10px] mt-[30px]">
+                  <div className="w-full flex justify-center gap-[10px] mt-[30px] text-sm">
                     <button
                       onClick={handleLogout}
-                      className="bg-white border border-main-darkGray px-[20px] py-[5px] rounded-[10px] text-main-darkGray"
+                      className="bg-main-gray border border-main-gray px-[20px] py-[5px] rounded-[10px] text-main-darkGray"
                     >
                       로그아웃
                     </button>

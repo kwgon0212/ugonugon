@@ -70,7 +70,7 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                     <span className="text-sm text-main-darkGray w-full">
                       {notice.address.street}
                     </span>
-                    <div className="w-full flex gap-[4px] justify-between text-sm">
+                    <div className="w-full flex gap-[4px] justify-between items-center text-sm">
                       <div className="flex gap-[4px]">
                         <span className="font-bold text-main-color">
                           {notice.pay.type}

@@ -74,11 +74,11 @@ const NewNoticeSlider = ({ notices }: Props) => {
                       {notice.address.street}
                     </p>
                     <div className="flex justify-between items-center gap-[4px] text-sm">
-                      <div className="flex gap-[4px]">
+                      <div className="flex gap-[4px] items-center">
                         <span className="font-bold text-main-color">
                           {notice.pay.type}
                         </span>
-                        <span className="text-sm text-main-darkGray">
+                        <span className="text-main-darkGray">
                           {notice.pay.value.toLocaleString()}원
                         </span>
                       </div>

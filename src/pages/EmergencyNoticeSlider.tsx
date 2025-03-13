@@ -55,11 +55,11 @@ const EmergencyNoticeSlider = ({ notices }: Props) => {
                     {notice.address.street}
                   </p>
                   <div className="flex justify-between items-center">
-                    <div className="flex gap-[4px]">
+                    <div className="flex gap-[4px] items-center text-sm">
                       <span className="font-bold text-main-color">
                         {notice.pay.type}
                       </span>
-                      <span className="text-sm text-main-darkGray">
+                      <span className="text-main-darkGray">
                         {notice.pay.value.toLocaleString()}원
                       </span>
                     </div>

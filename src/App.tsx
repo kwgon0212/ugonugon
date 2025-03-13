@@ -40,7 +40,7 @@ import BankAccountPage from "./pages/mypage/bank-account/page";
 
 function App() {
   return (
-    <div className="min-h-screen flex justify-center bg-gray-200">
+    <div className="min-h-screen flex justify-center bg-gray-100">
       <div className="flex w-full max-w-[1200px] justify-center min-h-screen">
         <Aside />
         {/* 모바일 레이아웃 */}

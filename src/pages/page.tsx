@@ -223,7 +223,7 @@ const RootPage = () => {
                 {newNotices && <NewNoticeSlider notices={newNotices} />}
               </div>
               {/* 하단 정보 */}
-              <div className=" text-center text-[12px] text-main-darkGray">
+              <div className=" text-center text-[12px] text-main-darkGray pb-[20px]">
                 <p>
                   이용약관{" "}
                   <span className="font-bold">
