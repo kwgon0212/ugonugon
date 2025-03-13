@@ -126,7 +126,7 @@ function MypageResumeList() {
       };
       fetchData();
     }
-  }, [userId]);
+  }, [userId, resumes]);
 
   return (
     <>
