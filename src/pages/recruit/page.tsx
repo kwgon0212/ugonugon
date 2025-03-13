@@ -11,6 +11,7 @@ import ArrowDownIcon from "@/components/icons/ArrowDown";
 import ArrowUpIcon from "@/components/icons/ArrowUp";
 import ReCruitPageFail from "./ReCruitPageFail";
 import { useAppSelector } from "@/hooks/useRedux";
+import AddIcon from "@/components/icons/Plus";
 
 // 타입 정의
 interface Post {
@@ -524,7 +525,7 @@ const ReCruitPage: React.FC = () => {
     <>
       {/* 헤더 영역 */}
       <Header>
-        <p className="flex justify-center items-center h-full font-bold text-lg">
+        <p className="flex justify-center items-center h-full font-bold">
           고용 현황
         </p>
       </Header>
@@ -532,12 +533,9 @@ const ReCruitPage: React.FC = () => {
       {/* 메인 콘텐츠 */}
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="p-4 space-y-4 h-full rounded-t-[30px] bg-main-bg">
-            {/* 상단 제목 */}
-            <h2 className="text-[18px] font-bold">나의 근로자 관리</h2>
-
+          <div className="p-4 space-y-4 rounded-t-[30px] h-full bg-main-bg ">
             {loading ? (
-              <div className="flex justify-center items-center h-40">
+              <div className="flex justify-center h-full items-center ">
                 <p>근로자 정보를 불러오는 중...</p>
               </div>
             ) : error ? (
@@ -547,13 +545,44 @@ const ReCruitPage: React.FC = () => {
             ) : workerGroups.length === 0 ? (
               <ReCruitPageFail />
             ) : (
-              /* 근로자 그룹 목록 */
+              /* 공고 등록하기 */
+
               <div className="space-y-4">
+                <Link to="/notice/add">
+                  <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
+                    <div className="bg-selected-box rounded-[10px] flex-1 m-4 h-[80%] border-2 border-main-color border-dashed cursor-pointer">
+                      <div className="flex flex-col justify-center h-full items-center">
+                        <AddIcon />
+                        <p className="text-main-color text-[12px]">
+                          새 공고 등록하기
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+
+                {/*  수정된 목차: 흰 배경 유지, 아이콘을 오른쪽으로 정렬 */}
+                <div className="mt-6 space-y-3">
+                  <Link to="/recruit/manage">
+                    <div className="bg-white p-4 rounded-lg   flex justify-between items-center cursor-pointer">
+                      <span className="  font-medium flex gap-[5px] items-center">
+                        <span>
+                          <ResumeIcon color="#717171" />
+                        </span>{" "}
+                        등록한 공고 관리
+                      </span>
+                      <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                        <ArrowRightIcon color="#717171" />
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+                {/* 상단 제목 */}
+                <h2 className=" font-bold">나의 근로자 관리</h2>
+
+                {/* 근로자 그룹 목록 */}
                 {workerGroups.map((group, groupIndex) => (
-                  <div
-                    key={group.post._id}
-                    className="bg-white rounded-lg shadow-md"
-                  >
+                  <div key={group.post._id} className="bg-white rounded-lg">
                     {/* 공고 정보 및 펼치기 헤더 */}
                     <div className="p-4">
                       <div className="flex justify-between items-center">
@@ -565,9 +594,9 @@ const ReCruitPage: React.FC = () => {
                           className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
                         >
                           {group.isExpanded ? (
-                            <ArrowUpIcon />
+                            <ArrowUpIcon color="#717171" />
                           ) : (
-                            <ArrowDownIcon />
+                            <ArrowDownIcon color="#717171" />
                           )}
                         </button>
                       </div>
@@ -734,36 +763,9 @@ const ReCruitPage: React.FC = () => {
                     )}
                   </div>
                 ))}
+                <div className="h-5"></div>
               </div>
             )}
-
-            {/*  수정된 목차: 흰 배경 유지, 아이콘을 오른쪽으로 정렬 */}
-            <div className="mt-6 space-y-3">
-              <Link to="/recruit/manage">
-                <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer">
-                  <span className="text-gray-800 font-medium flex gap-[5px] items-center">
-                    <span>
-                      <ResumeIcon color="#717171" />
-                    </span>{" "}
-                    등록한 공고 관리
-                  </span>
-                  <div className="w-5 h-5 text-gray-700">
-                    <ArrowRightIcon color="#717171" />
-                  </div>
-                </div>
-              </Link>
-              <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer">
-                <span className="text-gray-800 font-medium flex items-center gap-[5px]">
-                  <span>
-                    <WalletIcon color="#717171" />
-                  </span>
-                  내 출금계좌 관리
-                </span>
-                <div className="w-5 h-5 text-gray-700">
-                  <ArrowRightIcon color="#717171" />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </Main>
