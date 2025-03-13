@@ -90,7 +90,7 @@ export interface WorkStatus {
   checkInTime?: Date; // 출근 시간
   estimatedCheckOutTime?: Date; // 예상 퇴근 시간
   totalWorkDuration?: number; // 총 근무 시간(분)
-  canCheckOut: boolean; // 퇴근 가능 여부
+  canCheckOut: boolean | null; // 퇴근 가능 여부
 }
 
 // 유저의 현재 위치 정보 인터페이스
