@@ -107,13 +107,22 @@ const RootPage = () => {
       </Header>
       <Main hasBottomNav={true}>
         <div className="bg-white size-full">
-          <div className="px-[20px] py-[20px]">
-            <h1 className="text-[16px] font-regular">
-              안녕하세요! {userName}님
-            </h1>
-            <p className="text-[24px] font-bold tracking-tight ">
-              오늘은 <span className="text-main-color">이런 알바</span> 어때요?
-            </p>
+          <div className="w-full flex justify-between items-center px-[20px] py-[20px]">
+            <div>
+              <h1 className="text-base font-regular">
+                안녕하세요! {userName}님
+              </h1>
+              <p className="text-[20px] font-bold tracking-tight ">
+                오늘은 <span className="text-main-color">이런 알바</span>{" "}
+                어때요?
+              </p>
+            </div>
+            <img
+              src="https://em-content.zobj.net/source/microsoft-teams/363/star_2b50.png"
+              loading="lazy"
+              alt="15.0"
+              className="size-[60px]"
+            ></img>
           </div>
           <Link to="/notice/search" className="block pr-4 pl-4 pb-6">
             <div className="flex items-center border border-main-gray rounded-[10px] px-4 py-3 bg-white focus-within:border-main-darkGray">
@@ -136,8 +145,14 @@ const RootPage = () => {
           <div className="bg-main-bg rounded-[30px] pb-[20px]">
             {/* 맞춤형 추천 공고 */}
             <div className="p-[20px] flex flex-col gap-[10px]">
-              <div className="flex gap-2 items-center text-main-darkGray">
-                <span className="text-[16px] font-medium ">
+              <div className="flex gap-[4px] items-center">
+                <img
+                  src="https://em-content.zobj.net/source/animated-noto-color-emoji/356/direct-hit_1f3af.gif"
+                  loading="lazy"
+                  alt="15.0"
+                  className="size-[24px]"
+                />
+                <span className="text-[16px] font-medium text-main-darkGray">
                   맞춤형 추천공고
                 </span>
                 <div className="relative flex items-center">
@@ -163,9 +178,15 @@ const RootPage = () => {
             </div>
             {/* 긴급 공고 */}
             <div className="flex flex-col gap-[10px] pb-[10px]">
-              <div className="flex justify-between items-center px-[20px]">
+              <div className="flex gap-[4px] items-center px-[20px]">
+                <img
+                  src="https://em-content.zobj.net/source/microsoft-teams/363/alarm-clock_23f0.png"
+                  loading="lazy"
+                  alt="15.0"
+                  className="size-[24px]"
+                />
                 <span className="text-[16px] font-medium text-red-500">
-                  긴급 공고 🚨
+                  긴급 공고
                 </span>
               </div>
               {emergencyNotices && (
@@ -174,7 +195,13 @@ const RootPage = () => {
             </div>
             {/* 방금 올라온 공고 */}
             <div className="py-[20px] flex flex-col gap-[10px]">
-              <div className="flex gap-2 justify-between items-center px-[20px] text-main-darkGray">
+              <div className="flex gap-[4px] items-center px-[20px] text-main-darkGray">
+                <img
+                  src="https://em-content.zobj.net/source/microsoft-teams/363/fire_1f525.png"
+                  loading="lazy"
+                  alt="15.0"
+                  className="size-[24px]"
+                />
                 <span className="text-[16px] font-medium text-main-color">
                   방금 올라온 공고
                 </span>
