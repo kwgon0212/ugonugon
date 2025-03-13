@@ -122,7 +122,7 @@ const MyPage = () => {
 
                 <div className="w-full p-[20px] flex flex-col gap-[10px]">
                   <Link
-                    to="/mypage/edit/bank-account"
+                    to="/mypage/bank-account"
                     className="flex justify-between items-center"
                   >
                     <div className="flex gap-[10px] items-center">
