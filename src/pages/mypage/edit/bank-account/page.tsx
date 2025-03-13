@@ -51,7 +51,7 @@ const SaveBtn = styled.button`
   border-radius: 10px;
 `;
 
-export function EditBankAccountPage() {
+export function EditBankAccountPageBefore() {
   const userId = useAppSelector((state) => state.auth.user?._id);
 
   const [account, setAccount] = useState("");
@@ -262,4 +262,4 @@ const Sheet = styled.div`
   }
 `;
 
-export default EditBankAccountPage;
+export default EditBankAccountPageBefore;
