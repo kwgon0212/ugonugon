@@ -11,7 +11,7 @@ import contractRoutes from "./routes/contract.ts";
 import resumeRoutes from "./routes/resume.ts";
 import attendanceRoutes from "./routes/attendance.ts";
 import newAttendance from "./routes/newAttendance.ts";
-
+import bankRoutes from "./routes/bank.ts";
 import imageRoutes from "./routes/image.ts";
 import emailRoutes from "./routes/email.ts";
 import chatRoutes from "./routes/chatServer.ts";
@@ -57,6 +57,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/scrap", scrapRoutes);
 app.use("/api/image", imageRoutes);
 app.use("api/newAttendance", newAttendance);
+app.use("/api/bank", bankRoutes);
 
 app.use("/api/post", postRoutes);
 app.use("/api", chatRoutes); // 채팅 관련 라우트를 /api 접두사로 설정

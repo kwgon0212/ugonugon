@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser } from "@/hooks/fetchUser";
 import ProfileIcon from "@/components/icons/Profile";
+import postBank from "@/hooks/fetchBank";
 
 const LogoutModal = Modal;
 const WithdrawModal = Modal;
@@ -22,6 +23,7 @@ const WithdrawModal = Modal;
 const MyPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
   const [userData, setUserData] = useState<User | null>(null);
+  const [balance, setBalance] = useState();
 
   const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
   const [isOpenWithdrawModal, setIsOpenWithdrawModal] = useState(false);
@@ -33,6 +35,8 @@ const MyPage = () => {
     if (userId) {
       const fetchData = async () => {
         setUserData(await getUser(userId));
+        let Ldbl = await postBank("InquireBalance", { FinAcno: true });
+        setBalance(Ldbl.Ldbl);
       };
       fetchData();
     }
@@ -122,7 +126,7 @@ const MyPage = () => {
 
                 <div className="w-full p-[20px] flex flex-col gap-[10px]">
                   <Link
-                    to="/mypage/edit/bank-account"
+                    to="/mypage/bank-account"
                     className="flex justify-between items-center"
                   >
                     <div className="flex gap-[10px] items-center">
@@ -130,6 +134,8 @@ const MyPage = () => {
                       <span className="text-main-darkGray">
                         {userData?.bankAccount?.bank}&nbsp;
                         {userData?.bankAccount?.account}
+                        <br />
+                        잔액: {Number(balance).toLocaleString()} 원
                       </span>
                     </div>
                     <ArrowRightIcon color="#717171" />

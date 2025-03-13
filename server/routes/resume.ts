@@ -1,4 +1,3 @@
-import { profile, timeStamp } from "console";
 import express from "express";
 import mongoose from "mongoose";
 const router = express.Router();
@@ -58,7 +57,6 @@ const ResumesSchema = new mongoose.Schema({
   ],
   introduction: { type: String, required: true },
   writtenDay: { type: String, required: true },
-  // writtenDay: { type: Date, require: true },
   applyIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -108,7 +106,6 @@ router.delete("/", async (req, res) => {
 
 router.get("/:resumeId", async (req, res) => {
   try {
-    // const resume = await Resumes.findById(req.query.resumeId);
     const resume = await Resumes.findById(req.params.resumeId);
     return res.status(200).json(resume);
   } catch (err) {
