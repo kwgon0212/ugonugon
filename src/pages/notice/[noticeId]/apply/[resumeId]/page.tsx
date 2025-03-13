@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import ProfileIcon from "@/components/icons/Profile";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
 import getResume, { postResume, Resume } from "@/hooks/fetchResume";
@@ -140,12 +141,18 @@ const NoticeApplyResumePage = () => {
         <div className="size-full bg-main-bg relative">
           <div className="w-full h-full flex flex-col relative">
             <div className="flex p-layout gap-[20px] items-center">
-              <img
-                width="80px"
-                src={resume.profile}
-                alt="user-img"
-                className="rounded-full object-cover border border-main-darkGray self-stretch"
-              />
+              <div className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden">
+                {resume.profile ? (
+                  <img
+                    width="80px"
+                    src={resume.profile}
+                    alt="user-img"
+                    // className="rounded-full object-cover border border-main-darkGray"
+                  />
+                ) : (
+                  <ProfileIcon />
+                )}
+              </div>
               <div className="w-full flex flex-col justify-between">
                 <p className="w-full flex">
                   <span className="basis-[80px] text-main-darkGray">이름</span>
