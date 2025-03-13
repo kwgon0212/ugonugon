@@ -16,7 +16,7 @@ module.exports = {
 
         selected: {
           box: "#D7F6F6",
-          text: "#1D7887",
+          text: "#D7F6F6",
         },
       },
       spacing: {

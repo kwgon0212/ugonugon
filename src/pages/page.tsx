@@ -104,7 +104,7 @@ const RootPage = () => {
           <img
             src="/logo.png"
             alt="logo"
-            width={150}
+            width={120}
             className="object-contain"
           />
           <Link to={"/map"}>
@@ -116,13 +116,13 @@ const RootPage = () => {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="bg-white size-full">
-            <div className="w-full flex justify-between items-center px-[20px] py-[20px]">
-              <div>
+          <div className="bg-white size-full flex flex-col gap-[20px] pt-[20px]">
+            <div className="w-full flex justify-between items-center px-[20px]">
+              <div className="flex flex-col">
                 <h1 className="text-base font-regular">
                   안녕하세요! {userName}님
                 </h1>
-                <p className="text-[20px] font-bold tracking-tight ">
+                <p className="text-[20px] font-bold tracking-tight">
                   오늘은 <span className="text-main-color">이런 알바</span>{" "}
                   어때요?
                 </p>
@@ -132,9 +132,10 @@ const RootPage = () => {
                 loading="lazy"
                 alt="15.0"
                 className="size-[60px]"
-              ></img>
+              />
             </div>
-            <Link to="/notice/search" className="block pr-4 pl-4 pb-6">
+
+            <Link to="/notice/search" className="px-[20px]">
               <div className="flex items-center border border-main-gray rounded-[10px] px-4 py-3 bg-white focus-within:border-main-darkGray">
                 <SearchIcon color="#717171" />
                 <div className="relative flex-1">
@@ -152,7 +153,8 @@ const RootPage = () => {
                 </div>
               </div>
             </Link>
-            <div className="bg-main-bg rounded-[30px] pb-[20px]">
+
+            <div className="size-full bg-main-bg rounded-t-[30px]">
               {/* 맞춤형 추천 공고 */}
               <div className="p-[20px] flex flex-col gap-[10px]">
                 <div className="flex gap-[4px] items-center">
@@ -162,7 +164,7 @@ const RootPage = () => {
                     alt="15.0"
                     className="size-[24px]"
                   />
-                  <span className="text-[16px] font-medium text-main-darkGray">
+                  <span className="text-base font-medium text-main-darkGray">
                     맞춤형 추천공고
                   </span>
                   <div className="relative flex items-center">
@@ -176,7 +178,7 @@ const RootPage = () => {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -5 }}
                           transition={{ duration: 0.3 }}
-                          className="absolute left-[20px] -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-[12px] px-3 py-1 rounded-md shadow-lg z-10"
+                          className="absolute left-[20px] -translate-x-1/2 whitespace-nowrap bg-main-color/90 text-white text-xs px-3 py-1 rounded-md shadow-lg z-10"
                         >
                           회원님의 거주지 주변 공고입니다
                         </motion.div>
@@ -197,7 +199,7 @@ const RootPage = () => {
                     alt="15.0"
                     className="size-[24px]"
                   />
-                  <span className="text-[16px] font-medium text-red-500">
+                  <span className="text-base font-medium text-red-500">
                     긴급 공고
                   </span>
                 </div>
@@ -214,7 +216,7 @@ const RootPage = () => {
                     alt="15.0"
                     className="size-[24px]"
                   />
-                  <span className="text-[16px] font-medium text-main-color">
+                  <span className="text-base font-medium text-main-color">
                     방금 올라온 공고
                   </span>
                 </div>
