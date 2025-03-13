@@ -12,7 +12,7 @@ import ArrowUpIcon from "@/components/icons/ArrowUp";
 import ReCruitPageFail from "./ReCruitPageFail";
 import { useAppSelector } from "@/hooks/useRedux";
 import AddIcon from "@/components/icons/Plus";
-
+import Loading from "@/loading/page";
 // 타입 정의
 interface Post {
   _id: string;
@@ -535,9 +535,7 @@ const ReCruitPage: React.FC = () => {
         <div className="size-full bg-white">
           <div className="p-4 space-y-4 rounded-t-[30px] h-full bg-main-bg ">
             {loading ? (
-              <div className="flex justify-center h-full items-center ">
-                <p>근로자 정보를 불러오는 중...</p>
-              </div>
+              <Loading />
             ) : error ? (
               <div className="flex justify-center items-center h-40">
                 <p className="text-red-500">{error}</p>

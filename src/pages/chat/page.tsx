@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import { useAppSelector } from "@/hooks/useRedux";
 import { getOtherUserId } from "@/util/chatUtils";
 import RefreshIcon from "@/components/icons/Refresh";
+import ChatLoading from "@/loading/page";
 // 채팅방 정보 인터페이스 정의
 interface ChatRoom {
   id: string;
@@ -361,7 +362,7 @@ transform -translate-x-1/2: 요소를 자신의 너비의 50%만큼 왼쪽으로
       <Main hasBottomNav={true}>
         <div className="p-5">
           {loading ? (
-            <p className="text-center">채팅방 로딩 중...</p>
+            <ChatLoading />
           ) : chatRooms.length > 0 ? (
             chatRooms.map((room) => (
               <Link
