@@ -15,6 +15,7 @@ import {
   formatTime12Hour,
   getWorkplaceLocation,
 } from "./utils";
+import { AttendanceRecord } from "./attendanceService";
 
 interface WorkItemProps {
   notice: WorkData;
@@ -25,6 +26,7 @@ interface WorkItemProps {
   currentTime: Date;
   onCheckIn: (noticeId: string) => void;
   onCheckOut: (noticeId: string) => void;
+  attendanceRecord?: AttendanceRecord; // 추가
 }
 
 export const WorkItem: React.FC<WorkItemProps> = ({
@@ -36,6 +38,7 @@ export const WorkItem: React.FC<WorkItemProps> = ({
   currentTime,
   onCheckIn,
   onCheckOut,
+  attendanceRecord, // 추가: 출석 기록을 props로 받음
 }) => {
   // 스키마 구조에 맞게 처리
   const address = notice.address?.street || "주소 정보 없음";
@@ -72,15 +75,39 @@ export const WorkItem: React.FC<WorkItemProps> = ({
   const formattedDistance =
     distance !== undefined ? `${Math.round(distance)}m` : "거리 정보 없음";
 
-  // 버튼 상태 가져오기
+  // 버튼 상태 가져오기 (출석 기록도 전달)
   const buttonState = getButtonState(
     notice,
     status,
     currentTime,
     distance,
     locationEnabled,
-    currentLocation
+    currentLocation,
+    attendanceRecord
   );
+
+  // 디버깅용 로그 추가
+  const handleButtonClick = () => {
+    if (buttonState.enabled) {
+      console.log("Button clicked", {
+        noticeId: notice._id,
+        isOnTime: status.isOnTime,
+        attendanceRecord: attendanceRecord,
+        buttonState: buttonState,
+      });
+
+      if (
+        !status.isOnTime ||
+        (attendanceRecord && attendanceRecord.status === "checked-in")
+      ) {
+        console.log("퇴근 처리 실행");
+        onCheckOut(notice._id);
+      } else {
+        console.log("출근 처리 실행");
+        onCheckIn(notice._id);
+      }
+    }
+  };
 
   return (
     <ItemContainer>
@@ -117,7 +144,8 @@ export const WorkItem: React.FC<WorkItemProps> = ({
         )}
       </div>
 
-      {!status.isOnTime && (
+      {(!status.isOnTime ||
+        (attendanceRecord && attendanceRecord.status === "checked-in")) && (
         <div className="flex flex-col w-[90%] mt-3 mb-5">
           <div className="w-full mb-2 flex justify-between">
             <span>{status.percent}% 근무완료</span>
@@ -142,12 +170,16 @@ export const WorkItem: React.FC<WorkItemProps> = ({
         </div>
       )}
 
+      {/* 현재 상태 디버깅용 (필요시 주석 해제) */}
+      {/* <div className="text-xs text-gray-500 mb-2 w-[90%]">
+        <div>Status: {attendanceRecord ? attendanceRecord.status : "없음"}</div>
+        <div>Progress: {status.percent}%</div>
+        <div>canCheckOut: {status.canCheckOut ? "Yes" : "No"}</div>
+      </div> */}
+
       <Btn
         className={buttonState.style}
-        onClick={() =>
-          buttonState.enabled &&
-          (!status.isOnTime ? onCheckOut(notice._id) : onCheckIn(notice._id))
-        }
+        onClick={handleButtonClick}
         disabled={!buttonState.enabled}
       >
         {buttonState.text}
@@ -187,14 +219,15 @@ const Btn = styled.button`
   margin-top: 14px;
 `;
 
-// 버튼 상태 및 텍스트 반환 함수
+// 버튼 상태 및 텍스트 반환 함수 - 출석 기록(attendanceRecord) 파라미터 추가
 const getButtonState = (
   notice: WorkData,
   status: WorkStatus,
   currentTime: Date,
   distance: number | undefined,
   locationEnabled: boolean,
-  currentLocation: Location | null
+  currentLocation: Location | null,
+  attendanceRecord?: AttendanceRecord // 추가: 출석 기록 파라미터
 ): { text: string; enabled: boolean; style: string; reason?: string } => {
   const workDate = getWorkDate(notice);
   const startTime = getWorkStartTime(notice);
@@ -202,7 +235,7 @@ const getButtonState = (
   const now = currentTime;
   const distanceValue = distance || Infinity;
 
-  // 위치가 100m 이내인지 확인
+  // 위치가 허용 범위 이내인지 확인
   const isNearWorkplace = isWithinAllowedDistance(distanceValue);
 
   // 기본적인 조건 검사
@@ -238,10 +271,29 @@ const getButtonState = (
     };
   }
 
-  // 이미 출근한 경우 (퇴근 버튼 관련 로직)
-  if (!status.isOnTime) {
-    // 퇴근 가능 여부에 따라 버튼 상태 결정
-    if (status.canCheckOut) {
+  // 출석 기록 기반으로 출퇴근 상태 확인 (개선됨)
+  const hasCheckedIn =
+    attendanceRecord &&
+    (attendanceRecord.status === "checked-in" ||
+      attendanceRecord.status === "completed");
+
+  // 이미 출근한 경우 (출석 기록 또는 status 기반으로 확인)
+  if (hasCheckedIn || !status.isOnTime) {
+    // 이미 퇴근한 경우
+    if (attendanceRecord && attendanceRecord.status === "completed") {
+      return {
+        text: "근무 완료",
+        enabled: false,
+        style: "bg-gray-400 cursor-not-allowed",
+      };
+    }
+
+    // 퇴근 가능 여부 확인: 출근한 상태이고, 근무 시간이 종료되었거나 100% 진행된 경우
+    const isPastEndTime = endTime && now >= endTime;
+    const isWorkCompleted = status.percent >= 100;
+    const canCheckOut = isPastEndTime || isWorkCompleted;
+
+    if (canCheckOut) {
       // 퇴근 가능하지만 거리 조건 확인
       if (!locationEnabled) {
         return {
@@ -359,7 +411,7 @@ const getButtonState = (
       style: "bg-gray-300 cursor-not-allowed",
     };
   }
-  // 거리 기반 조건 - 100m 이내인지 확인
+  // 거리 기반 조건 - 허용 거리 이내인지 확인
   if (!isNearWorkplace) {
     return {
       text: `근무지와 ${DISTANCE_TOLERANCE}m 떨어짐`,
@@ -387,17 +439,3 @@ const getButtonState = (
   // 모든 조건을 만족하면 출근 가능
   return { text: buttonText, enabled: true, style: "bg-main-color" };
 };
-
-// 근무지 위치 정보를 가져오는 함수
-// const getWorkplaceLocation = (
-//   notice: WorkData
-// ): { lat: number; lng: number } | null => {
-//   // address 내부에 lat, lng가 있는 경우 (새 스키마)
-//   if (notice.address?.lat && notice.address?.lng) {
-//     return {
-//       lat: notice.address.lat,
-//       lng: notice.address.lng,
-//     };
-//   }
-//   return null;
-// };

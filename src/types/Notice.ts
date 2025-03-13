@@ -41,6 +41,8 @@ export default interface Notice {
     zipcode: string;
     street: string;
     detail?: string;
+    lat: number;
+    lng: number;
   };
   recruiter?: {
     name?: string;

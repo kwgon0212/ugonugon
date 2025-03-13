@@ -43,6 +43,8 @@ const dummyNotice: Notice[] = [
       zipcode: "04511",
       street: "서울특별시 중구 을지로 12",
       detail: "2층 스타벅스 매장",
+      lat: 37.5654,
+      lng: 126.9783,
     },
     recruiter: {
       name: "김매니저",
@@ -109,6 +111,8 @@ const dummyNotice: Notice[] = [
       zipcode: "06236",
       street: "서울특별시 강남구 테헤란로 87",
       detail: "GS25 테헤란점",
+      lat: 37.5654,
+      lng: 126.9783,
     },
     recruiter: {
       name: "박점장",
@@ -169,6 +173,8 @@ const dummyNotice: Notice[] = [
       zipcode: "18471",
       street: "경기도 화성시 동탄물류로 23",
       detail: "쿠팡 동탄 물류센터",
+      lat: 37.5654,
+      lng: 126.9783,
     },
     recruiter: {
       name: "이현우",
