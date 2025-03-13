@@ -49,6 +49,7 @@ const WorkApplyPage = () => {
             const response = await axios.get(
               `/api/post?postId=${apply.postId}`
             );
+
             return response.data;
           })
         );
