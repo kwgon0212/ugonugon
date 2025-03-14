@@ -6,7 +6,6 @@ import Main from "../../components/Main";
 import BottomNav from "../../components/BottomNav";
 import ArrowRightIcon from "../../components/icons/ArrowRight";
 import ResumeIcon from "../../components/icons/Resume";
-import WalletIcon from "../../components/icons/Wallet";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import ArrowUpIcon from "@/components/icons/ArrowUp";
 import ReCruitPageFail from "./ReCruitPageFail";
