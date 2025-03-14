@@ -12,6 +12,11 @@ import ReCruitPageFail from "./ReCruitPageFail";
 import { useAppSelector } from "@/hooks/useRedux";
 import AddIcon from "@/components/icons/Plus";
 import Loading from "@/loading/page";
+import ProfileIcon from "@/components/icons/Profile";
+import getUser, { type User } from "@/hooks/fetchUser";
+import getResume, { Resume } from "@/hooks/fetchResume";
+import postBank from "@/hooks/fetchBank";
+
 // 타입 정의
 interface Post {
   _id: string;
@@ -51,7 +56,7 @@ interface Attendance {
   postId: string;
   checkInTime?: string;
   checkOutTime?: string;
-  status: "checked-in" | "checked-out" | "completed";
+  status: "checked-in" | "checked-out" | "completed" | "paid";
   createdAt: string;
 }
 
@@ -60,25 +65,27 @@ interface AttendanceMap {
   [postId: string]: Attendance;
 }
 
-interface User {
-  _id: string;
-  name: string;
-  birthDate?: string;
-  sex?: "male" | "female";
-  phone: string;
-  profileImage?: string;
-  profile?: string;
-  residentId?: string;
-  email?: string;
-  address?: any;
-  bankAccount?: any;
-}
+// interface User {
+//   _id: string;
+//   name: string;
+//   birthDate?: string;
+//   sex?: "male" | "female";
+//   phone: string;
+//   profileImage?: string;
+//   profile?: string;
+//   residentId?: string;
+//   email?: string;
+//   address?: any;
+//   bankAccount?: any;
+// }
 
 interface WorkerWithAttendance {
+  resume: Resume;
   user: User;
   attendance?: Attendance | null;
   post: Post;
   hasAttendance: boolean; // 출근 기록이 있는지 여부
+  totalPay?: number;
 }
 
 interface WorkerGroup {
@@ -99,7 +106,7 @@ interface RootState {
 interface DebugState {
   postsResponse?: any;
   error?: any;
-  userResponses?: any;
+  resumeResponses?: any;
   attendanceResponses?: any;
   [key: string]: any;
 }
@@ -208,14 +215,14 @@ const formatBirthDate = (dateString?: string, residentId?: string): string => {
 };
 
 // 성별 표시 함수
-const getGenderDisplay = (user: User): string => {
-  if (user.sex === "male") return "(남)";
-  if (user.sex === "female") return "(여)";
+const getGenderDisplay = (resume: Resume): string => {
+  if (resume.sex === "male") return "(남)";
+  if (resume.sex === "female") return "(여)";
 
   // sex 필드가 없는 경우 residentId에서 성별 추출 시도
-  if (user.residentId && user.residentId.length >= 8) {
+  if (resume.residentId && resume.residentId.length >= 7) {
     // 주민번호 7번째 자리로 성별 추정 (1,3 = 남자, 2,4 = 여자)
-    const genderDigit = user.residentId.charAt(6);
+    const genderDigit = resume.residentId.charAt(6);
     if (genderDigit === "1" || genderDigit === "3") return "(남)";
     if (genderDigit === "2" || genderDigit === "4") return "(여)";
   }
@@ -224,43 +231,47 @@ const getGenderDisplay = (user: User): string => {
 };
 
 // 프로필 이미지 URL 가져오기
-const getProfileImageUrl = (user: User): string | undefined => {
-  // profileImage가 있으면 그걸 먼저 사용
-  if (user.profileImage) {
-    return user.profileImage;
-  }
+// const getProfileImageUrl = (user: User): string | undefined => {
+//   profileImage가 있으면 그걸 먼저 사용
+//   if (user.profileImage) {
+//     return user.profileImage;
+//   }
+//   if (user.profile) {
+//     return user.profile;
+//   }
 
-  // profile 필드에 이미지가 있을 수 있음
-  if (user.profile) {
-    // 이미 URL 형태면 그대로 반환
-    if (
-      typeof user.profile === "string" &&
-      (user.profile.startsWith("http") || user.profile.startsWith("data:image"))
-    ) {
-      return user.profile;
-    }
+//   // profile 필드에 이미지가 있을 수 있음
+//   if (user.profile) {
+//     // 이미 URL 형태면 그대로 반환
+//     if (
+//       typeof user.profile === "string" &&
+//       (user.profile.startsWith("http") || user.profile.startsWith("data:image"))
+//     ) {
+//       return user.profile;
+//     }
 
-    // 다른 형태일 경우 로깅
-    console.log(
-      "[DEBUG] Profile 필드 형식:",
-      typeof user.profile,
-      user.profile
-    );
+//     // 다른 형태일 경우 로깅
+//     console.log(
+//       "[DEBUG] Profile 필드 형식:",
+//       typeof user.profile,
+//       user.profile
+//     );
 
-    // 문자열 변환 시도
-    if (user.profile && typeof user.profile.toString === "function") {
-      const profileStr = user.profile.toString();
-      if (
-        profileStr.startsWith("http") ||
-        profileStr.startsWith("data:image")
-      ) {
-        return profileStr;
-      }
-    }
-  }
+//     // 문자열 변환 시도
+//     if (user.profile && typeof user.profile.toString === "function") {
+//       const profileStr = user.profile.toString();
+//       if (
+//         profileStr.startsWith("http") ||
+//         profileStr.startsWith("data:image")
+//       ) {
+//         return profileStr;
+//       }
+//     }
+//   }
 
-  return undefined;
-};
+//   return undefined;
+// };
+
 type ApplyType = {
   userId: string;
   status: string;
@@ -269,17 +280,62 @@ type ApplyType = {
   appliedAt: string;
 };
 // 기본 사용자 정보 생성 함수
-const createDefaultUser = (userId: string): User => ({
-  _id: userId,
-  name: "이름 정보 없음",
-  phone: "연락처 정보 없음",
-});
+// const createDefaultUser = (userId: string): User => ({
+//   _id: userId,
+//   name: "이름 정보 없음",
+//   phone: "연락처 정보 없음",
+// });
 
 const ReCruitPage: React.FC = () => {
   const [workerGroups, setWorkerGroups] = useState<WorkerGroup[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [debug, setDebug] = useState<DebugState | null>(null);
+  const [payModal, setPayModal] = useState(false);
+  const [Acno, setAcno] = useState("");
+  const [Tram, setTram] = useState("");
+  const [reload, setReload] = useState(true);
+
+  function countSpecificWeekdays(
+    startDate: string,
+    endDate: string,
+    stringDays: string[]
+  ): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const days = { 일: 0, 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6 };
+    const targetDays = stringDays.map((v) => days[v as keyof typeof days]);
+    let counts: { [key: string]: number } = {};
+
+    // 타겟 요일(0: 일요일 ~ 6: 토요일) 개수 초기화
+    targetDays.forEach((day) => (counts[day] = 0));
+
+    // 날짜 반복하면서 체크
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (targetDays.includes(d.getDay())) {
+        counts[d.getDay()]++;
+      }
+    }
+    return Object.values(counts).reduce((p, c) => p + c, 0);
+  }
+  function getWeeksBetween(startDate: string, endDate: string): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    return Math.ceil(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
+    );
+  }
+
+  function getMonthsBetween(startDate: string, endDate: string): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    return (
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth())
+    );
+  }
 
   // Redux에서 로그인한 사용자 정보 가져오기
   const user = useAppSelector((state: RootState) => state.auth.user);
@@ -290,6 +346,9 @@ const ReCruitPage: React.FC = () => {
         setError("로그인이 필요한 서비스입니다.");
         setLoading(false);
         return;
+      } else {
+        setLoading(true);
+        setError(null);
       }
 
       try {
@@ -319,7 +378,8 @@ const ReCruitPage: React.FC = () => {
         }
 
         const workerGroupsData: WorkerGroup[] = [];
-        const userResponses: Record<string, any> = {};
+        const resumeResponses: Record<string, any> = {};
+        const UserResponses: Record<string, any> = {};
         const attendanceResponses: Record<string, any> = {};
 
         // 2. 각 공고별로 처리
@@ -330,6 +390,33 @@ const ReCruitPage: React.FC = () => {
             period: post.period,
             day: post.day,
           });
+
+          const workDays = countSpecificWeekdays(
+            post.period.start,
+            post.period.end,
+            post.day
+          );
+
+          const workTime =
+            (new Date(post.hour.end).getTime() -
+              new Date(post.hour.start).getTime() +
+              new Date(post.restTime.end).getTime() -
+              new Date(post.restTime.start).getTime()) /
+            (60 * 60 * 1000);
+          let totalPay = 0;
+          if (post.pay.type === "시급")
+            totalPay += post.pay.value * workDays * workTime;
+          else if (post.pay.type === "일급")
+            totalPay += post.pay.value * workDays;
+          else if (post.pay.type === "주급")
+            totalPay +=
+              post.pay.value *
+              getWeeksBetween(post.period.start, post.period.end);
+          else if (post.pay.type === "월급")
+            totalPay +=
+              post.pay.value *
+              getMonthsBetween(post.period.start, post.period.end);
+          else if (post.pay.type === "총 급여") totalPay += post.pay.value;
 
           // Post 스키마를 건드리지 않고 인라인 타입으로 문제 해결하기
 
@@ -390,30 +477,28 @@ const ReCruitPage: React.FC = () => {
           for (const apply of acceptedApplies as ApplyType[]) {
             try {
               // 3-1. 사용자 정보 불러오기
+              const resumeId = apply.resumeId.toString();
               const userId = apply.userId.toString();
               console.log(
-                `[DEBUG] 사용자 정보 요청: /api/users?userId=${userId}`
+                `[DEBUG] 사용자 정보 요청: /api/users?resumeId=${resumeId}`
               );
 
-              const userResponse = await axios.get(`/api/users`, {
-                params: { userId },
-              });
+              const resumeResponse = await getResume(resumeId);
+              const UserResponse = await getUser(userId);
 
-              console.log(`[DEBUG] 사용자 데이터 응답:`, userResponse.data);
-              userResponses[userId] = userResponse.data;
-
-              const userData: User =
-                userResponse.data || createDefaultUser(userId);
+              console.log(`[DEBUG] 사용자 데이터 응답:`, resumeResponse);
+              resumeResponses[resumeId] = resumeResponse;
+              UserResponses[userId] = UserResponse;
 
               // 프로필 이미지 디버깅
               console.log(`[DEBUG] 사용자 프로필 필드:`, {
-                profileImage: userData.profileImage,
-                profile: userData.profile,
+                // profileImage: userData.profileImage,
+                profile: resumeResponse.profile,
               });
 
               // 3-2. 이미 가져온 출석 정보 사용
               const attendanceData =
-                attendanceMapByUser[userId]?.[post._id] || null;
+                attendanceMapByUser[resumeResponse.userId]?.[post._id] || null;
               const hasAttendance = !!attendanceData;
 
               // 디버깅: 출석 상태 로그
@@ -429,29 +514,33 @@ const ReCruitPage: React.FC = () => {
 
               // 근로자 정보 추가
               workersData.push({
-                user: userData,
+                resume: resumeResponse,
+                user: UserResponse,
                 attendance: attendanceData, // 출석 정보가 없으면 null
                 post: post,
                 hasAttendance: hasAttendance,
+                totalPay: totalPay,
               });
 
               console.log(
-                `[DEBUG] 근로자 정보 추가 완료: ${userData.name || "이름 없음"}`
+                `[DEBUG] 근로자 정보 추가 완료: ${
+                  resumeResponse.name || "이름 없음"
+                }`
               );
             } catch (err) {
               console.error(
-                `[ERROR] 근로자 정보 불러오기 실패: ${apply.userId}`,
+                `[ERROR] 근로자 정보 불러오기 실패: ${apply.resumeId}`,
                 err
               );
 
               // 오류가 발생해도 기본 정보로 추가
-              const userId = apply.userId.toString();
-              workersData.push({
-                user: createDefaultUser(userId),
-                attendance: null, // 출석 정보 없음
-                post: post,
-                hasAttendance: false,
-              });
+              // const userId = apply.userId.toString();
+              // workersData.push({
+              //   user: createDefaultUser(userId),
+              //   attendance: null, // 출석 정보 없음
+              //   post: post,
+              //   hasAttendance: false,
+              // });
             }
           }
 
@@ -470,7 +559,7 @@ const ReCruitPage: React.FC = () => {
         // 디버깅용 - API 응답 데이터 저장
         setDebug((prev: DebugState | null) => ({
           ...(prev || {}),
-          userResponses,
+          resumeResponses,
           attendanceResponses,
           workerGroups: workerGroupsData,
         }));
@@ -490,7 +579,7 @@ const ReCruitPage: React.FC = () => {
     };
 
     fetchWorkerData();
-  }, [user]);
+  }, [user, reload]);
 
   // 그룹 펼치기/접기 토글 함수
   const handleToggleExpand = (
@@ -515,9 +604,35 @@ const ReCruitPage: React.FC = () => {
     worker: WorkerWithAttendance,
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
+    setPayModal(!payModal);
     e.stopPropagation(); // 이벤트 버블링 방지
-    console.log("[DEBUG] 정산 처리:", worker);
-    alert(`${worker.user.name} 근로자 정산을 진행합니다.`);
+    setAcno(worker.user.bankAccount.account);
+    setTram(worker.totalPay?.toLocaleString() as string);
+  };
+
+  const hanldePayment = async (userId: string, postId: string) => {
+    try {
+      console.log(
+        "userId, postIduserId, postIduserId, postIduserId, postIduserId, postIduserId, postId"
+      );
+      console.log(userId, postId);
+
+      await axios.post("/api/attendance/pay", {
+        userId,
+        postId,
+      });
+    } catch (error) {
+      console.error("Attendance error", error);
+    }
+    const res = await postBank("ReceivedTransferAccountNumber", {
+      Bncd: "011",
+      Acno,
+      Tram: Tram.replace(/,/g, ""),
+      DractOtlt: "페이러너 임금 지불",
+      MractOtlt: "페이러너 임금 지급",
+    });
+    if (res) setPayModal(!payModal);
+    setReload(!reload);
   };
 
   return (
@@ -619,9 +734,9 @@ const ReCruitPage: React.FC = () => {
                             {!group.isExpanded && group.workers.length > 0 && (
                               <span>
                                 {" "}
-                                · {group.workers[0].user.name ||
+                                · {group.workers[0].resume.name ||
                                   "이름 없음"}{" "}
-                                {getGenderDisplay(group.workers[0].user)}{" "}
+                                {getGenderDisplay(group.workers[0].resume)}{" "}
                                 {group.workers.length > 1
                                   ? `외 ${group.workers.length - 1}명`
                                   : ""}
@@ -640,7 +755,7 @@ const ReCruitPage: React.FC = () => {
                         {group.workers.length > 0 ? (
                           group.workers.map((worker) => (
                             <div
-                              key={worker.user._id}
+                              key={worker.resume._id as string}
                               className="p-4 border-b border-gray-100 last:border-b-0"
                             >
                               {/* 근무일자 */}
@@ -669,34 +784,37 @@ const ReCruitPage: React.FC = () => {
                               </h4>
                               <div className="flex items-center space-x-4 mt-2">
                                 {/* 근로자 사진 */}
-                                <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden">
-                                  {getProfileImageUrl(worker.user) ? (
+                                {/* <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden"> */}
+                                <div className="w-[80px] h-[80px] border border-main-darkGray rounded-full overflow-hidden">
+                                  {worker.resume.profile ? (
                                     <img
-                                      src={getProfileImageUrl(worker.user)}
-                                      alt={worker.user.name}
+                                      src={worker.resume.profile}
+                                      alt={worker.resume.name}
                                       className="w-full h-full object-cover rounded-[10px]"
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
-                                      No Photo
-                                    </div>
+                                    <ProfileIcon />
+
+                                    // <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
+                                    //   No Photo
+                                    // </div>
                                   )}
                                 </div>
 
                                 {/* 근로자 정보 텍스트 */}
                                 <div>
                                   <p className="flex gap-[6px] text-[14px] font-semibold">
-                                    {worker.user.name || "이름 정보 없음"}{" "}
-                                    {getGenderDisplay(worker.user)}
+                                    {worker.resume.name || "이름 정보 없음"}{" "}
+                                    {getGenderDisplay(worker.resume)}
                                     <span className="text-main-darkGray font-medium ml-1">
                                       {formatBirthDate(
-                                        worker.user.birthDate,
-                                        worker.user.residentId
+                                        worker.resume.residentId.slice(0, 6),
+                                        worker.resume.residentId
                                       )}
                                     </span>
                                   </p>
                                   <p className="font-semibold">
-                                    {worker.user.phone || "연락처 정보 없음"}
+                                    {worker.resume.phone || "연락처 정보 없음"}
                                   </p>
                                   <p className="flex gap-[7px] text-[14px]">
                                     출근
@@ -735,20 +853,72 @@ const ReCruitPage: React.FC = () => {
 
                               {/* 정산하기 버튼 */}
                               <button
-                                onClick={(e) => handleSettlement(worker, e)}
-                                className={`mt-4 w-full font-semibold text-[14px] py-2 rounded-[10px] text-white ${
+                                onClick={(e) => {
+                                  handleSettlement(worker, e);
+                                }}
+                                className={`mt-4 w-full font-semibold text-[14px] py-2 rounded-[10px] ${
                                   worker.hasAttendance &&
                                   worker.attendance?.status === "completed"
                                     ? "bg-main-color"
                                     : "bg-selected-box"
+                                } ${
+                                  worker.hasAttendance &&
+                                  worker.attendance?.status === "paid"
+                                    ? "text-main-color"
+                                    : "text-white"
                                 }`}
                                 disabled={
                                   !worker.hasAttendance ||
                                   worker.attendance?.status !== "completed"
                                 }
                               >
-                                정산하기
+                                {worker.attendance?.status === "paid"
+                                  ? "지급완료"
+                                  : "정산하기"}
                               </button>
+                              {payModal && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+                                  <div className="bg-white p-5 flex flex-col gap-[10px] rounded-[10px] w-[362px] text-center">
+                                    <p className="font-bold text-lg">
+                                      정산 금액을 확인해주세요.
+                                    </p>
+                                    <p className="text-[14px]  mt-2">
+                                      정산은 취소할 수 없습니다.
+                                    </p>
+                                    <input
+                                      className="border border-main-darkGray rounded-[10px] p-[10px] text-main-color"
+                                      type="text"
+                                      value={Tram}
+                                      onChange={(e) => setTram(e.target.value)}
+                                      onBlur={() =>
+                                        setTram(Number(Tram).toLocaleString())
+                                      }
+                                    />
+
+                                    <div className="flex gap-3 justify-between mt-5">
+                                      <button
+                                        className="flex-1 border border-main-color rounded-[10px] text-main-color font-semibold p-2"
+                                        onClick={() => setPayModal(!payModal)}
+                                      >
+                                        취소
+                                      </button>
+                                      <button
+                                        className="w-[151px] p-2 rounded-[10px] bg-main-color text-white"
+                                        onClick={async () => {
+                                          setTram(Tram.replace(/,/g, ""));
+                                          if (worker.attendance)
+                                            await hanldePayment(
+                                              worker.attendance.userId,
+                                              worker.attendance.postId
+                                            );
+                                        }}
+                                      >
+                                        정산하기
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))
                         ) : (
@@ -760,13 +930,11 @@ const ReCruitPage: React.FC = () => {
                     )}
                   </div>
                 ))}
-                <div className="h-5"></div>
               </div>
             )}
           </div>
         </div>
       </Main>
-
       {/* 바텀 네비게이션 */}
       <BottomNav />
     </>

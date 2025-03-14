@@ -22,7 +22,7 @@ const AttendanceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["checked-in", "checked-out", "completed"],
+    enum: ["checked-in", "checked-out", "completed", "paid"],
     default: "checked-in",
   },
   createdAt: {
@@ -96,6 +96,33 @@ router.post("/save", async (req, res) => {
       message: `${
         type === "check-in" ? "출근" : "퇴근"
       } 기록이 저장되었습니다.`,
+      attendance: updatedAttendance, // ✅ 응답에서 갱신된 데이터 반환
+    });
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    res.status(500).json({ error: "Failed to save attendance log" });
+  }
+});
+
+router.post("/pay", async (req, res) => {
+  try {
+    const { userId, postId } = req.body;
+
+    let attendance = await Attendance.findOne({ userId, postId });
+    if (!attendance) return;
+
+    attendance.status = "paid";
+
+    // ✅ `new: true` 옵션을 추가해 findOneAndUpdate 사용 (더 안정적인 방법)
+    const updatedAttendance = await Attendance.findOneAndUpdate(
+      { userId, postId },
+      {
+        status: attendance.status,
+      }
+    );
+
+    res.json({
+      message: "정산 내역이 저장되었습니다.",
       attendance: updatedAttendance, // ✅ 응답에서 갱신된 데이터 반환
     });
   } catch (error) {
