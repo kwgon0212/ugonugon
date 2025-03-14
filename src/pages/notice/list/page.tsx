@@ -203,17 +203,16 @@ interface PostData {
     phone?: string;
   };
   author: string;
+  images?: [string];
   createdAt?: string | Date;
   applies: [
     {
       userId: mongoose.Types.ObjectId;
       resumeId: mongoose.Types.ObjectId;
-      // postId: mongoose.Types.ObjectId;
       status?: "pending" | "accepted" | "rejected";
       appliedAt?: string | Date;
     }
   ];
-  // applies: IApply[]; // 따로 분리한 인터페이스 적용
 }
 
 interface PaginationData {
@@ -504,7 +503,7 @@ export function NoticeListPage() {
       <Header>
         <Link to={"/"} className="flex p-3 w-full h-full">
           <img
-            src="/logo192.png"
+            src="/logo.png"
             alt="로고 이미지"
             className="flex bottom-0 w-[179px] h-[43px]"
           />
@@ -568,7 +567,10 @@ export function NoticeListPage() {
                       }
                     >
                       <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray">
-                        <img src="/logo192.png" alt="공고 이미지" />
+                        <img
+                          src={notice.images ? notice.images[0] : "/logo.png"}
+                          alt="공고 이미지"
+                        />
                       </div>
                       <ListInfo>
                         <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
