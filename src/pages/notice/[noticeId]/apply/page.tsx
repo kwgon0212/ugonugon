@@ -133,7 +133,7 @@ const NoticeApplyPage = () => {
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">
                             <span className="font-bold text-[14px] text-black">
-                              {resume.name === null
+                              {resume.name
                                 ? resume.name
                                 : "이름 정보가 없습니다."}{" "}
                               ({resume.sex === "male" ? "남" : "여"})
