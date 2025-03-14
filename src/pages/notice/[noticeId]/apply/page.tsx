@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
+import ProfileIcon from "@/components/icons/Profile";
 import BirthIcon from "@/components/icons/Birth";
 import CallIcon from "@/components/icons/Call";
 import Main from "@/components/Main";
@@ -117,12 +118,18 @@ const NoticeApplyPage = () => {
                           handleClickUser(resume._id as string);
                         }}
                       >
-                        <img
-                          width="80px"
-                          src={resume.profile}
-                          alt="user-img"
-                          className="rounded-full object-cover border border-main-darkGray"
-                        />
+                        <div className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden">
+                          {resume.profile ? (
+                            <img
+                              width="80px"
+                              src={resume.profile}
+                              alt="user-img"
+                              // className="rounded-full object-cover border border-main-darkGray"
+                            />
+                          ) : (
+                            <ProfileIcon />
+                          )}
+                        </div>
                         <div className="flex flex-col w-full gap-[2px] text-left text-[12px] text-main-darkGray">
                           <p className="flex justify-between items-center w-full">
                             <span className="font-bold text-[14px] text-black">
