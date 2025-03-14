@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import ProfileIcon from "@/components/icons/Profile";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
 import getResume, { postResume, Resume } from "@/hooks/fetchResume";
@@ -143,12 +144,16 @@ const NoticeApplyResumePage = () => {
           <div className="w-full h-full flex flex-col relative">
             <div className="bg-main-color rounded-b-[20px] p-[20px] pt-0">
               <div className="flex p-layout gap-[20px] items-center bg-white rounded-[10px]">
-                <img
-                  width="80px"
-                  src={resume.profile}
-                  alt="user-img"
-                  className="rounded-full object-cover border border-main-darkGray self-stretch"
-                />
+                {resume.profile ? (
+                  <img
+                    width="80px"
+                    src={resume.profile}
+                    alt="user-img"
+                    // className="rounded-full object-cover border border-main-darkGray"
+                  />
+                ) : (
+                  <ProfileIcon />
+                )}
                 <div className="w-full flex flex-col justify-between">
                   <p className="w-full flex">
                     <span className="basis-[80px] text-main-darkGray">

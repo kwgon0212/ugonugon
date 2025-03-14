@@ -54,7 +54,6 @@ router.post("/", async (req, res) => {
           ? "00820100028990000000000026652"
           : process.env.FinAcno;
     }
-    console.log(req.body.account);
 
     req.body.Header.FintechApsno = FintechApsno;
     req.body.Header.ApiSvcCd = ApiSvcCd;
