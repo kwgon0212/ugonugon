@@ -163,6 +163,9 @@ const ReCruitManagePage: React.FC = () => {
         setError("로그인이 필요한 서비스입니다.");
         setLoading(false);
         return;
+      } else {
+        setError(null);
+        setLoading(true);
       }
 
       try {
