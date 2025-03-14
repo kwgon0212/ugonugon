@@ -33,10 +33,9 @@ function ReCruitPageFail() {
         </div>
         <div className="text-xl mb-5">고용 내역이 존재하지 않아요</div>
         <div className="flex flex-row justify-center w-full">
-          <Link to="/">
-            <span className="text-main-color">내가 작성한 공고 페이지</span>
+          <Link to="/notice/add">
+            <span className="text-main-color font-bold">공고 등록하러가기</span>
           </Link>
-          <span>로 이동</span>
         </div>
       </CenterDiv>
     </>
