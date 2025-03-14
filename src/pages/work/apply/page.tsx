@@ -142,7 +142,7 @@ const WorkApplyPage = () => {
                   className="w-full bg-white rounded-[10px] flex p-[10px] gap-[20px] items-center"
                 >
                   <img
-                    src="https://placehold.co/90"
+                    src={post.images ? post.images[0] : "/logo.png"}
                     alt="img"
                     className="size-[90px] rounded-[10px]"
                   />
