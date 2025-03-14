@@ -115,7 +115,7 @@ export function RegisterAddressPage() {
                 value={postcode}
                 readOnly
                 disabled
-                className="flex w-full h-[50px] pl-3 rounded-[10px] bg-white border border-main-gray outline-main-color"
+                className="flex w-full h-[50px] pl-3 rounded-[10px] bg-white border border-main-gray"
               ></input>
               <FindBtn
                 type="button"
@@ -132,14 +132,14 @@ export function RegisterAddressPage() {
               value={address}
               readOnly
               disabled
-              className="flex w-full h-[50px] mb-[20px] pl-3 rounded-[10px] border bg-white border-main-gray outline-main-color"
+              className="flex w-full h-[50px] mb-[20px] pl-3 rounded-[10px] border bg-white border-main-gray"
             ></input>
             <input
               type="text"
               placeholder="상세주소"
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
-              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray outline outline-main-color"
+              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray focus:border-main-color"
             ></input>
           </div>
 
