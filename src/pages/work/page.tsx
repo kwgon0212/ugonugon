@@ -48,6 +48,8 @@ type TabType = "today" | "past" | "upcoming";
 const WorkPage: React.FC = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
   const userEmail = useAppSelector((state) => state.auth.user?.email);
+  const userName = useAppSelector((state) => state.auth.user?.name);
+
   const [workPosts, setWorkPosts] = useState<Notice[] | null>(null);
   const [attendances, setAttendances] = useState<Record<string, Attendance>>(
     {}
@@ -428,7 +430,7 @@ const WorkPage: React.FC = () => {
               <CenterDiv className="text-main-darkGray">
                 <div className="text-xl">
                   <span>현재 </span>
-                  <span className="text-main-color font-bold">{userEmail}</span>
+                  <span className="text-main-color font-bold">{userName}</span>
                   <span>님의</span>
                 </div>
                 <div className="text-xl mb-5">
