@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
@@ -11,7 +11,7 @@ import Main from "@/components/Main";
 import banks from "./banks";
 import AlertModal from "./AlertMocal";
 import { useAppSelector } from "@/hooks/useRedux";
-import getUser, { putUser, type User } from "@/hooks/fetchUser";
+import { putUser } from "@/hooks/fetchUser";
 
 const HeaderWrap = styled.div`
   display: flex;

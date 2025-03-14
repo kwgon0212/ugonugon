@@ -41,13 +41,6 @@ const MyPage = () => {
         try {
           const user = await getUser(userId);
           setUserData(user);
-
-          const bankResponse = await postBank("InquireBalance", {
-            FinAcno: true,
-          });
-          if (bankResponse && bankResponse.Ldbl) {
-            setBalance(bankResponse.Ldbl);
-          }
         } catch (error) {
           console.error("사용자 데이터 로딩 오류:", error);
         } finally {
@@ -57,6 +50,21 @@ const MyPage = () => {
       fetchData();
     }
   }, [userId]);
+  useEffect(() => {
+    const fetchBank = async () => {
+      const bankResponse = await postBank(
+        "InquireBalance",
+        {
+          FinAcno: true,
+        },
+        userData?.bankAccount.account
+      );
+      if (userData?.bankAccount.account) {
+        setBalance(bankResponse.Ldbl);
+      }
+    };
+    fetchBank();
+  }, [userData]);
 
   const handleLogout = () => {
     setIsOpenLogoutModal(true);

@@ -9,172 +9,11 @@ import Slider from "react-slick";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import getUser, { type User } from "@/hooks/fetchUser";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import CloseEyeIcon from "@/components/icons/CloseEye";
 import OpenEyeIcon from "@/components/icons/OpenEye";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import postBank from "@/hooks/fetchBank";
-
-interface Transaction {
-  id: number;
-  date: string;
-  amount: number;
-  receiver: string;
-  type: "입금" | "출금";
-}
-
-const transactions: Record<string, Record<string, Transaction[]>> = {
-  "2024": {
-    "01": [
-      {
-        id: 1,
-        date: "2024-01-05",
-        amount: 45000,
-        receiver: "김민수",
-        type: "입금",
-      },
-      {
-        id: 2,
-        date: "2024-01-15",
-        amount: 75000,
-        receiver: "박지윤",
-        type: "출금",
-      },
-    ],
-    "02": [
-      {
-        id: 3,
-        date: "2024-02-10",
-        amount: 98000,
-        receiver: "이영호",
-        type: "입금",
-      },
-    ],
-  },
-  "2025": {
-    "01": [
-      {
-        id: 4,
-        date: "2025-01-05",
-        amount: 50000,
-        receiver: "김철수",
-        type: "입금",
-      },
-      {
-        id: 5,
-        date: "2025-01-10",
-        amount: 30000,
-        receiver: "박영희",
-        type: "출금",
-      },
-    ],
-    "02": [
-      {
-        id: 6,
-        date: "2025-02-02",
-        amount: 20000,
-        receiver: "이민호",
-        type: "입금",
-      },
-      {
-        id: 7,
-        date: "2025-02-15",
-        amount: 100000,
-        receiver: "최지은",
-        type: "출금",
-      },
-    ],
-    "03": [
-      {
-        id: 8,
-        date: "2025-03-03",
-        amount: 150000,
-        receiver: "오정우",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "출금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "출금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-      {
-        id: 9,
-        date: "2025-03-20",
-        amount: 50000,
-        receiver: "강나래",
-        type: "입금",
-      },
-    ],
-    "04": [
-      {
-        id: 6,
-        date: "2025-02-02",
-        amount: 20000,
-        receiver: "이민호",
-        type: "입금",
-      },
-      {
-        id: 7,
-        date: "2025-02-15",
-        amount: 100000,
-        receiver: "최지은",
-        type: "출금",
-      },
-    ],
-  },
-};
 
 interface History {
   Header: {};
@@ -185,8 +24,12 @@ interface History {
 
 const BankAccountPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [selectedYear, setSelectedYear] = useState<string>("2025");
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<string>(
+    new Date().getFullYear().toString()
+  );
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
+    new Date().getMonth()
+  );
   const [isHiddenhistory, setIsHiddenhistory] = useState(false);
   const [userBank, setUserBank] = useState<User["bankAccount"] | null>(null);
   const sliderRef = useRef<Slider | null>(null);
@@ -211,9 +54,6 @@ const BankAccountPage = () => {
     "12",
   ];
 
-  // const years = Object.keys(transactions);
-  // const months = Object.keys(transactions[selectedYear]);
-
   const [userData, setUserData] = useState<User | null>(null);
   const [history, setHistory] = useState<History>();
   const [balance, setBalance] = useState();
@@ -222,8 +62,10 @@ const BankAccountPage = () => {
     const fetchUserBankAccount = async () => {
       if (!userId) return;
       const response = await getUser(userId);
-      setUserData(response);
-      setUserBank(response.bankAccount);
+      if (response) {
+        setUserData(response);
+        setUserBank(response.bankAccount);
+      }
     };
 
     fetchUserBankAccount();
@@ -410,31 +252,6 @@ const BankAccountPage = () => {
                     key={month}
                     className="px-[20px] bg-white rounded-[10px] max-h-[500px] overflow-y-scroll"
                   >
-                    {/* {transactions[selectedYear][month].length > 0 ? (
-                      transactions[selectedYear][month].map((tx) => (
-                        <div
-                          key={tx.id}
-                          className="py-[20px] border-b last:border-none"
-                        >
-                          <p className="text-sm text-gray-500">{tx.date}</p>
-                          <p className="text-lg font-medium">{tx.receiver}</p>
-                          <p
-                            className={`${
-                              tx.type === "입금"
-                                ? "text-main-color"
-                                : "text-warn"
-                            } font-semibold`}
-                          >
-                            {tx.type === "입금" ? "+" : "-"}
-                            {tx.amount.toLocaleString()}원
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-400">
-                        거래 내역 없음
-                      </p>
-                    )} */}
                     {history?.REC.length ? (
                       history.REC.map(
                         ({
