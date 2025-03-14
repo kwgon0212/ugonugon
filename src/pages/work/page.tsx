@@ -8,6 +8,7 @@ import Notice from "@/types/Notice";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import OpenEyeIcon from "@/components/icons/OpenEye";
 
 const CenterDiv = styled.div`
   display: flex;
@@ -21,8 +22,9 @@ const CenterDiv = styled.div`
 const TabContainer = styled.div`
   display: flex;
   width: 100%;
-  margin-bottom: 16px;
-  border-radius: 8px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--main-color);
   background-color: white;
   overflow: hidden;
 `;
@@ -47,9 +49,7 @@ type TabType = "today" | "past" | "upcoming";
 
 const WorkPage: React.FC = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const userEmail = useAppSelector((state) => state.auth.user?.email);
   const userName = useAppSelector((state) => state.auth.user?.name);
-
   const [workPosts, setWorkPosts] = useState<Notice[] | null>(null);
   const [attendances, setAttendances] = useState<Record<string, Attendance>>(
     {}
@@ -297,7 +297,7 @@ const WorkPage: React.FC = () => {
     return (
       <div
         key={post._id.toString()}
-        className="w-full bg-white px-[20px] py-[10px] rounded-[10px] flex flex-col gap-[10px] mb-4"
+        className="w-full bg-white p-[20px] rounded-[10px] flex flex-col gap-[10px] mb-4 border border-main-gray"
       >
         <div>
           <h3 className="font-bold text-[18px]">{post.title}</h3>
@@ -321,7 +321,10 @@ const WorkPage: React.FC = () => {
             <b className="text-main-color">{post.pay.type}</b>
             <span>{post.pay.value.toLocaleString()}원</span>
           </div>
-          <Link to="#">근로계약서</Link>
+          <button className="flex gap-[4px] items-center">
+            <span>근로계약서</span>
+            <OpenEyeIcon width={18} height={18} />
+          </button>
         </div>
         <hr className="border border-main-color/20 rounded-full" />
         <div className="flex flex-col gap-[4px]">
@@ -383,16 +386,14 @@ const WorkPage: React.FC = () => {
   return (
     <>
       <Header>
-        <>
-          <p className="flex justify-center items-center h-full font-bold text-lg">
-            근로 현황
-          </p>
-        </>
+        <div className="size-full flex justify-center items-center bg-main-color text-white font-bold">
+          근로 현황
+        </div>
       </Header>
 
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="h-full p-[20px] rounded-t-[30px] bg-main-bg">
+          <div className="h-full p-layout">
             {/* 탭 메뉴 */}
             <TabContainer>
               <TabButton
@@ -417,7 +418,7 @@ const WorkPage: React.FC = () => {
                 isActive={false}
                 onClick={() => navigate("/work/apply")}
               >
-                지원한 근로
+                지원한 공고
               </TabButton>
             </TabContainer>
 
@@ -439,14 +440,6 @@ const WorkPage: React.FC = () => {
                     : activeTab === "past"
                     ? "지난 근무 기록이 없습니다"
                     : "예정된 근무가 없습니다"}
-                </div>
-                <div className="flex flex-row justify-center w-full">
-                  <Link to="/work/apply">
-                    <span className="text-main-color">
-                      내가 지원한 공고 페이지
-                    </span>
-                  </Link>
-                  <span>로 이동</span>
                 </div>
               </CenterDiv>
             )}

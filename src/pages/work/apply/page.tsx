@@ -106,16 +106,17 @@ const WorkApplyPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex justify-center items-center relative">
-          <span>내가 지원한 공고</span>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
           <button
-            className="absolute left-[20px] top-1/2 -translate-y-1/2"
             onClick={() => {
               navigate(-1);
             }}
           >
-            <ArrowLeftIcon color="#717171" />
+            <ArrowLeftIcon className="text-white" />
           </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            내가 지원한 공고
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={true}>
@@ -139,7 +140,7 @@ const WorkApplyPage = () => {
                   onClick={() => {
                     navigate(`/notice/${post._id}`);
                   }}
-                  className="w-full bg-white rounded-[10px] flex p-[10px] gap-[20px] items-center"
+                  className="w-full bg-white rounded-[10px] flex p-[10px] gap-[20px] items-center border border-main-gray"
                 >
                   <img
                     src={post.images ? post.images[0] : "/logo.png"}

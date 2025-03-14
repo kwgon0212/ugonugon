@@ -4,6 +4,7 @@ import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
 import StatusBar from "@/components/StatusBar";
+import SubmitButton from "@/components/SubmitButton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   setUserEmailCert,
@@ -17,16 +18,14 @@ import styled from "styled-components";
 const CertificationInput = styled.input`
   width: 48px;
   height: 48px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--main-gray);
   border-radius: 10px;
   text-align: center;
-  font-size: 14px;
-  color: #1f2024;
   /* form의 padding으로 해결 못하여 input에 margin 설정 */
   margin: 0 4px;
 
   &:focus {
-    border: 1px solid #0b798b;
+    border: 1px solid var(--main-color);
     outline: none;
   }
 `;
@@ -127,9 +126,9 @@ function RegisterEmailCertPage() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <>
+        <div className="size-full bg-white">
           <form
-            className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]"
+            className="w-full p-layout flex flex-col gap-layout"
             onSubmit={handleEmailCodeSubmit}
           >
             <p className="font-semibold text-xl text-center">인증번호 확인</p>
@@ -176,7 +175,10 @@ function RegisterEmailCertPage() {
                 인증번호 재전송
               </button>
             </div>
-            <BottomButton>확인</BottomButton>
+
+            <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+              <SubmitButton type="submit">다음</SubmitButton>
+            </div>
           </form>
           <NotEqualEmailCodeModal
             isOpen={isOpenNotEqualEmailCodeModal}
@@ -207,7 +209,7 @@ function RegisterEmailCertPage() {
               </button>
             </div>
           </ReSendEmailCodeModal>
-        </>
+        </div>
       </Main>
     </>
   );

@@ -4,6 +4,7 @@ const PlusIcon = ({
   width = 20,
   height = 20,
   color = "#0B798B",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const PlusIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M12 4V20"

@@ -5,7 +5,7 @@ type Props = {
 const Header = ({ children }: Props) => {
   return (
     <header
-      className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-16 bg-white z-10 shadow-sm`}
+      className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-16 bg-white z-30`}
     >
       {children}
     </header>

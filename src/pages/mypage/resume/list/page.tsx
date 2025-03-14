@@ -131,66 +131,67 @@ function MypageResumeList() {
   return (
     <>
       <Header>
-        <Link
-          to="/mypage"
-          className="p-layout h-full flex flex-wrap content-center"
-        >
-          <ArrowLeftIcon width={24} height={24} />
-          <Title>이력서 관리</Title>
-        </Link>
+        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-1/2 -translate-y-1/2 left-layout"
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span>이력서 관리</span>
+        </div>
       </Header>
       {userData && (
         <Main hasBottomNav={false}>
-          {resumes?.length === 0 || resumes === null ? (
-            <CenterDiv className="text-main-darkGray">
-              <div className="text-base text-center">
-                <span>현재&nbsp;</span>
-                <span className="text-main-color font-bold">
-                  {userData?.name}
-                </span>
-                <span>
-                  님의
-                  <br />
-                  이력서가 존재하지 않아요
-                  <br />
-                </span>
-                <div className="m-[10px] text-sm">
-                  <Link to="/mypage/resume/add">
-                    <span className="text-main-color">이력서 등록</span>
-                    &nbsp;페이지로 이동
-                  </Link>
+          <div className="size-full bg-white">
+            {resumes?.length === 0 || resumes === null ? (
+              <CenterDiv className="text-main-darkGray">
+                <div className="text-base text-center">
+                  <span>현재&nbsp;</span>
+                  <span className="text-main-color font-bold">
+                    {userData?.name}
+                  </span>
+                  <span>
+                    님의
+                    <br />
+                    이력서가 존재하지 않아요
+                    <br />
+                  </span>
+                  <div className="m-[10px] text-sm">
+                    <Link to="/mypage/resume/add">
+                      <span className="text-main-color">이력서 등록</span>
+                      &nbsp;페이지로 이동
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </CenterDiv>
-          ) : (
-            <ul className="w-full px-5 pt-[22px] flex flex-col gap-[10px] list-none">
-              {Array.isArray(resumes)
-                ? resumes.map(({ _id, writtenDay, title }, index) => (
-                    <li
-                      key={index}
-                      className="h-20 w-full rounded-[10px] bg-white flex flex-col p-[15px] gap-[10px] border border-main-gray"
-                      onClick={() => navigate(`/mypage/resume/list/${_id}`)}
-                    >
-                      <span className="p-0 flex gap-1">
-                        <span className="w-[49px] text-main-darkGray text-xs">
-                          작성일자
+              </CenterDiv>
+            ) : (
+              <ul className="w-full px-5 pt-[22px] flex flex-col gap-[10px] list-none">
+                {Array.isArray(resumes)
+                  ? resumes.map(({ _id, writtenDay, title }, index) => (
+                      <button
+                        key={index}
+                        className="w-full rounded-[10px] bg-white flex flex-col p-[15px] gap-[10px] border border-main-gray"
+                        onClick={() => navigate(`/mypage/resume/list/${_id}`)}
+                      >
+                        <span className="flex gap-[4px]">
+                          <span className="w-[49px] text-main-darkGray text-xs">
+                            작성일자
+                          </span>
+                          <span className="text-main-darkGray text-xs">
+                            {writtenDay}
+                          </span>
                         </span>
-                        <span className="text-main-darkGray text-xs">
-                          {writtenDay}
-                        </span>
-                      </span>
-                      <span className="text-lg font-semibold relative">
-                        {title}
-
-                        <span className="absolute right-0 bottom-0">
+                        <div className="text-lg font-semibold flex justify-between items-center text-start">
+                          <p>{title}</p>
                           <ArrowRightIcon color="#717171" />
-                        </span>
-                      </span>
-                    </li>
-                  ))
-                : ""}
-            </ul>
-          )}
+                        </div>
+                      </button>
+                    ))
+                  : ""}
+              </ul>
+            )}
+          </div>
         </Main>
       )}
     </>

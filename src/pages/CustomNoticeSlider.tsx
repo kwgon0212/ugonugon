@@ -4,7 +4,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Notice from "@/types/Notice";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 
 interface Props {
   notices: Notice[];
@@ -27,8 +26,8 @@ const CustomNoticeSlider = ({ notices }: Props) => {
 
   if (notices.length <= 0) {
     return (
-      <p className="px-[20px] text-main-darkGray text-[14px] h-[110px] flex justify-center items-center">
-        추천 공고가 없습니다.
+      <p className="px-[20px] text-main-darkGray text-sm h-[110px] flex justify-center items-center">
+        추천 공고가 없습니다
       </p>
     );
   }
@@ -47,10 +46,10 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                   <img
                     src={notice.images[0]}
                     alt="img"
-                    className="size-[90px] rounded-[10px] object-cover"
+                    className="size-[90px] rounded-[10px] object-cover border border-main-gray"
                   />
                 ) : (
-                  <p className="size-[90px] min-w-[90px] rounded-[10px] bg-main-gray text-main-darkGray text-[12px] flex justify-center items-center">
+                  <p className="size-[90px] min-w-[90px] rounded-[10px] bg-main-gray text-main-darkGray text-sm flex justify-center items-center">
                     이미지 없음
                   </p>
                 )}
@@ -62,25 +61,25 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                         {notice.title}
                       </p>
                     </div>
-                    <span className="text-[12px]">
-                      현재 {notice.applies ? notice.applies.length : 0}명 지원중
-                    </span>
                   </div>
+                  <span className="text-sm">
+                    현재 {notice.applies ? notice.applies.length : 0}명 지원중
+                  </span>
 
                   <div className="flex flex-col w-full">
-                    <span className="text-[12px] text-main-darkGray w-full">
+                    <span className="text-sm text-main-darkGray w-full">
                       {notice.address.street}
                     </span>
-                    <div className="w-full flex gap-[4px] justify-between text-sm">
+                    <div className="w-full flex gap-[4px] justify-between items-center text-sm">
                       <div className="flex gap-[4px]">
                         <span className="font-bold text-main-color">
                           {notice.pay.type}
                         </span>
-                        <span className="text-[12px] text-main-darkGray">
+                        <span className="text-sm text-main-darkGray">
                           {notice.pay.value.toLocaleString()}원
                         </span>
                       </div>
-                      <span className="text-main-darkGray text-[12px]">
+                      <span className="text-main-darkGray text-sm">
                         ~ {new Date(notice.deadline.date).toLocaleDateString()}
                       </span>
                     </div>

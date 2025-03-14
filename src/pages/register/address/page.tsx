@@ -13,6 +13,8 @@ import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserAddress } from "@/util/slices/registerUserInfoSlice";
 import Modal from "@/components/Modal";
 import StatusBar from "@/components/StatusBar";
+import InputComponent from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
 
 // 우편번호 데이터 타입 정의
 interface PostcodeData {
@@ -23,33 +25,14 @@ interface PostcodeData {
 const Head = styled.div`
   display: flex;
   align-self: start;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  padding-left: 20px;
-  /* font-size: 18px; */
   font-weight: bold;
 `;
 
 const FindBtn = styled.button`
   display: flex;
+  width: 150px;
   justify-content: center;
   align-items: center;
-  width: 140px;
-  height: 50px;
-  border-radius: 10px;
-  color: white;
-
-  &:hover {
-    background-color: #196b78;
-  }
-`;
-
-const NextButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--main-color);
-  width: 100%;
   height: 50px;
   border-radius: 10px;
   color: white;
@@ -104,56 +87,51 @@ export function RegisterAddressPage() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="flex flex-col items-center w-full h-full">
+        <div className="flex flex-col gap-[20px] items-center size-full bg-white p-[20px]">
           <Head className="text-xl">주소지 등록</Head>
-          {/* 우편번호 + 주소검색 버튼 */}
-          <div className="w-full px-[20px]">
-            <div className="flex flex-row gap-[20px] w-full mb-[20px]">
-              <input
+          <div className="w-full flex flex-col gap-[10px]">
+            <div className="flex flex-row gap-[20px] w-full">
+              <InputComponent
                 type="text"
                 placeholder="우편번호"
                 value={postcode}
                 readOnly
                 disabled
-                className="flex w-full h-[50px] pl-3 rounded-[10px] bg-white border border-main-gray"
-              ></input>
+                className="flex-5"
+              />
               <FindBtn
                 type="button"
                 onClick={handleOpenPostcodePopup}
                 className="bg-main-color"
               >
-                주소검색
+                <span className="text-center">주소검색</span>
               </FindBtn>
             </div>
-            {/* 주소 + 상세주소 */}
-            <input
+            <InputComponent
               type="text"
               placeholder="주소"
               value={address}
               readOnly
               disabled
-              className="flex w-full h-[50px] mb-[20px] pl-3 rounded-[10px] border bg-white border-main-gray"
-            ></input>
-            <input
+            />
+            <InputComponent
               type="text"
               placeholder="상세주소"
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
-              className="flex w-full h-[50px] pl-3 rounded-[10px] border border-main-gray focus:border-main-color"
-            ></input>
+            />
           </div>
 
           <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
-            <NextButton onClick={handleClickNext} type="button">
+            <SubmitButton onClick={handleClickNext} type="button">
               다음
-            </NextButton>
+            </SubmitButton>
           </div>
 
           <Modal isOpen={isPostcodeOpen} setIsOpen={setIsPostcodeOpen}>
             {isPostcodeOpen && (
               <DaumPostcode
                 onComplete={handlePostcodeComplete} // 주소 선택 시 실행되는 함수
-                className="mt-5"
                 autoClose
               />
             )}

@@ -146,20 +146,23 @@ const BankAccountPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex justify-center items-center relative">
-          <span>내 계좌 관리</span>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
           <button
-            onClick={() => navigate(-1)}
-            className="absolute left-[20px] top-1/2 -translate-y-1/2"
+            onClick={() => {
+              navigate(-1);
+            }}
           >
-            <ArrowLeftIcon />
+            <ArrowLeftIcon className="text-white" />
           </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            내 계좌 관리
+          </span>
         </div>
       </Header>
       {userBank && (
         <Main hasBottomNav={false}>
           <div className="size-full flex flex-col gap-[20px] p-[20px]">
-            <div className="w-full bg-white rounded-[10px] flex flex-col gap-[5px] px-[20px] py-[20px]">
+            <div className="w-full bg-white border border-main-gray rounded-[10px] flex flex-col gap-[5px] px-[20px] py-[20px]">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-[10px]">
                   <img

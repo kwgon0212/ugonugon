@@ -4,7 +4,7 @@ import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
 import StatusBar from "@/components/StatusBar";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { setUserBisnessNumber } from "@/util/slices/registerUserInfoSlice";
+// import { setUserBisnessNumber } from "@/util/slices/registerUserInfoSlice";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -38,7 +38,7 @@ function RegisterBusinessPage() {
     };
 
   const handleClickNext = () => {
-    dispatch(setUserBisnessNumber(businessNumbers));
+    // dispatch(setUserBisnessNumber(businessNumbers));
     navigate("/register/user-account");
   };
 

@@ -126,22 +126,24 @@ const NoticeApplyResumePage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center px-[20px] justify-between">
-          <div className="flex gap-[10px] items-center">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <span className="font-bold">
-              지원자: <span className="text-main-color">{resume.name}</span>
-            </span>
-          </div>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            지원자 - {resume.name}
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="size-full bg-main-bg relative">
+        <div className="size-full bg-white relative">
           <div className="w-full h-full flex flex-col relative">
-            <div className="flex p-layout gap-[20px] items-center">
-              <div className="w-20 h-20 rounded-full border border-main-darkGray flex items-center justify-center cursor-pointer overflow-hidden">
+            <div className="bg-main-color rounded-b-[20px] p-[20px] pt-0">
+              <div className="flex p-layout gap-[20px] items-center bg-white rounded-[10px]">
                 {resume.profile ? (
                   <img
                     width="80px"
@@ -152,22 +154,26 @@ const NoticeApplyResumePage = () => {
                 ) : (
                   <ProfileIcon />
                 )}
-              </div>
-              <div className="w-full flex flex-col justify-between">
-                <p className="w-full flex">
-                  <span className="basis-[80px] text-main-darkGray">이름</span>
-                  <span className="flex-grow">{resume.name}</span>
-                </p>
-                <p className="w-full flex">
-                  <span className="basis-[80px] text-main-darkGray">성별</span>
-                  <span className="flex-grow">{resume.sex}</span>
-                </p>
-                <p className="w-full flex">
-                  <span className="basis-[80px] text-main-darkGray">
-                    주민번호
-                  </span>
-                  <span className="flex-grow">{resume.residentId}</span>
-                </p>
+                <div className="w-full flex flex-col justify-between">
+                  <p className="w-full flex">
+                    <span className="basis-[80px] text-main-darkGray">
+                      이름
+                    </span>
+                    <span className="flex-grow">{resume.name}</span>
+                  </p>
+                  <p className="w-full flex">
+                    <span className="basis-[80px] text-main-darkGray">
+                      성별
+                    </span>
+                    <span className="flex-grow">{resume.sex}</span>
+                  </p>
+                  <p className="w-full flex">
+                    <span className="basis-[80px] text-main-darkGray">
+                      주민번호
+                    </span>
+                    <span className="flex-grow">{resume.residentId}</span>
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex h-full flex-col gap-[20px] bg-white rounded-t-[20px] p-[20px]">
@@ -261,7 +267,7 @@ const NoticeApplyResumePage = () => {
             clickOutsideClose={!isFetchStatus}
           >
             <div className="w-full flex flex-col gap-[20px]">
-              <p className="text-xl font-bold">고용 거절</p>
+              <p className="text-xl font-bold ">고용 거절</p>
               <p className="text-center">
                 {isFetchStatus
                   ? "거절 되었습니다"
@@ -345,7 +351,7 @@ const NoticeApplyResumePage = () => {
         </button>
         <button
           onClick={() => setIsOpenRejectModal(true)}
-          className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-selected-text rounded-[10px]"
+          className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-main-color rounded-[10px]"
         >
           고용 거절
         </button>

@@ -98,17 +98,18 @@ function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
     : "마감일 정보 없음";
 
   return (
-    <Link to={`/notice/${post._id}`} className="block">
-      <div className="bg-white h-[160px] rounded-[10px] flex-col p-3">
-        <div className="flex justify-between">
-          <p className="font-bold text-[12px] mb-2">{post.title}</p>
-          <div className="w-5 h-5">
-            <ArrowRightIcon />
-          </div>
+    <Link
+      to={`/notice/${post._id}`}
+      className="block border border-main-gray rounded-[10px]"
+    >
+      <div className="bg-white rounded-[10px] flex flex-col gap-[10px] p-[20px]">
+        <div className="flex justify-between items-center">
+          <p className="font-bold text-lg">{post.title}</p>
+          <ArrowRightIcon />
         </div>
         <div className="flex justify-between">
-          <div className="flex flex-col gap-0.5 text-main-darkGray text-[10px]">
-            <p className="text-[12px] font-bold text-black">근무조건</p>
+          <div className="flex flex-col gap-0.5 text-main-darkGray text-xs">
+            <p className="text-sm font-bold text-black">근무조건</p>
             <p>
               <span className={spanStyle.text}>{post.pay.type}</span>{" "}
               {post.pay.value.toLocaleString()}
@@ -120,8 +121,8 @@ function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
               <span className={spanStyle.text}>시간</span> {timeString}
             </p>
           </div>
-          <div className="flex flex-col gap-0.5 text-[10px] text-main-darkGray">
-            <p className="text-[12px] font-bold text-black">모집조건</p>
+          <div className="flex flex-col gap-0.5 text-xs text-main-darkGray">
+            <p className="text-sm font-bold text-black">모집조건</p>
             <p>
               <span className={spanStyle.text}>마감</span> {deadlineString}
             </p>
@@ -129,17 +130,17 @@ function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
               <span className={spanStyle.text}>인원</span> {post.person}
             </p>
           </div>
-          <div className="flex flex-col gap-2 text-[10px] text-main-color">
-            <div className="bg-selected-box rounded-[10px] text-center p-1">
+          <div className="flex flex-col gap-2 text-xs text-main-color">
+            <div className="bg-selected-box rounded-[10px] text-center px-2 py-1">
               모집중
             </div>
-            <div className="bg-selected-box rounded-[10px] text-center p-1">
+            <div className="bg-selected-box rounded-[10px] text-center px-2 py-1">
               {applicantCount}명 지원
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-0.5 text-[10px] mt-2 text-main-darkGray">
-          <p className="text-[12px] font-bold text-black">근무지역</p>
+        <div className="flex flex-col gap-0.5 text-xs mt-2 text-main-darkGray">
+          <p className="text-sm font-bold text-black">근무지역</p>
           <p>{addressString}</p>
         </div>
       </div>
@@ -184,46 +185,43 @@ const ReCruitManagePage: React.FC = () => {
   return (
     <>
       <Header>
-        <div className="flex items-center h-full ml-2">
-          <div onClick={() => navigate(-1)}>
-            <ArrowLeftIcon />
-          </div>
-          <span className="font-bold flex justify-center w-full mr-3">
-            고용 현황
-          </span>
+        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-1/2 -translate-y-1/2 left-layout"
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span>고용 현황</span>
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <div className="size-full bg-white">
-          <div className="p-4 space-y-4 rounded-t-[30px] h-full bg-main-bg pb-28">
-            {/* 상단 제목 */}
-            <h2 className="text-[18px] font-bold">나의 공고 관리</h2>
+        <div className="size-full bg-white p-[20px] flex flex-col gap-[20px]">
+          {/* 상단 제목 */}
+          <h2 className="text-[18px] font-bold">나의 공고 관리</h2>
 
-            {loading ? (
-              <Loading />
-            ) : error ? (
-              <div className="flex justify-center items-center h-40">
-                <p className="text-red-500">{error}</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5">
-                {/* 새 공고 등록 버튼 */}
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="flex justify-center items-center h-40">
+              <p className="text-red-500">{error}</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-5">
+              {/* 새 공고 등록 버튼 */}
 
-                {/* 공고 목록 */}
-                {myPosts.length > 0 ? (
-                  myPosts.map((post) => (
-                    <ReCruitManage key={post._id} post={post} />
-                  ))
-                ) : (
-                  <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
-                    <p className="text-main-darkGray">
-                      등록한 공고가 없습니다.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+              {/* 공고 목록 */}
+              {myPosts.length > 0 ? (
+                myPosts.map((post) => (
+                  <ReCruitManage key={post._id} post={post} />
+                ))
+              ) : (
+                <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
+                  <p className="text-main-darkGray">등록한 공고가 없습니다.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Main>
       <BottomNav></BottomNav>

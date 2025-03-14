@@ -4,6 +4,7 @@ const CancelIcon = ({
   width = 20,
   height = 20,
   color = "#0B798B",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const CancelIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999"

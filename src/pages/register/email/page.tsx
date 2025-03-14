@@ -1,10 +1,11 @@
-import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CancelIcon from "@/components/icons/Cancel";
+import InputComponent from "@/components/Input";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
 import StatusBar from "@/components/StatusBar";
+import SubmitButton from "@/components/SubmitButton";
 import { useAppDispatch } from "@/hooks/useRedux";
 import {
   setUserEmail,
@@ -13,34 +14,6 @@ import {
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-
-const InsertTextInput = styled.input`
-  width: 100%;
-  height: 50px;
-  background: white;
-  border-radius: 10px;
-  padding: 0 20px;
-  border: 1px solid var(--main-gray);
-
-  ::placeholder {
-    padding: 0 20px;
-    color: #d9d9d9;
-    font-size: 14px;
-  }
-`;
-
-const BottomButton = styled.button`
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
-  height: 50px;
-  border-radius: 10px;
-  background: #0b798b;
-  color: white;
-`;
 
 const DupEmailModal = Modal;
 
@@ -72,7 +45,7 @@ function RegisterEmailPage() {
   return (
     <>
       <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
+        <div className="relative flex flex-col justify-center size-full">
           <div className="flex flex-row justify-between px-[20px]">
             <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
@@ -85,7 +58,7 @@ function RegisterEmailPage() {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <>
+        <div className="size-full bg-white">
           <form
             className="w-full p-layout flex flex-col gap-layout"
             onSubmit={handleSubmitEmail}
@@ -96,15 +69,17 @@ function RegisterEmailPage() {
               <br />
               계정에 사용할 이메일 계정을 입력해주세요.
             </p>
-            <InsertTextInput
+            <InputComponent
               type="email"
               name="email"
               placeholder="이메일 계정"
-              className="w-full h-[50px] bg-white rounded-[10px] outline-main-color"
               pattern="[\w]+@+[\w]+\.[\w]+"
               required
             />
-            <BottomButton>인증번호 전송</BottomButton>
+
+            <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+              <SubmitButton type="submit">인증번호 전송</SubmitButton>
+            </div>
           </form>
 
           <DupEmailModal
@@ -121,7 +96,7 @@ function RegisterEmailPage() {
               </button>
             </div>
           </DupEmailModal>
-        </>
+        </div>
       </Main>
     </>
   );

@@ -14,11 +14,13 @@ import StarIcon from "@/components/icons/Star";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
 import { useEffect } from "react";
+import Notice from "@/types/Notice";
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  padding: 20px;
 `;
 
 const ListWrapper = styled.div`
@@ -28,7 +30,7 @@ const ListWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  background-color: #f7f7f9;
+  background-color: white;
 `;
 const ListScrollWrapper = styled.div`
   display: flex;
@@ -37,19 +39,19 @@ const ListScrollWrapper = styled.div`
   width: 100%;
   height: 93%;
   overflow-y: auto;
-  background-color: #f7f7f9;
+  background-color: white;
   scrollbar-width: none;
 `;
 
 const ListContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 95%;
+  width: 100%;
   height: 100px;
-  background-color: white;
   padding: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-radius: 10px;
+  border: 1px solid var(--main-gray);
 `;
 
 const ListInfo = styled.div`
@@ -91,6 +93,7 @@ const Drop = styled.ul`
   position: absolute;
   display: block;
   top: 20px;
+  right: 0px;
   text-align: center;
   background-color: white;
   width: 40px;
@@ -110,6 +113,7 @@ interface GetNoticeInfo {
   address: string;
   pay: number;
   period: string;
+  images: string[];
 }
 
 export function MypageScrabPage() {
@@ -176,6 +180,7 @@ export function MypageScrabPage() {
               address: post.address?.street || "",
               pay: post.pay?.value || 0,
               period: formatPeriod(post.period?.start, post.period?.end),
+              images: post.images || [],
             };
           });
 
@@ -253,12 +258,15 @@ export function MypageScrabPage() {
   return (
     <>
       <Header>
-        <Link to="/mypage" className="flex items-center h-full ml-2">
-          <ArrowLeftIcon />
-          <span className="font-bold flex justify-center w-full mr-3">
-            스크랩알바
-          </span>
-        </Link>
+        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
+          <button
+            onClick={() => navigate("/mypage")}
+            className="absolute top-1/2 -translate-y-1/2 left-layout"
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span>스크랩 공고</span>
+        </div>
       </Header>
       <Main hasBottomNav={true}>
         <Body>
@@ -269,18 +277,17 @@ export function MypageScrabPage() {
             </div>
           ) : hasNotice ? (
             <>
-              <ListWrapper className="bg-main-bg">
+              <ListWrapper className="bg-white">
                 <ListScrollWrapper>
-                  <div className="flex flex-row justify-between items-center pl-4 w-full h-[40px]">
-                    <div className="flex flex-row gap-1">
-                      <span>총 </span>
-                      <span className="text-main-color font-bold">
-                        {noticeList.length}건의
-                      </span>
-                      <span>스크랩 공고</span>
-                    </div>
-                    <div className="flex flex-row items-center justify-evenly text-[12px] w-[100px] h-[40px]">
-                      <div className="flex w-fit">필터</div>
+                  <div className="flex flex-row justify-between items-center w-full mb-layout">
+                    <span>
+                      총{" "}
+                      <b className="text-main-color font-bold">
+                        {noticeList.length}건
+                      </b>
+                    </span>
+                    <div className="flex flex-row items-center text-sm gap-[4px]">
+                      <span>필터</span>
                       <div className="relative flex w-fit">
                         <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
                           <MinusIcon />
@@ -302,28 +309,32 @@ export function MypageScrabPage() {
                         className="flex w-full cursor-pointer"
                         onClick={() => navigate(`/notice/${notice._id}`)} // 상세 페이지로 이동
                       >
-                        <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray relative">
-                          <img
-                            src="/logo192.png"
-                            alt="공고 이미지"
-                            className="w-full h-full object-cover rounded-lg"
-                          />
+                        <div className="mr-2 w-[80px] h-[80px] rounded-[10px] bg-main-darkGray relative">
+                          {notice.images && notice.images.length > 0 ? (
+                            <img
+                              src={notice.images[0]}
+                              alt="공고 이미지"
+                              className="w-full h-full object-cover border border-main-gray rounded-[10px]"
+                            />
+                          ) : (
+                            <div className="w-full h-full object-cover border border-main-gray rounded-[10px]" />
+                          )}
 
                           {/* 스크랩 아이콘 - 이제 클릭해도 상세 페이지로 이동됨 */}
                           <div className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full">
                             <div>
-                              <StarIcon color="#FFD700" />
+                              <StarIcon fill="#FFD700" color="#FFD700" />
                             </div>
                           </div>
                         </div>
 
                         <ListInfo>
-                          <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray">
+                          <div className="flex flex-row justify-between w-full text-[12px] text-main-darkGray">
                             <span>{notice.companyName}</span>
                             <div>
-                              <span>마감일 </span>
-                              <span>{notice.endDate}</span>
-                              <span>({notice.day})</span>
+                              <span>
+                                ~ {notice.endDate}({notice.day})
+                              </span>
                             </div>
                           </div>
                           <div className="w-[95%] text-[12px] font-bold flex-wrap">
@@ -332,7 +343,7 @@ export function MypageScrabPage() {
                           <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
                             <div>{notice.address}</div>
                             <div>
-                              <span className="font-bold text-[#1D8738]">
+                              <span className="font-bold text-main-color">
                                 시급{" "}
                               </span>
                               <span>{notice.pay.toLocaleString()} 원</span>
@@ -358,7 +369,10 @@ export function MypageScrabPage() {
                         key={page}
                         onClick={() => setCurrentPage(page)}
                         style={{
-                          color: currentPage === page ? "#0B798B" : "#717171",
+                          color:
+                            currentPage === page
+                              ? "var(--main-color)"
+                              : "var(--main-darkGray)",
                         }}
                       >
                         {page}

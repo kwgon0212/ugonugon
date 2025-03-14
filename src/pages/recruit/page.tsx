@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/Header";
 import Main from "../../components/Main";
@@ -295,6 +295,7 @@ const ReCruitPage: React.FC = () => {
   const [Acno, setAcno] = useState("");
   const [Tram, setTram] = useState("");
   const [reload, setReload] = useState(true);
+  const navigate = useNavigate();
 
   function countSpecificWeekdays(
     startDate: string,
@@ -659,33 +660,33 @@ const ReCruitPage: React.FC = () => {
             ) : (
               /* 공고 등록하기 */
 
-              <div className="space-y-4">
-                <Link to="/notice/add">
-                  <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
-                    <div className="bg-selected-box rounded-[10px] flex-1 m-4 h-[80%] border-2 border-main-color border-dashed cursor-pointer">
-                      <div className="flex flex-col justify-center h-full items-center">
-                        <AddIcon />
-                        <p className="text-main-color text-[12px]">
-                          새 공고 등록하기
-                        </p>
-                      </div>
+              <div className="bg-main-color rounded-b-[10px] flex justify-center items-center p-[20px] pt-0">
+                <div
+                  className="size-full bg-white rounded-[10px]"
+                  onClick={() => navigate("/notice/add")}
+                >
+                  <div className="bg-selected-box rounded-[10px] flex-1 m-4 h-[80%] border-2 border-main-color border-dashed cursor-pointer">
+                    <div className="flex flex-col justify-center h-full items-center">
+                      <AddIcon />
+                      <p className="text-main-color text-[12px]">
+                        새 공고 등록하기
+                      </p>
                     </div>
                   </div>
-                </Link>
+                </div>
 
                 {/*  수정된 목차: 흰 배경 유지, 아이콘을 오른쪽으로 정렬 */}
-                <div className="mt-6 space-y-3">
-                  <Link to="/recruit/manage">
-                    <div className="bg-white p-4 rounded-lg   flex justify-between items-center cursor-pointer">
-                      <span className="  font-medium flex gap-[5px] items-center">
-                        <span>
-                          <ResumeIcon color="#717171" />
-                        </span>{" "}
-                        등록한 공고 관리
-                      </span>
-                      <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
-                        <ArrowRightIcon color="#717171" />
-                      </div>
+                <div className="size-full flex flex-col gap-[20px] p-[20px] bg-white">
+                  <Link
+                    to="/recruit/manage"
+                    className="flex justify-between items-center border-b-main-gray border-b py-[10px]"
+                  >
+                    <div className="flex gap-[10px] items-center">
+                      <ResumeIcon color="#717171" />
+                      &nbsp;등록한 공고 관리
+                    </div>
+                    <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                      <ArrowRightIcon color="#717171" />
                     </div>
                   </Link>
                 </div>
@@ -694,9 +695,13 @@ const ReCruitPage: React.FC = () => {
 
                 {/* 근로자 그룹 목록 */}
                 {workerGroups.map((group, groupIndex) => (
-                  <div key={group.post._id} className="bg-white rounded-lg">
+                  <div
+                    key={group.post._id}
+                    className="bg-white rounded-[10px] border border-main-gray"
+                  >
+                    {" "}
                     {/* 공고 정보 및 펼치기 헤더 */}
-                    <div className="p-4">
+                    <div className="px-[20px] py-[10px]">
                       <div className="flex justify-between items-center">
                         <h3 className="text-[16px] font-semibold">
                           {group.post.title || "제목 없음"}
@@ -748,7 +753,6 @@ const ReCruitPage: React.FC = () => {
                         )}
                       </div>
                     </div>
-
                     {/* 펼쳐진 상태일 때 근로자 목록 표시 */}
                     {group.isExpanded && (
                       <div className="border-t border-gray-200 pt-2">
@@ -784,7 +788,6 @@ const ReCruitPage: React.FC = () => {
                               </h4>
                               <div className="flex items-center space-x-4 mt-2">
                                 {/* 근로자 사진 */}
-                                {/* <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden"> */}
                                 <div className="w-[80px] h-[80px] border border-main-darkGray rounded-full overflow-hidden">
                                   {worker.resume.profile ? (
                                     <img
@@ -794,10 +797,6 @@ const ReCruitPage: React.FC = () => {
                                     />
                                   ) : (
                                     <ProfileIcon />
-
-                                    // <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
-                                    //   No Photo
-                                    // </div>
                                   )}
                                 </div>
 
