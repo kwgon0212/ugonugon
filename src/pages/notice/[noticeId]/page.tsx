@@ -309,29 +309,29 @@ const NoticeDetailPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center px-[20px] justify-between">
+        <div className="size-full flex items-center px-[20px] justify-between bg-main-color">
           <div className="flex gap-[10px]">
             <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
+              <ArrowLeftIcon className="text-white" />
             </button>
-            <span className="font-bold">채용정보</span>
+            <span className="font-bold text-white">공고 상세</span>
           </div>
           <div className="flex gap-[10px]">
             <div
-              className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]"
+              className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px] cursor-pointer"
               onClick={handleToggleScrap}
             >
               {/* fill 속성 대신 조건부 렌더링 */}
               {isScraped ? (
-                <StarIcon color="#FFD700" /> // 또는 StarIcon에 지원되는 색상 관련 props 사용
+                <StarIcon fill="#FFD700" color="#FFD700" /> // 또는 StarIcon에 지원되는 색상 관련 props 사용
               ) : (
-                <StarIcon />
+                <StarIcon className="text-white" />
               )}
               {/* <span>스크랩</span> */}
             </div>
             <div className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px]">
               <button onClick={handleClickShare}>
-                <ShareIcon />
+                <ShareIcon className="text-white" />
               </button>
               {/* <span>공유</span> */}
             </div>
@@ -342,7 +342,7 @@ const NoticeDetailPage = () => {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="size-full bg-main-bg relative">
+          <div className="size-full bg-white relative">
             <AnimatePresence>
               {isClickShare && (
                 <motion.div
@@ -362,7 +362,7 @@ const NoticeDetailPage = () => {
               style={{ minHeight: contentHeight }}
             >
               <div className="flex flex-col gap-[4px] mb-[10px] px-layout">
-                <div className="flex gap-[4px] text-[12px] text-main-darkGray">
+                <div className="flex gap-[4px] text-[12px]">
                   <span>
                     {postData &&
                       postData.createdAt &&
@@ -386,7 +386,7 @@ const NoticeDetailPage = () => {
                 <h1 className="font-bold text-[20px]">{postData?.title}</h1>
               </div>
 
-              <div className="flex justify-between sticky top-0 bg-main-bg py-[10px] z-[5]">
+              <div className="flex justify-between sticky top-0 py-[10px] z-[5] bg-main-color text-white">
                 <button
                   className="flex-1 text-center"
                   onClick={() => scrollToSection("condition")}
@@ -407,7 +407,7 @@ const NoticeDetailPage = () => {
                 </button>
               </div>
 
-              <div className="flex flex-col gap-[20px] bg-white rounded-[20px] p-[20px] pb-[110px]">
+              <div className="flex flex-col gap-[20px] bg-white p-[20px] pb-[110px]">
                 <div className="flex flex-col gap-[10px]">
                   <h3 className="font-bold text-[20px]" id="condition">
                     근무조건
@@ -829,7 +829,7 @@ const NoticeDetailPage = () => {
               </button>
               <button
                 onClick={() => navigate(`/notice/edit/${noticeId}`)}
-                className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-selected-text rounded-[10px]"
+                className="flex flex-grow h-[50px] justify-center items-center border border-main-color bg-white text-main-color rounded-[10px]"
               >
                 공고 수정
               </button>

@@ -2,18 +2,23 @@ import React from "react";
 import styled from "styled-components";
 
 const InputComponent = ({
+  padding,
+  width,
   ...attributes
-}: React.InputHTMLAttributes<HTMLInputElement>) => {
+}: React.InputHTMLAttributes<HTMLInputElement> & {
+  width?: string;
+  padding?: string;
+}) => {
   return (
-    <InputContainer>
-      <Input {...attributes} />
+    <InputContainer width={width}>
+      <Input padding={padding} {...attributes} />
     </InputContainer>
   );
 };
 
-const InputContainer = styled.div`
+const InputContainer = styled.div<{ width?: string }>`
   position: relative;
-  width: 100%;
+  width: ${({ width }) => width || "fit-content"};
 
   &::after {
     content: "";
@@ -32,11 +37,11 @@ const InputContainer = styled.div`
   }
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ padding?: string }>`
   outline: none;
-  padding: 0 20px;
+  padding: ${({ padding }) => padding || "0 20px"};
   width: 100%;
-  height: 50px;
+  height: ${({ height }) => (height ? height : "50px")};
   border-bottom: 1px solid var(--main-gray);
   background: transparent;
 `;

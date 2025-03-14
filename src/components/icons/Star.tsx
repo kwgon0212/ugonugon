@@ -3,16 +3,17 @@ import IconOptions from "../../types/IconOptions";
 const StarIcon = ({
   width = 20,
   height = 20,
-  color = "#0475f5",
+  color = "#0B798B",
   className,
-}: IconOptions) => (
+  fill,
+}: IconOptions & { fill?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     width={width}
     height={height}
     color={color}
-    fill={"none"}
+    fill={fill || "none"}
     className={className}
   >
     <path

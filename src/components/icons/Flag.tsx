@@ -3,7 +3,7 @@ import IconOptions from "@/types/IconOptions";
 const FlagIcon = ({
   width = 20,
   height = 20,
-  color = "#0475f5",
+  color = "#0B798B",
   className,
 }: IconOptions) => (
   <svg

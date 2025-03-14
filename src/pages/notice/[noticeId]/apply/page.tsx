@@ -67,41 +67,38 @@ const NoticeApplyPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center px-[20px] justify-between">
-          <div className="flex gap-[10px] items-center">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <span className="font-bold">지원현황</span>
-          </div>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            지원현황
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="size-full bg-main-bg relative">
+        <div className="size-full bg-white relative">
           <div className="w-full h-full flex flex-col relative">
-            <div className="flex flex-col gap-[4px] py-[10px] px-layout">
-              {/* <div className="flex gap-[4px] text-[12px] text-main-darkGray justify-end">
-                <span>작성일자 </span>
-                <span>2025-02-17</span>
-                <span>10:29:15</span>
-              </div> */}
-              <h1 className="font-bold text-[20px]">{postData?.title}</h1>
-              <div className="text-[14px] flex w-full justify-end">
-                {/* <h3>한경 2기 풀스택반</h3> */}
-                <span className="text-main-darkGray">
-                  ~{" "}
-                  {postData &&
-                    `${new Date(
-                      postData.deadline.date
-                    ).toLocaleDateString()} ${new Date(
-                      postData.deadline.time
-                    ).toLocaleTimeString()}`}
-                </span>
+            <div className="flex flex-col gap-[4px] p-[20px] pt-0 rounded-b-[20px] bg-main-color">
+              <div className="bg-white rounded-[10px] p-[10px]">
+                <h1 className="font-bold text-[20px]">{postData?.title}</h1>
+                <div className="text-[14px] flex w-full justify-end">
+                  {/* <h3>한경 2기 풀스택반</h3> */}
+                  <span className="text-main-darkGray text-xs">
+                    ~{" "}
+                    {postData &&
+                      `${new Date(
+                        postData.deadline.date
+                      ).toLocaleDateString()} ${new Date(
+                        postData.deadline.time
+                      ).toLocaleTimeString()}`}
+                  </span>
+                </div>
               </div>
-              {/* <div className="text-main-darkGray flex gap-[4px] text-[14px]">
-                <span>설립 1년차</span>
-                <span>25년 2월부터 이용중</span>
-              </div> */}
             </div>
 
             <div className="flex h-full flex-col gap-[20px] bg-white rounded-[20px] p-[20px]">

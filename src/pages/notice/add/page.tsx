@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import useGeocode from "@/hooks/useGeocode";
 import PlusIcon from "@/components/icons/Plus";
 import CancelIcon from "@/components/icons/Cancel";
+import InputComponent from "@/components/Input";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -222,43 +223,45 @@ const NoticeAddPage = () => {
   return (
     <>
       <Header>
-        <div className="p-layout h-full flex flex-wrap content-center">
-          <div
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
             onClick={() => {
               navigate(-1);
             }}
           >
-            <ArrowLeftIcon width={24} height={24} />
-          </div>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-base">
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
             공고 등록
           </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="w-full flex flex-col relative">
+        <div className="w-full flex flex-col relative bg-white">
           <form
-            className="w-full p-layout flex flex-col gap-layout divide-[#0b798b] relative"
+            className="w-full p-layout flex flex-col gap-layout relative"
             onSubmit={handleSubmitNotice}
           >
             <div className="flex flex-col gap-[5px]">
-              <b>
-                공고제목 <b className="text-warn">*</b>
+              <b className="text-lg">
+                공고제목 <b className="text-main-warn">*</b>
               </b>
-              <input
+              <InputComponent
                 type="text"
                 placeholder="공고 제목을 작성해주세요"
+                width="100%"
+                height="40px"
+                padding="0 10px"
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
                 }}
-                className="w-full bg-transparent border-b border-main-gray h-[40px] px-[10px] outline-none text-xl"
               />
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                직종 <b className="text-warn">*</b>
+              <b className="text-lg">
+                직종 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full relative">
                 <select
@@ -273,14 +276,14 @@ const NoticeAddPage = () => {
                   ))}
                 </select>
                 <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                  <ArrowDownIcon color="#717171" />
+                  <ArrowDownIcon className="text-main-darkGray" />
                 </div>
               </div>
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                급여 <b className="text-warn">*</b>
+              <b className="text-lg">
+                급여 <b className="text-main-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="relative">
@@ -296,12 +299,14 @@ const NoticeAddPage = () => {
                     ))}
                   </select>
                   <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                    <ArrowDownIcon color="#717171" />
+                    <ArrowDownIcon className="text-main-darkGray" />
                   </div>
                 </div>
                 <div className="relative flex-grow">
-                  <input
+                  <InputComponent
                     type="text"
+                    height="40px"
+                    width="100%"
                     value={pay.value}
                     onChange={(e) =>
                       setPay({
@@ -317,7 +322,6 @@ const NoticeAddPage = () => {
                       (e.target.value = pay.value.toLocaleString())
                     }
                     required
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                   />
                   <span className="absolute right-[10px] top-1/2 -translate-y-1/2">
                     원
@@ -327,8 +331,8 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                고용형태 <b className="text-warn">*</b>
+              <b className="text-lg">
+                고용형태 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {hireOptions.map((hireOption, index) => (
@@ -352,8 +356,8 @@ const NoticeAddPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <p className="w-full flex justify-between">
-                <b>
-                  근무기간 <b className="text-warn">*</b>
+                <b className="text-lg">
+                  근무기간 <b className="text-main-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="period-discussion">기간 협의 가능</label>
@@ -398,9 +402,9 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <p className="w-full flex justify-between">
-                <b>
-                  근무시간 <b className="text-warn">*</b>
+              <div className="w-full flex justify-between">
+                <b className="text-lg">
+                  근무시간 <b className="text-main-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="hour-discussion">시간 협의 가능</label>
@@ -416,7 +420,7 @@ const NoticeAddPage = () => {
                     id="hour-discussion"
                   />
                 </div>
-              </p>
+              </div>
               <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
                   selected={hour?.start || null}
@@ -443,8 +447,8 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                휴게시간 <b className="text-warn">*</b>
+              <b className="text-lg">
+                휴게시간 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
@@ -476,8 +480,8 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                근무요일 <b className="text-warn">*</b>
+              <b className="text-lg">
+                근무요일 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {dayOptions.map((dayOption, index) => (
@@ -498,7 +502,7 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>근무상세</b>
+              <b className="text-lg">근무상세</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="근무 상세 설명을 작성해주세요"
@@ -509,7 +513,7 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>복리후생</b>
+              <b className="text-lg">복리후생</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="복리후생을 작성해주세요"
@@ -520,7 +524,7 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>상세요강</b>
+              <b className="text-lg">상세요강</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="추가할 html 내용을 작성해주세요"
@@ -531,8 +535,8 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                모집마감 <b className="text-warn">*</b>
+              <b className="text-lg">
+                모집마감 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
@@ -564,12 +568,13 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                모집인원 <b className="text-warn">*</b>
+              <b className="text-lg">
+                모집인원 <b className="text-main-warn">*</b>
               </b>
-              <div className="relative">
-                <input
+              <div className="w-fit relative">
+                <InputComponent
                   type="text"
+                  height="40px"
                   value={person}
                   onChange={(e) =>
                     setPerson(Number(e.target.value.replace(/[^\d]/g, "")))
@@ -579,7 +584,7 @@ const NoticeAddPage = () => {
                   }}
                   onBlur={(e) => (e.target.value = person.toLocaleString())}
                   required
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  padding="0 10px"
                 />
                 <span className="absolute right-[10px] top-1/2 -translate-y-1/2">
                   명
@@ -588,7 +593,7 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>우대사항</b>
+              <b className="text-lg">우대사항</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="우대사항을 작성해주세요"
@@ -599,8 +604,8 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                학력제한 <b className="text-warn">*</b>
+              <b className="text-lg">
+                학력제한 <b className="text-main-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="w-full relative">
@@ -618,7 +623,7 @@ const NoticeAddPage = () => {
                     ))}
                   </select>
                   <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                    <ArrowDownIcon color="#717171" />
+                    <ArrowDownIcon className="text-main-darkGray" />
                   </div>
                 </div>
                 <div className="w-full relative">
@@ -649,17 +654,19 @@ const NoticeAddPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                주소지 등록 <b className="text-warn">*</b>
+              <b className="text-lg">
+                주소지 등록 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex flex-col gap-[10px]">
                 <div className="w-full flex gap-[10px]">
-                  <input
+                  <InputComponent
                     type="text"
                     placeholder="우편번호"
                     value={address.zipcode}
+                    height="40px"
+                    width="100%"
+                    padding="0 10px"
                     readOnly
-                    className="flex-grow rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                   />
                   <button
                     type="button"
@@ -667,70 +674,78 @@ const NoticeAddPage = () => {
                       setIsOpenAddressModal(true);
                       setIsPostcodeOpen(true);
                     }}
-                    className="px-[20px] rounded-[10px] h-[40px] bg-main-color text-white"
+                    className="w-[200px] rounded-[10px] h-[40px] bg-main-color text-white"
                   >
                     주소 검색
                   </button>
                 </div>
-                <input
+                <InputComponent
                   type="text"
                   placeholder="주소"
                   readOnly
                   value={address.street}
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  height="40px"
+                  width="100%"
+                  padding="0 10px"
                 />
-                <input
+                <InputComponent
                   type="text"
                   placeholder="상세주소"
                   value={address.detail}
                   onChange={(e) => {
                     setAddress({ ...address, detail: e.target.value });
                   }}
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  height="40px"
+                  width="100%"
+                  padding="0 10px"
                 />
               </div>
             </div>
 
-            <div className="w-full h-[1px] border border-main-color opacity-30" />
-
             <div className="w-full flex flex-col gap-[5px]">
-              <b>채용담당</b>
+              <b className="text-lg">채용담당</b>
               <div className="flex flex-col gap-[10px]">
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">이름</span>
-                  <input
+                  <InputComponent
                     placeholder="채용 담당자명"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.name}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, name: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">
                     이메일
                   </span>
-                  <input
+                  <InputComponent
                     placeholder="비공개"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.email}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, email: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">
                     연락처
                   </span>
-                  <input
+                  <InputComponent
                     placeholder="비공개"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.phone}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, phone: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
               </div>

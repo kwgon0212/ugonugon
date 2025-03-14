@@ -45,17 +45,18 @@ const ResumesSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   address: { type: String, required: true },
+  addressDetail: { type: String },
   school: { type: String, required: true },
   schoolState: { type: String, required: true },
   careers: [
     {
-      company: { type: String, required: true },
-      dates: { type: String, required: true },
-      careerDetail: { type: String, required: true },
+      company: { type: String },
+      dates: { type: String },
+      careerDetail: { type: String },
       _id: false,
     },
   ],
-  introduction: { type: String, required: true },
+  introduction: { type: String },
   writtenDay: { type: String, required: true },
   applyIds: [
     {
@@ -80,6 +81,7 @@ router.post("/", async (req, res) => {
   try {
     const resume = new Resumes(req.body.data);
     const newResume = await resume.save();
+    console.log(resume, "new resume임");
     res.status(200).json(newResume._id);
   } catch (err) {
     res.status(500).json({ error: err.message });

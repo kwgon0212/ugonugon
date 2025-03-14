@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/Header";
 import Main from "../../components/Main";
@@ -281,6 +281,7 @@ const ReCruitPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [debug, setDebug] = useState<DebugState | null>(null);
+  const navigate = useNavigate();
 
   // Redux에서 로그인한 사용자 정보 가져오기
   const user = useAppSelector((state: RootState) => state.auth.user);
@@ -525,15 +526,15 @@ const ReCruitPage: React.FC = () => {
     <>
       {/* 헤더 영역 */}
       <Header>
-        <p className="flex justify-center items-center h-full font-bold">
-          고용 현황
-        </p>
+        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white">
+          <span>고용 현황</span>
+        </div>
       </Header>
 
       {/* 메인 콘텐츠 */}
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="p-4 space-y-4 rounded-t-[30px] h-full bg-main-bg ">
+          <div className="size-full bg-main-bg">
             {loading ? (
               <Loading />
             ) : error ? (
@@ -545,10 +546,13 @@ const ReCruitPage: React.FC = () => {
             ) : (
               /* 공고 등록하기 */
 
-              <div className="space-y-4">
-                <Link to="/notice/add">
-                  <div className="bg-white h-[160px] rounded-[10px] flex justify-center items-center">
-                    <div className="bg-selected-box rounded-[10px] flex-1 m-4 h-[80%] border-2 border-main-color border-dashed cursor-pointer">
+              <>
+                <div className="bg-main-color rounded-b-[10px] flex justify-center items-center p-[20px] pt-0">
+                  <div
+                    className="size-full bg-white rounded-[10px]"
+                    onClick={() => navigate("/notice/add")}
+                  >
+                    <div className=" bg-selected-box rounded-[10px] flex-1 h-[100px] border-2 border-main-color cursor-pointer">
                       <div className="flex flex-col justify-center h-full items-center">
                         <AddIcon />
                         <p className="text-main-color text-[12px]">
@@ -557,212 +561,215 @@ const ReCruitPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
 
                 {/*  수정된 목차: 흰 배경 유지, 아이콘을 오른쪽으로 정렬 */}
-                <div className="mt-6 space-y-3">
-                  <Link to="/recruit/manage">
-                    <div className="bg-white p-4 rounded-lg   flex justify-between items-center cursor-pointer">
-                      <span className="  font-medium flex gap-[5px] items-center">
-                        <span>
-                          <ResumeIcon color="#717171" />
-                        </span>{" "}
-                        등록한 공고 관리
-                      </span>
-                      <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
-                        <ArrowRightIcon color="#717171" />
-                      </div>
+                <div className="size-full flex flex-col gap-[20px] p-[20px] bg-white">
+                  <Link
+                    to="/recruit/manage"
+                    className="flex justify-between items-center border-b-main-gray border-b py-[10px]"
+                  >
+                    <div className="flex gap-[10px] items-center">
+                      <ResumeIcon color="#717171" />
+                      <span>등록한 공고 관리</span>
+                    </div>
+                    <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                      <ArrowRightIcon color="#717171" />
                     </div>
                   </Link>
-                </div>
-                {/* 상단 제목 */}
-                <h2 className=" font-bold">나의 근로자 관리</h2>
+                  {/* 상단 제목 */}
+                  <h2 className=" font-bold">나의 근로자 관리</h2>
 
-                {/* 근로자 그룹 목록 */}
-                {workerGroups.map((group, groupIndex) => (
-                  <div key={group.post._id} className="bg-white rounded-lg">
-                    {/* 공고 정보 및 펼치기 헤더 */}
-                    <div className="p-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-[16px] font-semibold">
-                          {group.post.title || "제목 없음"}
-                        </h3>
-                        <button
-                          onClick={(e) => handleToggleExpand(groupIndex, e)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-                        >
-                          {group.isExpanded ? (
-                            <ArrowUpIcon color="#717171" />
-                          ) : (
-                            <ArrowDownIcon color="#717171" />
-                          )}
-                        </button>
-                      </div>
-                      <p className="text-[12px]">
-                        {group.post.address?.street || "주소 정보 없음"}{" "}
-                        {group.post.address?.detail || ""}
-                      </p>
-                      <p className="text-[12px]">
-                        <span className="text-main-color font-bold">
-                          {group.post.pay?.type || "급여 유형 없음"}
-                        </span>{" "}
-                        {group.post.pay?.value
-                          ? group.post.pay.value.toLocaleString()
-                          : "0"}
-                        원
-                      </p>
-
-                      {/* 근로자 수 표시 */}
-                      <div className="mt-2 text-[12px] text-main-darkGray">
-                        {group.workers.length > 0 ? (
-                          <>
-                            총 근로자 {group.workers.length}명
-                            {!group.isExpanded && group.workers.length > 0 && (
-                              <span>
-                                {" "}
-                                · {group.workers[0].user.name ||
-                                  "이름 없음"}{" "}
-                                {getGenderDisplay(group.workers[0].user)}{" "}
-                                {group.workers.length > 1
-                                  ? `외 ${group.workers.length - 1}명`
-                                  : ""}
-                              </span>
+                  {/* 근로자 그룹 목록 */}
+                  {workerGroups.map((group, groupIndex) => (
+                    <div
+                      key={group.post._id}
+                      className="bg-white rounded-[10px] border border-main-gray"
+                    >
+                      {/* 공고 정보 및 펼치기 헤더 */}
+                      <div className="px-[20px] py-[10px]">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-[16px] font-semibold">
+                            {group.post.title || "제목 없음"}
+                          </h3>
+                          <button
+                            onClick={(e) => handleToggleExpand(groupIndex, e)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                          >
+                            {group.isExpanded ? (
+                              <ArrowUpIcon color="#717171" />
+                            ) : (
+                              <ArrowDownIcon color="#717171" />
                             )}
-                          </>
-                        ) : (
-                          <span>근로자 없음</span>
-                        )}
+                          </button>
+                        </div>
+                        <p className="text-[12px]">
+                          {group.post.address?.street || "주소 정보 없음"}{" "}
+                          {group.post.address?.detail || ""}
+                        </p>
+                        <p className="text-[12px]">
+                          <span className="text-main-color font-bold">
+                            {group.post.pay?.type || "급여 유형 없음"}
+                          </span>{" "}
+                          {group.post.pay?.value
+                            ? group.post.pay.value.toLocaleString()
+                            : "0"}
+                          원
+                        </p>
+
+                        {/* 근로자 수 표시 */}
+                        <div className="mt-2 text-[12px] text-main-darkGray">
+                          {group.workers.length > 0 ? (
+                            <>
+                              총 근로자 {group.workers.length}명
+                              {!group.isExpanded &&
+                                group.workers.length > 0 && (
+                                  <span>
+                                    {" "}
+                                    ·{" "}
+                                    {group.workers[0].user.name ||
+                                      "이름 없음"}{" "}
+                                    {getGenderDisplay(group.workers[0].user)}{" "}
+                                    {group.workers.length > 1
+                                      ? `외 ${group.workers.length - 1}명`
+                                      : ""}
+                                  </span>
+                                )}
+                            </>
+                          ) : (
+                            <span>근로자 없음</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* 펼쳐진 상태일 때 근로자 목록 표시 */}
-                    {group.isExpanded && (
-                      <div className="border-t border-gray-200 pt-2">
-                        {group.workers.length > 0 ? (
-                          group.workers.map((worker) => (
-                            <div
-                              key={worker.user._id}
-                              className="p-4 border-b border-gray-100 last:border-b-0"
-                            >
-                              {/* 근무일자 */}
-                              <h4 className="text-[14px] font-semibold">
-                                근무일자
-                              </h4>
-                              <p className="text-[14px] text-main-color font-semibold">
-                                {worker.attendance?.checkInTime
-                                  ? // 출석 정보가 있으면 그 날짜 사용
-                                    `${formatDate(
-                                      worker.attendance.checkInTime
-                                    )} ${formatTime(
-                                      worker.post.hour?.start || ""
-                                    )}-${formatTime(
-                                      worker.post.hour?.end || ""
-                                    )}`
-                                  : // 출석 정보가 없으면 공고 정보에서 가져옴
-                                    formatWorkDate(worker.post)}
-                              </p>
-
-                              <hr className="my-2 border-main-color/30" />
-
-                              {/* 근로자 정보 */}
-                              <h4 className="text-[14px] font-semibold">
-                                근로자 정보
-                              </h4>
-                              <div className="flex items-center space-x-4 mt-2">
-                                {/* 근로자 사진 */}
-                                <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden">
-                                  {getProfileImageUrl(worker.user) ? (
-                                    <img
-                                      src={getProfileImageUrl(worker.user)}
-                                      alt={worker.user.name}
-                                      className="w-full h-full object-cover rounded-[10px]"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
-                                      No Photo
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* 근로자 정보 텍스트 */}
-                                <div>
-                                  <p className="flex gap-[6px] text-[14px] font-semibold">
-                                    {worker.user.name || "이름 정보 없음"}{" "}
-                                    {getGenderDisplay(worker.user)}
-                                    <span className="text-main-darkGray font-medium ml-1">
-                                      {formatBirthDate(
-                                        worker.user.birthDate,
-                                        worker.user.residentId
-                                      )}
-                                    </span>
-                                  </p>
-                                  <p className="font-semibold">
-                                    {worker.user.phone || "연락처 정보 없음"}
-                                  </p>
-                                  <p className="flex gap-[7px] text-[14px]">
-                                    출근
-                                    <span
-                                      className={
-                                        worker.hasAttendance &&
-                                        worker.attendance?.checkInTime
-                                          ? "text-main-color"
-                                          : "text-main-darkGray"
-                                      }
-                                    >
-                                      {worker.hasAttendance &&
-                                      worker.attendance?.checkInTime
-                                        ? "완료"
-                                        : "미완료"}
-                                    </span>
-                                  </p>
-                                  <p className="flex gap-[7px] text-[14px]">
-                                    퇴근
-                                    <span
-                                      className={
-                                        worker.hasAttendance &&
-                                        worker.attendance?.checkOutTime
-                                          ? "text-main-color"
-                                          : "text-main-darkGray"
-                                      }
-                                    >
-                                      {worker.hasAttendance &&
-                                      worker.attendance?.checkOutTime
-                                        ? "완료"
-                                        : "미완료"}
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* 정산하기 버튼 */}
-                              <button
-                                onClick={(e) => handleSettlement(worker, e)}
-                                className={`mt-4 w-full font-semibold text-[14px] py-2 rounded-[10px] text-white ${
-                                  worker.hasAttendance &&
-                                  worker.attendance?.status === "completed"
-                                    ? "bg-main-color"
-                                    : "bg-selected-box"
-                                }`}
-                                disabled={
-                                  !worker.hasAttendance ||
-                                  worker.attendance?.status !== "completed"
-                                }
+                      {/* 펼쳐진 상태일 때 근로자 목록 표시 */}
+                      {group.isExpanded && (
+                        <div className="border-t border-gray-200 pt-2">
+                          {group.workers.length > 0 ? (
+                            group.workers.map((worker) => (
+                              <div
+                                key={worker.user._id}
+                                className="p-4 border-b border-gray-100 last:border-b-0"
                               >
-                                정산하기
-                              </button>
+                                {/* 근무일자 */}
+                                <h4 className="text-[14px] font-semibold">
+                                  근무일자
+                                </h4>
+                                <p className="text-[14px] text-main-color font-semibold">
+                                  {worker.attendance?.checkInTime
+                                    ? // 출석 정보가 있으면 그 날짜 사용
+                                      `${formatDate(
+                                        worker.attendance.checkInTime
+                                      )} ${formatTime(
+                                        worker.post.hour?.start || ""
+                                      )}-${formatTime(
+                                        worker.post.hour?.end || ""
+                                      )}`
+                                    : // 출석 정보가 없으면 공고 정보에서 가져옴
+                                      formatWorkDate(worker.post)}
+                                </p>
+
+                                <hr className="my-2 border-main-color/30" />
+
+                                {/* 근로자 정보 */}
+                                <h4 className="text-[14px] font-semibold">
+                                  근로자 정보
+                                </h4>
+                                <div className="flex items-center space-x-4 mt-2">
+                                  {/* 근로자 사진 */}
+                                  <div className="w-[80px] h-[80px] bg-main-gray rounded-[10px] overflow-hidden">
+                                    {getProfileImageUrl(worker.user) ? (
+                                      <img
+                                        src={getProfileImageUrl(worker.user)}
+                                        alt={worker.user.name}
+                                        className="w-full h-full object-cover rounded-[10px]"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-main-darkGray text-sm">
+                                        No Photo
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* 근로자 정보 텍스트 */}
+                                  <div>
+                                    <p className="flex gap-[6px] text-[14px] font-semibold">
+                                      {worker.user.name || "이름 정보 없음"}{" "}
+                                      {getGenderDisplay(worker.user)}
+                                      <span className="text-main-darkGray font-medium ml-1">
+                                        {formatBirthDate(
+                                          worker.user.birthDate,
+                                          worker.user.residentId
+                                        )}
+                                      </span>
+                                    </p>
+                                    <p className="font-semibold">
+                                      {worker.user.phone || "연락처 정보 없음"}
+                                    </p>
+                                    <p className="flex gap-[7px] text-[14px]">
+                                      출근
+                                      <span
+                                        className={
+                                          worker.hasAttendance &&
+                                          worker.attendance?.checkInTime
+                                            ? "text-main-color"
+                                            : "text-main-darkGray"
+                                        }
+                                      >
+                                        {worker.hasAttendance &&
+                                        worker.attendance?.checkInTime
+                                          ? "완료"
+                                          : "미완료"}
+                                      </span>
+                                    </p>
+                                    <p className="flex gap-[7px] text-[14px]">
+                                      퇴근
+                                      <span
+                                        className={
+                                          worker.hasAttendance &&
+                                          worker.attendance?.checkOutTime
+                                            ? "text-main-color"
+                                            : "text-main-darkGray"
+                                        }
+                                      >
+                                        {worker.hasAttendance &&
+                                        worker.attendance?.checkOutTime
+                                          ? "완료"
+                                          : "미완료"}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* 정산하기 버튼 */}
+                                <button
+                                  onClick={(e) => handleSettlement(worker, e)}
+                                  className={`mt-4 w-full font-semibold text-[14px] py-2 rounded-[10px] text-white ${
+                                    worker.hasAttendance &&
+                                    worker.attendance?.status === "completed"
+                                      ? "bg-main-color"
+                                      : "bg-selected-box"
+                                  }`}
+                                  disabled={
+                                    !worker.hasAttendance ||
+                                    worker.attendance?.status !== "completed"
+                                  }
+                                >
+                                  정산하기
+                                </button>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="p-4 text-center text-main-darkGray">
+                              이 공고에 등록된 근로자가 없습니다.
                             </div>
-                          ))
-                        ) : (
-                          <div className="p-4 text-center text-main-darkGray">
-                            이 공고에 등록된 근로자가 없습니다.
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <div className="h-5"></div>
-              </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>

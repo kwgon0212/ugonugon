@@ -5,20 +5,25 @@ interface SubmitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-const SubmitButton: React.FC<SubmitButtonProps> = ({
+const SubmitButton: React.FC<SubmitButtonProps & { diff?: boolean }> = ({
   children,
+  diff = false,
   ...attributes
 }) => {
-  return <Submit {...attributes}>{children}</Submit>;
+  return (
+    <Submit diff={diff} {...attributes}>
+      {children}
+    </Submit>
+  );
 };
 
-const Submit = styled.button`
+const Submit = styled.button<{ diff?: boolean }>`
   width: 100%;
   height: 50px;
-  border: none;
+  border: ${({ diff }) => (diff ? "1px solid var(--main-color)" : "none")};
   border-radius: 10px;
-  background-color: var(--main-color);
-  color: white;
+  background-color: ${({ diff }) => (diff ? "white" : "var(--main-color)")};
+  color: ${({ diff }) => (diff ? "var(--main-color)" : "white")};
   cursor: pointer;
 `;
 
