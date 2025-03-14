@@ -11,8 +11,8 @@ module.exports = {
           bg: "#F7F7F9",
           gray: "#D9D9D9",
           darkGray: "#717171",
-          warn: "#FF0000",
         },
+        warn: "#FF0000",
 
         selected: {
           box: "#D7F6F6",
