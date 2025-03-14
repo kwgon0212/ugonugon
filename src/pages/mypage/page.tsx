@@ -59,7 +59,7 @@ const MyPage = () => {
         },
         userData?.bankAccount.account
       );
-      if (userData?.bankAccount.account) {
+      if (bankResponse.Ldbl) {
         setBalance(bankResponse.Ldbl);
       }
     };
