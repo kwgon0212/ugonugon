@@ -6,10 +6,10 @@ const Loading: React.FC = () => {
       {/* Replace this with your actual loading image */}
       <div className="mb-4">
         <img
-          src="https://em-content.zobj.net/source/microsoft-teams/363/mouse-face_1f42d.png"
+          src="https://em-content.zobj.net/source/microsoft-teams/363/hamster_1f439.png"
           loading="lazy"
           alt="15.0"
-          className="w-[200px] h-[200px]"
+          className="w-auto h-full"
         />
       </div>
       <p className="text-lg font-semibold ">로딩 중...</p>
