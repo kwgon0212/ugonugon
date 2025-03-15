@@ -140,7 +140,7 @@ export function LoginPage() {
                   <MailIcon color="#717171" />
                 </div>
                 <IconInputMail
-                  type="text"
+                  type="email"
                   placeholder="이메일 계정"
                   value={email}
                   onChange={(e) => {

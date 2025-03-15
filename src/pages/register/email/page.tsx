@@ -74,6 +74,8 @@ function RegisterEmailPage() {
               name="email"
               placeholder="이메일 계정"
               pattern="[\w]+@+[\w]+\.[\w]+"
+              width="100%"
+              padding="0 10px"
               required
             />
 

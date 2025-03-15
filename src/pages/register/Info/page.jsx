@@ -120,6 +120,8 @@ function RegisterInfoPage() {
               <FieldContainer>
                 <Label className="text-xl">이름</Label>
                 <InputComponent
+                  width="100%"
+                  padding="0 10px"
                   type="text"
                   placeholder="이름을 입력해주세요"
                   value={name}
@@ -173,6 +175,8 @@ function RegisterInfoPage() {
                     maxLength={6}
                     placeholder="앞 6자리"
                     value={residentFront}
+                    width="100%"
+                    padding="0 10px"
                     onChange={handleNumericInput(setResidentFront)}
                   />
                   <div className="w-[20px] border-main-color border-b" />
@@ -180,6 +184,8 @@ function RegisterInfoPage() {
                     type="password"
                     maxLength={7}
                     placeholder="뒤 7자리"
+                    width="100%"
+                    padding="0 10px"
                     value={residentBack}
                     onChange={handleNumericInput(setResidentBack)}
                   />
@@ -193,6 +199,8 @@ function RegisterInfoPage() {
                   placeholder="- 를 제외한 전화번호를 입력해주세요"
                   value={number}
                   maxLength={11}
+                  width="100%"
+                  padding="0 10px"
                   onChange={handleNumericInput(setNumber)}
                 />
               </FieldContainer>
