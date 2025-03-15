@@ -14,14 +14,16 @@ import {
   setUserSex,
 } from "@/util/slices/registerUserInfoSlice";
 import StatusBar from "@/components/StatusBar";
+import InputComponent from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%; /* 화면 전체를 차지하도록 설정 */
   overflow: hidden; /* 전체 페이지가 스크롤되지 않도록 설정 */
-  padding-bottom: 20px; /* 키보드가 올라오는 공간을 위해 하단 여백 추가 */
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 20px;
+  background-color: white;
+  gap: 20px;
 `;
 // 전체 폼 컨테이너
 const FormContainer = styled.div`
@@ -35,7 +37,7 @@ const FormContainer = styled.div`
 // 개별 입력 필드 영역(라벨과 텍스트 세로정렬)
 const FieldContainer = styled.div`
   display: flex;
-  gap: 15px;
+  gap: 10px;
   flex-direction: column;
 `;
 // 라벨 스타일
@@ -43,20 +45,8 @@ const Label = styled.p`
   /* font-size: 20px; */
   font-weight: 600;
   letter-spacing: -1px; //글자 간격
-  margin-top: 15px;
 `;
-// 입력 필드 스타일
-const StyledInput = styled.input`
-  width: 100%;
-  height: 50px;
-  padding: 12px;
-  border-radius: 10px;
-  /* font-size: 16px; */
-  outline: none;
-  &:focus {
-    border: 2px solid #0b798b;
-  }
-`;
+
 // 성별 선택 버튼 그룹(버튼 두개를 묶고있는 박스, 가로정렬함)
 const GenderContainer = styled.div`
   display: flex;
@@ -64,45 +54,19 @@ const GenderContainer = styled.div`
 `;
 // 성별 선택 버튼
 const GenderButton = styled.button`
-  flex: 1;
+  width: 100%;
   height: 50px;
-  padding: 10px;
-  /* font-size: 16px; */
-  background: ${(props) => (props.selected ? "#D7F6F6" : "white")};
-  color: ${(props) => (props.selected ? "#0B798B" : "black")};
+  background: ${(props) =>
+    props.selected ? "var(--selected-box)" : "var(--main-bg)"};
+  color: ${(props) =>
+    props.selected ? "var(--main-color)" : "var(--main-darkGray)"};
   border-radius: 10px;
-  display: flex; // 플렉스 박스 사용
-  align-items: center; // 세로 가운데 정렬
-  justify-content: center; // 가로 가운데 정렬
-  &:hover {
-    background: ${(props) => (props.selected ? "#D7F6F6" : "#F1F1F1")};
-  }
-`;
-// 주민번호 입력 필드 그룹
-const ResidentNumberContainer = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: center;
 `;
-const ResidentInput = styled(StyledInput)`
-  flex-grow: 1;
-  width: 100px;
-`;
-// 제출 버튼 스타일
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  /* font-size: 16px; */
-  border: none;
-  border-radius: 10px;
-  background-color: #0b798b;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
-  &:hover {
-    background-color: #0e6977;
-  }
-`;
+
 function RegisterInfoPage() {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -135,7 +99,7 @@ function RegisterInfoPage() {
   return (
     <>
       <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
+        <div className="relative flex flex-col justify-center size-full">
           <div className="flex flex-row justify-between px-[20px]">
             <button onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
@@ -155,7 +119,7 @@ function RegisterInfoPage() {
               {/* <div className="overflow-hidden "> */}
               <FieldContainer>
                 <Label className="text-xl">이름</Label>
-                <StyledInput
+                <InputComponent
                   type="text"
                   placeholder="이름을 입력해주세요"
                   value={name}
@@ -170,13 +134,22 @@ function RegisterInfoPage() {
                     selected={gender === "male"}
                     onClick={() => setGender("male")}
                   >
-                    {" "}
-                    <div style={{ marginRight: "5px" }}>
-                      <CheckIcon
-                        color={gender === "male" ? "#0B798B" : "#A5A5A5"}
-                      />
-                    </div>
-                    남성
+                    <CheckIcon
+                      className={`${
+                        gender === "male"
+                          ? "text-main-color"
+                          : "text-main-darkGray"
+                      }`}
+                    />
+                    <span
+                      className={`${
+                        gender === "male"
+                          ? "text-main-color"
+                          : "text-main-darkGray"
+                      }`}
+                    >
+                      남성
+                    </span>
                   </GenderButton>
                   <GenderButton
                     selected={gender === "female"}
@@ -194,28 +167,28 @@ function RegisterInfoPage() {
               {/* 주민번호 입력 */}
               <FieldContainer>
                 <Label className="text-xl">주민번호</Label>
-                <ResidentNumberContainer>
-                  <ResidentInput
+                <div className="flex gap-[10px] items-center">
+                  <InputComponent
                     type="text"
                     maxLength={6}
                     placeholder="앞 6자리"
                     value={residentFront}
                     onChange={handleNumericInput(setResidentFront)}
                   />
-                  <span>-</span>
-                  <ResidentInput
+                  <div className="w-[20px] border-main-color border-b" />
+                  <InputComponent
                     type="password"
                     maxLength={7}
                     placeholder="뒤 7자리"
                     value={residentBack}
                     onChange={handleNumericInput(setResidentBack)}
                   />
-                </ResidentNumberContainer>
+                </div>
               </FieldContainer>
               {/* 휴대폰 번호 입력 */}
-              <FieldContainer className="mb-[30%]">
+              <FieldContainer>
                 <Label className="text-xl">휴대폰 번호</Label>
-                <StyledInput
+                <InputComponent
                   type="text"
                   placeholder="- 를 제외한 전화번호를 입력해주세요"
                   value={number}
@@ -228,12 +201,7 @@ function RegisterInfoPage() {
           </MainContainer>
           {/* 제출 버튼 */}
           <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
-            <SubmitButton
-              onClick={handleClickNext}
-              className="sticky bottom-[10px] "
-            >
-              다음
-            </SubmitButton>
+            <SubmitButton onClick={handleClickNext}>다음</SubmitButton>
           </div>
         </>
       </Main>

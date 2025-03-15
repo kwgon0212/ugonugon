@@ -12,57 +12,27 @@ import SignatureCanvas from "react-signature-canvas";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserSignature } from "@/util/slices/registerUserInfoSlice";
 import StatusBar from "@/components/StatusBar";
+import SubmitButton from "@/components/SubmitButton";
 
-// 스타일 정의
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  background-color: #f5f5f5;
-`;
-
-const Head = styled.div`
-  display: flex;
-  align-self: start;
+const Head = styled.span`
   font-weight: bold;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  padding-left: 15px;
-  color: #333;
 `;
 
 const ClearButton = styled.button`
   display: flex;
   justify-content: center;
   text-align: center;
-  margin-top: 20px;
   padding: 10px 20px;
   background-color: var(--selected-box);
   color: var(--main-color);
-  border: none;
   border-radius: 10px;
-  font-weight: bold;
+  /* font-weight: bold; */
   cursor: pointer;
   width: 200px;
 
   /* &:hover {
     background-color: #357abd;
   } */
-`;
-
-const NextButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 50px;
-  border-radius: 10px;
-  color: white;
-
-  &:hover {
-    background-color: #196b78;
-  }
 `;
 
 export const RegisterSignPage = () => {
@@ -90,11 +60,6 @@ export const RegisterSignPage = () => {
     if (!signaturePadRef.current) return;
     if (!isSigned) return;
     const dataURL = signaturePadRef.current.toDataURL("image/png");
-    const link = document.createElement("a");
-    // link.href = dataURL;
-    // setSignature(link.href);
-    // link.download = "signature.png";
-    // link.click();
     dispatch(setUserSignature(dataURL));
     navigate("/register/bank-account");
   };
@@ -115,36 +80,25 @@ export const RegisterSignPage = () => {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <>
-          <Head className="text-xl">서명 등록</Head>
-          <Container>
-            <div className="flex flex-col justify-items-center items-center w-full h-full px-[20px] mb-11">
-              <SignatureCanvas
-                ref={signaturePadRef}
-                penColor="black"
-                backgroundColor="white"
-                onEnd={handleEnd}
-                canvasProps={{
-                  className:
-                    "signature-canvas flex rounded-[10px] border border-main-gray",
-                  style: { width: "100%", height: "250px" },
-                }}
-              />
-              <ClearButton onClick={handleClearSignature}>
-                서명 지우기
-              </ClearButton>
-            </div>
+        <div className="size-full bg-white p-layout flex flex-col gap-layout items-center">
+          <Head className="text-xl text-left w-full">서명 등록</Head>
+          <SignatureCanvas
+            ref={signaturePadRef}
+            penColor="black"
+            backgroundColor="white"
+            onEnd={handleEnd}
+            canvasProps={{
+              className:
+                "signature-canvas flex rounded-[10px] border border-main-gray",
+              style: { width: "100%", height: "250px" },
+            }}
+          />
+          <ClearButton onClick={handleClearSignature}>서명 지우기</ClearButton>
 
-            <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
-              <NextButton
-                className="bg-main-color"
-                onClick={handleSaveSignature}
-              >
-                다음
-              </NextButton>
-            </div>
-          </Container>
-        </>
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+            <SubmitButton onClick={handleSaveSignature}>다음</SubmitButton>
+          </div>
+        </div>
       </Main>
     </>
   );

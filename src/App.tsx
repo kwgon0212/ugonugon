@@ -27,7 +27,7 @@ import NoticeApplyPage from "./pages/notice/[noticeId]/apply/page";
 import NoticeApplyResumePage from "./pages/notice/[noticeId]/apply/[resumeId]/page";
 import MypageResumeAdd from "./pages/mypage/resume/add/page";
 import MypageResumeListId from "./pages/mypage/resume/list/[resumeId]/page";
-import MypageScrabPage from "./pages/mypage/scrab/page";
+import MypageScrabPage from "./pages/mypage/scrap/page";
 import MyPageEditInfoPage from "./pages/mypage/edit/info/page";
 import MypageResumeList from "./pages/mypage/resume/list/page";
 import EditBankAccountPage from "./pages/mypage/edit/bank-account/page";
@@ -36,10 +36,11 @@ import PostDataTest from "./pages/notice/post/page";
 import NoticeAddPage from "./pages/notice/add/page";
 import NoticeEditPage from "./pages/notice/edit/[noticeId]/page";
 import WorkApplyPage from "./pages/work/apply/page";
+import BankAccountPage from "./pages/mypage/bank-account/page";
 
 function App() {
   return (
-    <div className="min-h-screen flex justify-center bg-gray-200">
+    <div className="min-h-screen flex justify-center bg-gray-100">
       <div className="flex w-full max-w-[1200px] justify-center min-h-screen">
         <Aside />
         {/* 모바일 레이아웃 */}
@@ -97,6 +98,7 @@ function App() {
                   <Route path=":resumeID" element={<MypageResumeListId />} />
                 </Route>
                 <Route path="scrab" element={<MypageScrabPage />} />
+                <Route path="bank-account" element={<BankAccountPage />} />
                 <Route path="edit">
                   <Route index element={<NotFound />} />
                   <Route path="info" element={<MyPageEditInfoPage />} />

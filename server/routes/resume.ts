@@ -1,4 +1,3 @@
-import { profile, timeStamp } from "console";
 import express from "express";
 import mongoose from "mongoose";
 const router = express.Router();
@@ -46,19 +45,19 @@ const ResumesSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   address: { type: String, required: true },
+  addressDetail: { type: String },
   school: { type: String, required: true },
   schoolState: { type: String, required: true },
   careers: [
     {
-      company: { type: String, required: true },
-      dates: { type: String, required: true },
-      careerDetail: { type: String, required: true },
+      company: { type: String },
+      dates: { type: String },
+      careerDetail: { type: String },
       _id: false,
     },
   ],
-  introduction: { type: String, required: true },
+  introduction: { type: String },
   writtenDay: { type: String, required: true },
-  // writtenDay: { type: Date, require: true },
   applyIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -82,6 +81,7 @@ router.post("/", async (req, res) => {
   try {
     const resume = new Resumes(req.body.data);
     const newResume = await resume.save();
+    console.log(resume, "new resume임");
     res.status(200).json(newResume._id);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -108,7 +108,6 @@ router.delete("/", async (req, res) => {
 
 router.get("/:resumeId", async (req, res) => {
   try {
-    // const resume = await Resumes.findById(req.query.resumeId);
     const resume = await Resumes.findById(req.params.resumeId);
     return res.status(200).json(resume);
   } catch (err) {

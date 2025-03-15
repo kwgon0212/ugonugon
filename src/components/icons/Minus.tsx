@@ -4,6 +4,7 @@ const MinusIcon = ({
   width = 20,
   height = 20,
   color = "#0B798B",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const MinusIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M20 12L4 12"

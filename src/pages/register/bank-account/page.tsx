@@ -10,6 +10,8 @@ import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserBankAccount } from "@/util/slices/registerUserInfoSlice";
 import { Link, useNavigate } from "react-router-dom";
 import StatusBar from "@/components/StatusBar";
+import InputComponent from "@/components/Input";
+import SubmitButton from "@/components/SubmitButton";
 
 const RegisterBankAccount = () => {
   const [account, setAccount] = useState("");
@@ -33,7 +35,7 @@ const RegisterBankAccount = () => {
     if (!account || !bank) return;
 
     dispatch(setUserBankAccount({ bank, account }));
-    navigate("/register/business-num");
+    navigate("/register/user-account");
   };
 
   return (
@@ -52,43 +54,34 @@ const RegisterBankAccount = () => {
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="size-full p-layout flex flex-col gap-layout relative">
+        <div className="size-full p-layout flex flex-col gap-layout relative bg-white">
           <p className="text-xl font-bold">계좌 등록</p>
-          <div className="flex flex-col gap-layout">
-            <input
-              placeholder="계좌번호를 입력해주세요"
-              value={account}
-              onChange={handleChangeAccount}
-              type="numeric"
-              className="h-[50px] rounded-[10px] px-layout border border-main-gray outline-main-color"
+          <InputComponent
+            placeholder="계좌번호를 입력해주세요"
+            value={account}
+            onChange={handleChangeAccount}
+            type="numeric"
+          />
+          <div
+            className="w-full relative"
+            onClick={() => setIsOpenBottomSheet(true)}
+          >
+            <InputComponent
+              type="text"
+              readOnly
+              placeholder="은행선택"
+              value={bank ? (bank.includes("뱅크") ? bank : `${bank}은행`) : ""}
+              className="cursor-pointer"
             />
-            <div
-              className="w-full relative"
-              onClick={() => setIsOpenBottomSheet(true)}
-            >
-              <input
-                type="text"
-                className="w-full h-[50px] rounded-[10px] px-layout bg-white text-left border border-main-gray outline-none cursor-pointer"
-                readOnly
-                placeholder="은행선택"
-                value={
-                  bank ? (bank.includes("뱅크") ? bank : `${bank}은행`) : ""
-                }
-              />
-              <div className="absolute right-[20px] top-1/2 -translate-y-1/2">
-                <ArrowDownIcon color="#D9D9D9" />
-              </div>
+            <div className="absolute right-[20px] top-1/2 -translate-y-1/2">
+              <ArrowDownIcon color="#717171" />
             </div>
           </div>
 
-          <div className="w-full absolute bottom-[20px] left-0 px-[20px]">
-            <button
-              className={`w-full h-[50px] rounded-[10px] px-layout bg-main-color text-center text-white`}
-              disabled={!account || !bank}
-              onClick={handleClickNext}
-            >
+          <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+            <SubmitButton onClick={handleClickNext} type="button">
               다음
-            </button>
+            </SubmitButton>
           </div>
 
           {isOpenBottomSheet && (

@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const registerInitialState: RegisterUserInfo = {
   name: "",
-  businessNumber: [],
   sex: "",
   residentId: "",
   phone: "",
@@ -29,9 +28,6 @@ const registerUserInfo = createSlice({
   reducers: {
     setUserName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
-    },
-    setUserBisnessNumber: (state, action: PayloadAction<string[]>) => {
-      state.businessNumber = action.payload;
     },
     setUserSex: (state, action: PayloadAction<"male" | "female">) => {
       state.sex = action.payload;
@@ -77,7 +73,6 @@ const registerUserInfo = createSlice({
 
 export const {
   setUserName,
-  setUserBisnessNumber,
   setUserSex,
   setUserResidentId,
   setUserPhone,

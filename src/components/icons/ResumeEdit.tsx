@@ -4,6 +4,7 @@ const ResumeEditIcon = ({
   width = 20,
   height = 20,
   color = "#0B798B",
+  className,
 }: IconOptions) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,6 +13,7 @@ const ResumeEditIcon = ({
     height={height}
     color={color}
     fill={"none"}
+    className={className}
   >
     <path
       d="M19.7502 11V10C19.7502 6.22876 19.7502 4.34315 18.5786 3.17157C17.407 2 15.5214 2 11.7502 2H10.7503C6.97907 2 5.09346 2 3.92189 3.17156C2.75032 4.34312 2.7503 6.22872 2.75027 9.99993L2.75024 14C2.7502 17.7712 2.75019 19.6568 3.92172 20.8284C5.09329 21.9999 6.97897 22 10.7502 22"

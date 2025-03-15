@@ -1,6 +1,7 @@
+// useKakaoLoader.tsx
 import { useKakaoLoader as useKakaoLoaderOrigin } from "react-kakao-maps-sdk";
 
-export default function useKakaoLoader() {
+export default function useKakaoLoader(): void {
   useKakaoLoaderOrigin({
     /**
      * ※주의※ appkey의 경우 본인의 appkey를 사용하셔야 합니다.
@@ -8,7 +9,7 @@ export default function useKakaoLoader() {
      *
      * @참고 https://apis.map.kakao.com/web/guide/
      */
-    appkey: process.env.REACT_APP_KEY,
+    appkey: process.env.REACT_APP_KEY as string,
     libraries: ["clusterer", "drawing", "services"],
   });
 }

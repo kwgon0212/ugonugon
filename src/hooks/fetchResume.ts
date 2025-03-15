@@ -18,6 +18,7 @@ export interface Resume extends Document {
   phone: string;
   email: string;
   address: string;
+  addressDetail?: string;
   school: string;
   schoolState: string;
   careers: Career[];

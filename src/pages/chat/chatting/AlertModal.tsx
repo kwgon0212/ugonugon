@@ -202,8 +202,9 @@ export function AlertModal({ handleClose, roomId }: AlertModalProps) {
           <div className="flex font-bold text-[16px]">
             정말로 나가시겠습니까?
           </div>
-          <div className="flex text-[14px]">
-            나가시면 이전의 대화내역이 모두 삭제됩니다.
+          <div className="flex justify-center text-[14px] m-2">
+            나가시면 이전의 대화내역이 모두 삭제되고, 상대방과 대화할 수
+            없습니다.
           </div>
           <div className="flex w-full h-[40px] text-[14px] justify-around">
             <div className="flex w-[40%]">

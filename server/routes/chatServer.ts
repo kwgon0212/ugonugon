@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import mongoose from "mongoose";
 import { io } from "../server.ts";
+import { Users } from "./users.ts";
 
 const router = Router();
 
@@ -19,13 +20,14 @@ const messageSchema = new mongoose.Schema({
 const Message = mongoose.model("Message", messageSchema);
 
 // 유저 스키마
-const userSchema = new mongoose.Schema({
-  _id: { type: String, required: true }, // 사용자 ID
-  name: { type: String, required: true }, // 사용자 이름
-  // 추가 필드는 필요에 따라 추가
-});
+// const userSchema = new mongoose.Schema({
+//   _id: { type: String, required: true }, // 사용자 ID
+//   name: { type: String, required: true }, // 사용자 이름
+//   // 추가 필드는 필요에 따라 추가
+// });
 
-const Useree = mongoose.model("Useree", userSchema);
+// const Useree = mongoose.model("Useree", userSchema);
+// const Users = mongoose.models.users;
 
 // 공고 스키마 (JobPosting 모델 정의)
 const JobPostingSchema = new mongoose.Schema(
@@ -229,7 +231,7 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
       );
 
       // 모델이 이미 존재하는지 확인하고, 그렇지 않으면 새로 생성
-      const User =
+      const Users =
         mongoose.models.RealUserModel ||
         mongoose.model("RealUserModel", UserSchema, "users");
 
@@ -244,7 +246,7 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
 
       // ObjectId로 검색 시도
       if (objId) {
-        const user = await User.findById(objId);
+        const user = await Users.findById(objId);
         if (user) {
           console.log(`ObjectId로 사용자 찾음: ${user.name}`);
           return res.status(200).json({
@@ -258,7 +260,7 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
       }
 
       // 2. phone, email로 검색 시도
-      const userByField = await User.findOne({
+      const userByField = await Users.findOne({
         $or: [{ phone: userId }, { email: userId }],
       });
 
@@ -276,10 +278,10 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
       console.error("users 컬렉션 조회 중 오류:", userError);
     }
 
-    // 3. Useree 모델에서 사용자 조회 (백업)
-    const user = await Useree.findById(userId);
+    // 3. Users 모델에서 사용자 조회 (백업)
+    const user = await Users.findById(userId);
     if (user) {
-      console.log(`Useree 모델에서 사용자 찾음: ${user.name}`);
+      console.log(`Users 모델에서 사용자 찾음: ${user.name}`);
       return res.status(200).json(user);
     }
 
@@ -340,7 +342,7 @@ router.get("/users/:userId", async (req: Request, res: Response) => {
 // 사용자 목록 조회 API
 router.get("/users", async (req: Request, res: Response) => {
   try {
-    const users = await Useree.find({});
+    const users = await Users.find({});
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);

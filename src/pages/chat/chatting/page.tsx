@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
-
 import Header from "@/components/Header";
 import Main from "@/components/Main";
 import AlertModal from "./AlertModal";
@@ -20,6 +19,8 @@ const HeaderWrap = styled.div`
   width: 100%;
   height: 100%;
   padding: 5%;
+  background-color: #0b798b;
+  color: white;
 `;
 
 const MainWrap = styled.div`
@@ -576,7 +577,7 @@ export function ChattingPage() {
     if (isPartnerLeft) {
       return (
         <InputBar className="bg-main-bg">
-          <div className="w-full flex justify-center mr-4 items-center h-[45px] border-2 border-main-color rounded-[10px] bg-selected-box text-gray-500">
+          <div className="w-full flex justify-center mr-6 text-main-color items-center h-[45px] border-2 border-main-color rounded-[10px] bg-selected-box">
             상대방이 채팅방을 나갔습니다
           </div>
         </InputBar>
@@ -635,11 +636,11 @@ export function ChattingPage() {
       <Header>
         <HeaderWrap>
           <div onClick={handleBackClick} className="flex w-fit h-fit">
-            <ArrowLeftIcon />
+            <ArrowLeftIcon color="white" />
           </div>
           <div className="flex font-bold text-[16px]">{otherName}님</div>
           <div onClick={handleOpenAlertModal} className="flex w-fit h-fit">
-            <CancelIcon />
+            <CancelIcon color="white" />
           </div>
         </HeaderWrap>
       </Header>
@@ -663,7 +664,7 @@ export function ChattingPage() {
                     <div className="text-[12px] text-main-darkGray mb-[5px]">
                       {message.time}
                     </div>
-                    <ChatBox className="bg-selected-box text-selected-text text-[12px]">
+                    <ChatBox className="bg-selected-box border border-main-color text-[12px]">
                       {message.text}
                     </ChatBox>
                   </UserChatWrap>
@@ -676,7 +677,9 @@ export function ChattingPage() {
                   <div className="text-[12px] text-main-darkGray mb-[5px]">
                     {message.time}
                   </div>
-                  <ChatBox className="bg-white">{message.text}</ChatBox>
+                  <ChatBox className="bg-white border border-main-gray">
+                    {message.text}
+                  </ChatBox>
                 </OtherChatWrap>
               );
             })}

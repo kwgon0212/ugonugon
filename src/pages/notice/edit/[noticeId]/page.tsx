@@ -22,6 +22,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGeocode from "@/hooks/useGeocode";
 import PlusIcon from "@/components/icons/Plus";
 import CancelIcon from "@/components/icons/Cancel";
+import InputComponent from "@/components/Input";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -118,7 +119,7 @@ const NoticeEditPage = () => {
     if (noticeId) {
       const fetchPost = async () => {
         try {
-          const response = await axios.get(`/api/post/${noticeId}`);
+          const response = await axios.get(`/api/post?postId=${noticeId}`);
           const data = response.data;
 
           setIsEmployer(data.author === userId);
@@ -225,6 +226,8 @@ const NoticeEditPage = () => {
     e.preventDefault();
     if (
       !title ||
+      hireType.length <= 0 ||
+      day.length <= 0 ||
       pay.value <= 0 ||
       person <= 0 ||
       !address.zipcode ||
@@ -284,35 +287,45 @@ const NoticeEditPage = () => {
   return (
     <>
       <Header>
-        <div className="p-layout h-full flex flex-wrap content-center">
-          <ArrowLeftIcon width={24} height={24} />
-          <span>공고 등록</span>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            공고 수정
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={false}>
-        <div className="w-full flex flex-col relative">
+        <div className="w-full flex flex-col relative bg-white">
           <form
             className="w-full p-layout flex flex-col gap-layout divide-[#0b798b] relative"
             onSubmit={handleSubmitEditNotice}
           >
             <div className="flex flex-col gap-[5px]">
-              <b>
-                공고제목 <b className="text-warn">*</b>
+              <b className="text-lg">
+                공고제목 <b className="text-main-warn">*</b>
               </b>
-              <input
+              <InputComponent
                 type="text"
                 placeholder="공고 제목을 작성해주세요"
+                width="100%"
+                height="40px"
+                padding="0 10px"
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
                 }}
-                className="w-full bg-transparent border-b border-main-gray h-[40px] px-[10px] outline-none text-xl"
               />
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                직종 <b className="text-warn">*</b>
+              <b className="text-lg">
+                직종 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full relative">
                 <select
@@ -327,14 +340,14 @@ const NoticeEditPage = () => {
                   ))}
                 </select>
                 <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                  <ArrowDownIcon color="#717171" />
+                  <ArrowDownIcon className="text-main-darkGray" />
                 </div>
               </div>
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                급여 <b className="text-warn">*</b>
+              <b className="text-lg">
+                급여 <b className="text-main-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="relative">
@@ -350,12 +363,14 @@ const NoticeEditPage = () => {
                     ))}
                   </select>
                   <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                    <ArrowDownIcon color="#717171" />
+                    <ArrowDownIcon className="text-main-darkGray" />
                   </div>
                 </div>
                 <div className="relative flex-grow">
-                  <input
+                  <InputComponent
                     type="text"
+                    height="40px"
+                    width="100%"
                     value={pay.value}
                     onChange={(e) =>
                       setPay({
@@ -371,7 +386,6 @@ const NoticeEditPage = () => {
                       (e.target.value = pay.value.toLocaleString())
                     }
                     required
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                   />
                   <span className="absolute right-[10px] top-1/2 -translate-y-1/2">
                     원
@@ -381,8 +395,8 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                고용형태 <b className="text-warn">*</b>
+              <b className="text-lg">
+                고용형태 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {hireOptions.map((hireOption, index) => (
@@ -406,8 +420,8 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <div className="w-full flex justify-between">
-                <b>
-                  근무기간 <b className="text-warn">*</b>
+                <b className="text-lg">
+                  근무기간 <b className="text-main-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="period-discussion">기간 협의 가능</label>
@@ -424,37 +438,43 @@ const NoticeEditPage = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={period?.start || null}
-                  setSelectedDate={(date) =>
-                    setPeriod((prev) =>
-                      prev ? { ...prev, start: date! } : null
-                    )
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="시작 날짜"
-                  mode="date"
-                  value={period?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={period?.end || null}
-                  setSelectedDate={(date) =>
-                    setPeriod((prev) => (prev ? { ...prev, end: date! } : null))
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="종료 날짜"
-                  mode="date"
-                  value={period?.end}
-                />
+              <div className="w-full flex justify-between items-center">
+                {period && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(period.start) || null}
+                      setSelectedDate={(date) =>
+                        setPeriod((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="시작 날짜"
+                      mode="date"
+                      value={period.start}
+                    />
+                    <span className="mx-[10px]">~</span>
+                    <CustomDatePicker
+                      selected={new Date(period.end) || null}
+                      setSelectedDate={(date) =>
+                        setPeriod((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="종료 날짜"
+                      mode="date"
+                      value={period.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
               <div className="w-full flex justify-between">
-                <b>
-                  근무시간 <b className="text-warn">*</b>
+                <b className="text-lg">
+                  근무시간 <b className="text-main-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="hour-discussion">시간 협의 가능</label>
@@ -471,67 +491,79 @@ const NoticeEditPage = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={hour?.start || null}
-                  setSelectedDate={(date) =>
-                    setHour((prev) => (prev ? { ...prev, start: date! } : null))
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="출근 시각"
-                  mode="time"
-                  value={hour?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={hour?.end || null}
-                  setSelectedDate={(date) =>
-                    setHour((prev) => (prev ? { ...prev, end: date! } : null))
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="퇴근 시각"
-                  mode="time"
-                  value={hour?.end}
-                />
+              <div className="w-full flex justify-between items-center">
+                {hour && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(hour.start) || null}
+                      setSelectedDate={(date) =>
+                        setHour((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="출근 시각"
+                      mode="time"
+                      value={hour.start}
+                    />
+                    <span className="mx-[10px]">~</span>
+                    <CustomDatePicker
+                      selected={new Date(hour.end) || null}
+                      setSelectedDate={(date) =>
+                        setHour((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="퇴근 시각"
+                      mode="time"
+                      value={hour?.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                휴게시간 <b className="text-warn">*</b>
+              <b className="text-lg">
+                휴게시간 <b className="text-main-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={restTime?.start || null}
-                  setSelectedDate={(date) =>
-                    setRestTime((prev) =>
-                      prev ? { ...prev, start: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="휴식 시작"
-                  mode="time"
-                  value={restTime?.start}
-                />
-                <span>~</span>
-                <CustomDatePicker
-                  selected={restTime?.end || null}
-                  setSelectedDate={(date) =>
-                    setRestTime((prev) =>
-                      prev ? { ...prev, end: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="휴식 종료"
-                  mode="time"
-                  value={restTime?.end}
-                />
+              <div className="w-full flex justify-between items-center">
+                {restTime && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(restTime.start) || null}
+                      setSelectedDate={(date) =>
+                        setRestTime((prev) =>
+                          prev ? { ...prev, start: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="휴식 시작"
+                      mode="time"
+                      value={restTime.start}
+                    />
+                    <span className="mx-[10px]">~</span>
+                    <CustomDatePicker
+                      selected={new Date(restTime.end) || null}
+                      setSelectedDate={(date) =>
+                        setRestTime((prev) =>
+                          prev ? { ...prev, end: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="휴식 종료"
+                      mode="time"
+                      value={restTime.end}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                근무요일 <b className="text-warn">*</b>
+              <b className="text-lg">
+                근무요일 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {dayOptions.map((dayOption, index) => (
@@ -552,7 +584,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>근무상세</b>
+              <b className="text-lg">근무상세</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="근무 상세 설명을 작성해주세요"
@@ -563,7 +595,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>복리후생</b>
+              <b className="text-lg">복리후생</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="복리후생을 작성해주세요"
@@ -574,7 +606,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>상세요강</b>
+              <b className="text-lg">상세요강</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="추가할 html 내용을 작성해주세요"
@@ -585,45 +617,50 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                모집마감 <b className="text-warn">*</b>
+              <b className="text-lg">
+                모집마감 <b className="text-main-warn">*</b>
               </b>
-              <div className="w-full flex justify-between items-center gap-[10px]">
-                <CustomDatePicker
-                  selected={deadline?.date || null}
-                  setSelectedDate={(date) =>
-                    setDeadline((prev) =>
-                      prev ? { ...prev, date: date! } : null
-                    )
-                  }
-                  icon={<CalendarIcon color="#717171" />}
-                  placeholder="모집 마감날짜"
-                  mode="date"
-                  value={deadline?.date}
-                />
-                <span>-</span>
-                <CustomDatePicker
-                  selected={deadline?.time || null}
-                  setSelectedDate={(date) =>
-                    setDeadline((prev) =>
-                      prev ? { ...prev, time: date! } : null
-                    )
-                  }
-                  icon={<ClockIcon color="#717171" />}
-                  placeholder="모집 마감시간"
-                  mode="time"
-                  value={deadline?.time}
-                />
+              <div className="w-full flex justify-between items-center">
+                {deadline && (
+                  <>
+                    <CustomDatePicker
+                      selected={new Date(deadline.date) || null}
+                      setSelectedDate={(date) =>
+                        setDeadline((prev) =>
+                          prev ? { ...prev, date: date! } : null
+                        )
+                      }
+                      icon={<CalendarIcon color="#717171" />}
+                      placeholder="모집 마감날짜"
+                      mode="date"
+                      value={deadline.date}
+                    />
+                    <span className="mx-[10px]">-</span>
+                    <CustomDatePicker
+                      selected={new Date(deadline.time) || null}
+                      setSelectedDate={(date) =>
+                        setDeadline((prev) =>
+                          prev ? { ...prev, time: date! } : null
+                        )
+                      }
+                      icon={<ClockIcon color="#717171" />}
+                      placeholder="모집 마감시간"
+                      mode="time"
+                      value={deadline.time}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>
-                모집인원 <b className="text-warn">*</b>
+              <b className="text-lg">
+                모집인원 <b className="text-main-warn">*</b>
               </b>
-              <div className="relative">
-                <input
+              <div className="w-fit relative">
+                <InputComponent
                   type="text"
+                  height="40px"
                   value={person}
                   onChange={(e) =>
                     setPerson(Number(e.target.value.replace(/[^\d]/g, "")))
@@ -633,7 +670,7 @@ const NoticeEditPage = () => {
                   }}
                   onBlur={(e) => (e.target.value = person.toLocaleString())}
                   required
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  padding="0 10px"
                 />
                 <span className="absolute right-[10px] top-1/2 -translate-y-1/2">
                   명
@@ -642,7 +679,7 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <b>우대사항</b>
+              <b className="text-lg">우대사항</b>
               <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="우대사항을 작성해주세요"
@@ -653,8 +690,8 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                학력제한 <b className="text-warn">*</b>
+              <b className="text-lg">
+                학력제한 <b className="text-main-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="w-full relative">
@@ -672,7 +709,7 @@ const NoticeEditPage = () => {
                     ))}
                   </select>
                   <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
-                    <ArrowDownIcon color="#717171" />
+                    <ArrowDownIcon className="text-main-darkGray" />
                   </div>
                 </div>
                 <div className="w-full relative">
@@ -703,17 +740,19 @@ const NoticeEditPage = () => {
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
-              <b>
-                주소지 등록 <b className="text-warn">*</b>
+              <b className="text-lg">
+                주소지 등록 <b className="text-main-warn">*</b>
               </b>
               <div className="w-full flex flex-col gap-[10px]">
                 <div className="w-full flex gap-[10px]">
-                  <input
+                  <InputComponent
                     type="text"
                     placeholder="우편번호"
                     value={address.zipcode}
+                    height="40px"
+                    width="100%"
+                    padding="0 10px"
                     readOnly
-                    className="flex-grow rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                   />
                   <button
                     type="button"
@@ -721,130 +760,137 @@ const NoticeEditPage = () => {
                       setIsOpenAddressModal(true);
                       setIsPostcodeOpen(true);
                     }}
-                    className="px-[20px] rounded-[10px] h-[40px] bg-main-color text-white"
+                    className="w-[200px] rounded-[10px] h-[40px] bg-main-color text-white"
                   >
                     주소 검색
                   </button>
                 </div>
-                <input
+                <InputComponent
                   type="text"
                   placeholder="주소"
                   readOnly
                   value={address.street}
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  height="40px"
+                  width="100%"
+                  padding="0 10px"
                 />
-                <input
+                <InputComponent
                   type="text"
                   placeholder="상세주소"
                   value={address.detail}
                   onChange={(e) => {
                     setAddress({ ...address, detail: e.target.value });
                   }}
-                  className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
+                  height="40px"
+                  width="100%"
+                  padding="0 10px"
                 />
               </div>
             </div>
 
-            <div className="w-full h-[1px] border border-main-color opacity-30" />
-
             <div className="w-full flex flex-col gap-[5px]">
-              <b>채용담당</b>
+              <b className="text-lg">채용담당</b>
               <div className="flex flex-col gap-[10px]">
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">이름</span>
-                  <input
+                  <InputComponent
                     placeholder="채용 담당자명"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.name}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, name: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">
                     이메일
                   </span>
-                  <input
+                  <InputComponent
                     placeholder="비공개"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.email}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, email: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">
                     연락처
                   </span>
-                  <input
+                  <InputComponent
                     placeholder="비공개"
-                    className="w-full rounded-[10px] border border-main-gray h-[40px] px-[10px] outline-none"
                     value={recruiter.phone}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, phone: e.target.value })
                     }
+                    width="100%"
+                    height="40px"
+                    padding="0 10px"
                   />
                 </div>
               </div>
+            </div>
+            <div className="flex flex-col gap-[10px]">
+              <input
+                id="post-images"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleNewImages}
+              />
+              <label
+                className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
+                htmlFor="post-images"
+              >
+                <PlusIcon />
+                <span className="text-main-color">이미지 추가</span>
+              </label>
 
-              <div className="flex flex-col gap-[10px]">
-                <input
-                  id="post-images"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleNewImages}
-                />
-                <label
-                  className="w-full h-[80px] flex flex-col items-center justify-center bg-selected-box rounded-[10px] border-2 border-main-color border-dashed cursor-pointer"
-                  htmlFor="post-images"
-                >
-                  <PlusIcon />
-                  <span className="text-main-color">이미지 추가</span>
-                </label>
-
-                <div className="flex gap-[10px]">
-                  {existingImages.map((img, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer bg-main-bg"
-                      onClick={() => handleDeleteExistingImage(img)}
-                    >
-                      <img
-                        src={img}
-                        alt="기존 이미지"
-                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
-                      />
-                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
-                        <CancelIcon color="red" />
-                      </div>
+              <div className="flex gap-[10px]">
+                {existingImages.map((img, index) => (
+                  <div
+                    key={index}
+                    className="relative cursor-pointer bg-main-bg"
+                    onClick={() => handleDeleteExistingImage(img)}
+                  >
+                    <img
+                      src={img}
+                      alt="기존 이미지"
+                      className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                    />
+                    <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                      <CancelIcon color="red" />
                     </div>
-                  ))}
-                  {imagePreviews.map((preview, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer bg-main-bg"
-                      onClick={() => handleDeleteNewImage(index)}
-                    >
-                      <img
-                        src={preview}
-                        alt="preview"
-                        className="size-[100px] rounded-[10px] border border-main-gray object-cover"
-                      />
-                      <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
-                        <CancelIcon color="red" />
-                      </div>
+                  </div>
+                ))}
+                {imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    className="relative cursor-pointer bg-main-bg"
+                    onClick={() => handleDeleteNewImage(index)}
+                  >
+                    <img
+                      src={preview}
+                      alt="preview"
+                      className="size-[100px] rounded-[10px] border border-main-gray object-cover"
+                    />
+                    <div className="absolute top-[1px] right-[1px] bg-main-bg rounded-[10px]">
+                      <CancelIcon color="red" />
                     </div>
-                  ))}
-                </div>
-
-                <p className="w-full text-right text-main-darkGray">
-                  {existingImages.length + imagePreviews.length} / 5
-                </p>
+                  </div>
+                ))}
               </div>
+
+              <p className="w-full text-right text-main-darkGray">
+                {existingImages.length + imagePreviews.length} / 5
+              </p>
             </div>
 
             <button className="w-full h-[50px] bg-main-color rounded-[10px] text-white">
