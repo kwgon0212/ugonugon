@@ -10,6 +10,8 @@ import LockIcon from "../../components//icons/Lock";
 import ArrowRightIcon from "../../components/icons/ArrowRight";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { loginSuccess } from "@/util/slices/authSlice";
+import Modal from "@/components/Modal";
+import SubmitButton from "@/components/SubmitButton";
 
 const Body = styled.div`
   display: flex;
@@ -85,12 +87,15 @@ const LoginButton = styled.button`
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isOpenLoginFailModal, setIsOpenLoginFailModal] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!email || !password) return;
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: {
@@ -106,8 +111,10 @@ export function LoginPage() {
     const data = await res.json();
 
     if (res.ok) {
-      dispatch(loginSuccess(data)); // Redux 상태 업데이트
+      dispatch(loginSuccess(data));
       navigate("/");
+    } else {
+      setIsOpenLoginFailModal(true);
     }
   };
 
@@ -117,60 +124,76 @@ export function LoginPage() {
         <div className=" w-full h-full bg-white"></div>
       </Header>
       <Main hasBottomNav={false}>
-        <Body>
-          <img
-            className="w-[220px] object-contain"
-            src="/logo.png"
-            alt="logo"
-          />
-          <form
-            className="flex flex-col justify-center items-center mt-7 w-full"
-            onSubmit={handleLogin}
-          >
-            <InputContainer>
-              <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
-                <MailIcon color="#717171" />
-              </div>
-              <IconInputMail
-                type="text"
-                placeholder="이메일 계정"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </InputContainer>
-            <InputContainer>
-              <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
-                <LockIcon color="#717171" />
-              </div>
+        <>
+          <Body>
+            <img
+              className="w-[220px] object-contain"
+              src="/logo.png"
+              alt="logo"
+            />
+            <form
+              className="flex flex-col justify-center items-center mt-7 w-full"
+              onSubmit={handleLogin}
+            >
+              <InputContainer>
+                <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
+                  <MailIcon color="#717171" />
+                </div>
+                <IconInputMail
+                  type="text"
+                  placeholder="이메일 계정"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </InputContainer>
+              <InputContainer>
+                <div className="absolute left-[10px] top-1/2 -translate-y-1/2">
+                  <LockIcon color="#717171" />
+                </div>
 
-              <IconInputPw
-                type="password"
-                placeholder="비밀번호"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </InputContainer>
+                <IconInputPw
+                  type="password"
+                  placeholder="비밀번호"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                />
+              </InputContainer>
 
-            <FindPw className="text-main-darkGray">
-              <Link to="login" className="flex gap-[4px] text-sm">
-                비밀번호 찾기
+              <FindPw className="text-main-darkGray">
+                <Link to="login" className="flex gap-[4px] text-sm">
+                  비밀번호 찾기
+                </Link>
+                <ArrowRightIcon color="#717171" width={18} height={18} />
+              </FindPw>
+
+              <LoginButton className="bg-main-color">로그인</LoginButton>
+            </form>
+            <div className="flex flex-row justify-center gap-[4px] w-full text-sm">
+              <div className=" text-main-darkGray">계정이 없으신가요?</div>
+              <Link to="/register/info" className="text-main-color font-bold">
+                회원가입
               </Link>
-              <ArrowRightIcon color="#717171" width={18} height={18} />
-            </FindPw>
-
-            <LoginButton className="bg-main-color">로그인</LoginButton>
-          </form>
-          <div className="flex flex-row justify-center gap-[4px] w-full text-sm">
-            <div className=" text-main-darkGray">계정이 없으신가요?</div>
-            <Link to="/register/info" className="text-main-color font-bold">
-              회원가입
-            </Link>
-          </div>
-        </Body>
+            </div>
+          </Body>
+          <Modal
+            isOpen={isOpenLoginFailModal}
+            setIsOpen={setIsOpenLoginFailModal}
+          >
+            <div className="size-full flex flex-col gap-[20px]">
+              <div className="text-center">
+                <p>이메일 또는 비밀번호가</p>
+                <p>올바르지 않습니다</p>
+              </div>
+              <SubmitButton onClick={() => setIsOpenLoginFailModal(false)}>
+                확인
+              </SubmitButton>
+            </div>
+          </Modal>
+        </>
       </Main>
     </>
   );

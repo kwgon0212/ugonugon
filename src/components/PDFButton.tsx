@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import Modal from "./Modal";
+import SubmitButton from "./SubmitButton";
 
 const downloadPDF = async () => {
   try {
@@ -17,13 +19,25 @@ const downloadPDF = async () => {
 };
 
 const PDFButton: React.FC = () => {
+  const [isOpenModal, setIsOpenModal] = useState(false);
   return (
-    <button
-      onClick={downloadPDF}
-      style={{ padding: "10px 20px", fontSize: "16px" }}
-    >
-      PDF 다운로드
-    </button>
+    <>
+      <button
+        // onClick={downloadPDF}
+        onClick={() => setIsOpenModal(true)}
+        style={{ padding: "10px 20px", fontSize: "16px" }}
+      >
+        PDF 다운로드
+      </button>
+      <Modal
+        isOpen={isOpenModal}
+        setIsOpen={setIsOpenModal}
+        clickOutsideClose={false}
+      >
+        <h1>hi</h1>
+        <SubmitButton onClick={() => setIsOpenModal(false)}>닫기</SubmitButton>
+      </Modal>
+    </>
   );
 };
 
