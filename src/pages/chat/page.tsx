@@ -360,11 +360,11 @@ transform -translate-x-1/2: 요소를 자신의 너비의 50%만큼 왼쪽으로
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <div className="p-5">
-          {loading ? (
-            <ChatLoading />
-          ) : chatRooms.length > 0 ? (
-            chatRooms.map((room) => (
+        {loading ? (
+          <ChatLoading />
+        ) : chatRooms.length > 0 ? (
+          <div className="p-5">
+            {chatRooms.map((room) => (
               <Link
                 key={room.id}
                 to={`/chat/chatting?roomId=${room.id}&userId=${userId}`}
@@ -372,11 +372,13 @@ transform -translate-x-1/2: 요소를 자신의 너비의 50%만큼 왼쪽으로
               >
                 <Chat room={room} />
               </Link>
-            ))
-          ) : (
+            ))}
+          </div>
+        ) : (
+          <div className="p-5">
             <p className="text-center">채팅방이 없습니다.</p>
-          )}
-        </div>
+          </div>
+        )}
       </Main>
       <BottomNav></BottomNav>
     </>
