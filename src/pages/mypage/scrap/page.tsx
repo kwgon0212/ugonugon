@@ -191,8 +191,6 @@ interface PaginationData {
 }
 
 export function NoticeListPage() {
-  const location = useLocation();
-  const searchParams = location.state || {};
   const userId = useAppSelector((state) => state.auth.user?._id);
 
   const [hasNotice, setNotice] = useState(true);
@@ -224,11 +222,7 @@ export function NoticeListPage() {
   };
 
   // API에서 공고 데이터 가져오기
-  const fetchPosts = async (
-    params = searchParams,
-    page = 1,
-    limit = itemsPerPage
-  ) => {
+  const fetchPosts = async (page = currentPage) => {
     try {
       // 사용자 정보에서 스크랩 목록 가져오기
       const userResponse = await axios.get(`/api/users`, {
@@ -264,7 +258,7 @@ export function NoticeListPage() {
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    fetchPosts(searchParams, pageNumber, itemsPerPage);
+    fetchPosts();
   };
 
   // 드롭다운 메뉴 열기/닫기
@@ -277,14 +271,14 @@ export function NoticeListPage() {
     setItemsPerPage(num);
     setCurrentPage(1);
     setPageGroup(0);
-    fetchPosts(searchParams, 1, num);
+    fetchPosts();
     setOpen(false);
   };
 
   // useEffect에서 초기 데이터 로딩
   useEffect(() => {
-    fetchPosts(searchParams, 1, itemsPerPage);
-  }, [location]);
+    fetchPosts();
+  }, [currentPage, itemsPerPage]);
 
   // 페이지 그룹 당 보여줄 페이지 개수
   const pagesToShow = 5;
@@ -322,21 +316,23 @@ export function NoticeListPage() {
                       <span className="text-main-color">{totalItems} 건 </span>
                       <span>공고</span>
                     </div>
-                    <div className="flex items-center justify-evenly text-[12px] w-[150px] h-[40px]">
+                    <DropMenu
+                      className="flex items-center justify-evenly gap-2 text-[12px] w-[150px] h-[40px]"
+                      onClick={handleOpenMenu}
+                      ref={minusIconRef}
+                    >
                       <div className="flex w-fit">{itemsPerPage}개씩 보기</div>
                       <div className="relative flex w-fit">
-                        <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
-                          <ArrowDownIcon />
-                        </DropMenu>
+                        <ArrowDownIcon />
                         {isOpen && (
-                          <Drop ref={dropMenuRef}>
+                          <Drop ref={dropMenuRef} className="z-10 -right-2">
                             <li onClick={() => handleSelectItem(5)}>5</li>
                             <li onClick={() => handleSelectItem(10)}>10</li>
                             <li onClick={() => handleSelectItem(20)}>20</li>
                           </Drop>
                         )}
                       </div>
-                    </div>
+                    </DropMenu>
                   </div>
                   {/* 현재 페이지의 공고 아이템 렌더링 */}
                   {filteredPosts.map((notice) => (

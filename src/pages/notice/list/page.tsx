@@ -548,21 +548,23 @@ export function NoticeListPage() {
                       <span className="text-main-color">{totalItems} 건 </span>
                       <span>공고</span>
                     </div>
-                    <div className="flex items-center justify-evenly text-[12px] w-[150px] h-[40px]">
+                    <DropMenu
+                      className="flex items-center justify-evenly gap-2 text-[12px] w-[150px] h-[40px]"
+                      onClick={handleOpenMenu}
+                      ref={minusIconRef}
+                    >
                       <div className="flex w-fit">{itemsPerPage}개씩 보기</div>
                       <div className="relative flex w-fit">
-                        <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
-                          <ArrowDownIcon />
-                        </DropMenu>
+                        <ArrowDownIcon />
                         {isOpen && (
-                          <Drop ref={dropMenuRef}>
+                          <Drop ref={dropMenuRef} className="z-10 -right-2">
                             <li onClick={() => handleSelectItem(5)}>5</li>
                             <li onClick={() => handleSelectItem(10)}>10</li>
                             <li onClick={() => handleSelectItem(20)}>20</li>
                           </Drop>
                         )}
                       </div>
-                    </div>
+                    </DropMenu>
                   </div>
                   {/* 현재 페이지의 공고 아이템 렌더링 */}
                   {filteredPosts.map((notice) => (
