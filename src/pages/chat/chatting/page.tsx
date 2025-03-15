@@ -19,6 +19,8 @@ const HeaderWrap = styled.div`
   width: 100%;
   height: 100%;
   padding: 5%;
+  background-color: #0b798b;
+  color: white;
 `;
 
 const MainWrap = styled.div`
@@ -634,11 +636,11 @@ export function ChattingPage() {
       <Header>
         <HeaderWrap>
           <div onClick={handleBackClick} className="flex w-fit h-fit">
-            <ArrowLeftIcon />
+            <ArrowLeftIcon color="white" />
           </div>
           <div className="flex font-bold text-[16px]">{otherName}님</div>
           <div onClick={handleOpenAlertModal} className="flex w-fit h-fit">
-            <CancelIcon />
+            <CancelIcon color="white" />
           </div>
         </HeaderWrap>
       </Header>
@@ -662,7 +664,7 @@ export function ChattingPage() {
                     <div className="text-[12px] text-main-darkGray mb-[5px]">
                       {message.time}
                     </div>
-                    <ChatBox className="bg-selected-box text-selected-text text-[12px]">
+                    <ChatBox className="bg-selected-box border border-main-color text-[12px]">
                       {message.text}
                     </ChatBox>
                   </UserChatWrap>
@@ -675,7 +677,9 @@ export function ChattingPage() {
                   <div className="text-[12px] text-main-darkGray mb-[5px]">
                     {message.time}
                   </div>
-                  <ChatBox className="bg-white">{message.text}</ChatBox>
+                  <ChatBox className="bg-white border border-main-gray">
+                    {message.text}
+                  </ChatBox>
                 </OtherChatWrap>
               );
             })}

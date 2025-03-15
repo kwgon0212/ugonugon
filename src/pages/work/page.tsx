@@ -387,7 +387,7 @@ const WorkPage: React.FC = () => {
     <>
       <Header>
         <div className="size-full flex justify-center items-center bg-main-color text-white font-bold">
-          근로 현황
+          근무 현황
         </div>
       </Header>
 
