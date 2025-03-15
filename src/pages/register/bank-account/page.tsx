@@ -60,6 +60,8 @@ const RegisterBankAccount = () => {
             placeholder="계좌번호를 입력해주세요"
             value={account}
             onChange={handleChangeAccount}
+            width="100%"
+            padding="0 10px"
             type="numeric"
           />
           <div
@@ -70,6 +72,8 @@ const RegisterBankAccount = () => {
               type="text"
               readOnly
               placeholder="은행선택"
+              width="100%"
+              padding="0 10px"
               value={bank ? (bank.includes("뱅크") ? bank : `${bank}은행`) : ""}
               className="cursor-pointer"
             />
