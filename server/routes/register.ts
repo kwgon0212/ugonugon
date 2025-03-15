@@ -26,6 +26,7 @@ const User = mongoose.model("user", UserSchema);
  * /api/register:
  *   post:
  *     summary: 회원가입 API
+ *     tags: [Register - 회원가입]
  *     description: 사용자 정보를 받아서 새 유저를 등록하는 API입니다. 패스워드는 해시화하고, 서명은 잠시 임시값으로 처리됩니다.
  *     requestBody:
  *       required: true

@@ -14,7 +14,54 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// 로그인 API
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: 사용자 로그인
+ *     tags: [Auth - 인증]
+ *     description: 이메일과 비밀번호를 이용해 로그인하고 JWT 토큰을 반환합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: 로그인 성공 (JWT 토큰 반환)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60b6c0f3f72e4a001c8b4567"
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                 token:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+ *       400:
+ *         description: 이메일 또는 비밀번호가 올바르지 않음
+ *       500:
+ *         description: 서버 오류 발생
+ */
 router.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -40,6 +87,39 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: 현재 로그인한 사용자 정보 조회
+ *     tags: [Auth - 인증]
+ *     description: JWT 토큰을 이용해 로그인된 사용자의 정보를 반환합니다.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 사용자 정보 반환
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "60b6c0f3f72e4a001c8b4567"
+ *                 email:
+ *                   type: string
+ *                   example: "user@example.com"
+ *                 name:
+ *                   type: string
+ *                   example: "홍길동"
+ *       401:
+ *         description: 인증 실패 (토큰이 없거나 유효하지 않음)
+ *       404:
+ *         description: 사용자를 찾을 수 없음
+ *       500:
+ *         description: 서버 오류 발생
+ */
 router.get("/me", authMiddleware, async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.body.userId);
@@ -54,9 +134,10 @@ router.get("/me", authMiddleware, async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /api/auth/get/userinfo/{userId}:
+ * /api/auth/userinfo/{userId}:
  *   get:
  *     summary: user의 근로 정보 가져오기
+ *     tags: [Auth - 인증]
  *     description: user의 근로 현황 보기에 사용됨 / user정보에 저장된 근로(공고id)
  *     responses:
  *       200:
