@@ -544,7 +544,7 @@ export function NoticeListPage() {
                 <ListScrollWrapper>
                   <div className="flex justify-between items-center pl-4 w-full h-10 my-1">
                     <div className="flex flex-row">
-                      <span>총 </span>
+                      <span>총&nbsp;</span>
                       <span className="text-main-color">{totalItems} 건 </span>
                       <span>공고</span>
                     </div>
@@ -572,7 +572,7 @@ export function NoticeListPage() {
                         navigate(`/notice/${notice._id.toString()}`)
                       }
                     >
-                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray">
+                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray min-w-20">
                         <img
                           className="w-full h-full object-cover"
                           src={
@@ -598,19 +598,20 @@ export function NoticeListPage() {
                         <div className="w-[95%] text-[16px] font-bold flex-wrap">
                           {notice.title}
                         </div>
-                        <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
-                          <div className="text-main-darkGray">
+                        <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-2">
+                          <div className="text-main-darkGray truncate">
                             {notice.address.street}
                           </div>
-                          <div>
+                          <div className="min-w-[100px]">
                             <span className="text-[#1D8738] font-bold">
                               {notice.pay.type}
                             </span>
+                            &nbsp;
                             <span className="text-main-darkGray">
-                              {notice.pay.value.toLocaleString()} 원
+                              {notice.pay.value.toLocaleString() + " 원"}
                             </span>
                           </div>
-                          <div className="text-main-darkGray">
+                          <div className="text-main-darkGray min-w-8 truncate">
                             {notice.hireType.join(", ")}
                           </div>
                         </div>
