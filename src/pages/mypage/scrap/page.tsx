@@ -1,26 +1,22 @@
-import React, { useState, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import axios from "axios";
+import mongoose from "mongoose";
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import BottomNav from "../../../components/BottomNav";
-
-import MinusIcon from "@/components/icons/Minus";
-import ArrowRightIcon from "@/components/icons/ArrowRight";
-import CancelIcon from "@/components/icons/Cancel";
+import ArrowDownIcon from "@/components/icons/ArrowDown";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import StarIcon from "@/components/icons/Star";
+import ArrowRightIcon from "@/components/icons/ArrowRight";
 import { useAppSelector } from "@/hooks/useRedux";
-import axios from "axios";
-import { useEffect } from "react";
-import Notice from "@/types/Notice";
+import StarIcon from "@/components/icons/Star";
+
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 20px;
 `;
 
 const ListWrapper = styled.div`
@@ -28,30 +24,33 @@ const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between; /* 📌 추가 */
   width: 100%;
   height: 100%;
-  background-color: white;
+  height: calc(100% - 70px);
+  background-color: #f7f7f9;
 `;
+
 const ListScrollWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 93%;
+  min-height: 100%;
+  height: 100%;
   overflow-y: auto;
-  background-color: white;
+  background-color: #f7f7f9;
   scrollbar-width: none;
 `;
 
 const ListContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: 95%;
   height: 100px;
+  background-color: white;
   padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  border: 1px solid var(--main-gray);
+  margin-bottom: 10px;
 `;
 
 const ListInfo = styled.div`
@@ -70,16 +69,36 @@ const Numbernav = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  //수정
-  height: 7%;
-  //수정 끝
   padding: 5px 0;
   background-color: #fff;
+  min-height: 7%;
+  height: 7%;
+`;
+
+const NumberBtnWrap = styled.div`
+  display: flex;
+  height: 100%;
+  min-width: 200px; // 최소 너비 설정 (숫자가 적어도 너무 벌어지지 않도록)
+  justify-content: center;
+  align-items: center;
+  gap: 10px; // 숫자 간격 일정하게 유지
 `;
 
 const NavBtn = styled.div`
-  color: #717171;
+  padding: 5px 10px; // 버튼 내부 간격 조정
+  border-radius: 5px; // 버튼 모양 둥글게
   cursor: pointer;
+  color: #717171;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &.active {
+    color: #0b798b;
+    font-weight: bold;
+  }
 `;
 
 const DropMenu = styled.div`
@@ -93,7 +112,6 @@ const Drop = styled.ul`
   position: absolute;
   display: block;
   top: 20px;
-  right: 0px;
   text-align: center;
   background-color: white;
   width: 40px;
@@ -103,144 +121,151 @@ const Drop = styled.ul`
   list-style: none;
 `;
 
-interface GetNoticeInfo {
-  id: number;
-  _id: string; // 추가: MongoDB ID도 추가
-  companyName: string;
-  endDate: string;
-  day: string;
+interface PostData {
+  _id: string;
   title: string;
-  address: string;
-  pay: number;
-  period: string;
-  images: string[];
+  jobType: string;
+  pay: {
+    type: string;
+    value: number;
+  };
+  hireType: string[];
+  period: {
+    start: string | Date;
+    end: string | Date;
+    discussion: boolean;
+  };
+  hour: {
+    start: string | Date;
+    end: string | Date;
+    discussion: boolean;
+  };
+  restTime?: {
+    start: string | Date;
+    end: string | Date;
+  };
+  day: string[];
+  workDetail?: string;
+  welfare?: string;
+  postDetail?: string;
+  deadline?: {
+    date: string | Date;
+    time: string | Date;
+  };
+  person?: number;
+  preferences?: string;
+  education?: {
+    school: string;
+    state: string;
+  };
+  address: {
+    zipcode: string;
+    street: string;
+    detail?: string;
+    lat?: number;
+    lng?: number;
+  };
+  recruiter?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
+  author: string;
+  images?: [string];
+  createdAt?: string | Date;
+  applies: [
+    {
+      userId: mongoose.Types.ObjectId;
+      resumeId: mongoose.Types.ObjectId;
+      status?: "pending" | "accepted" | "rejected";
+      appliedAt?: string | Date;
+    }
+  ];
 }
 
-export function MypageScrabPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [hasNotice, setNotice] = useState(true);
-  const [isOpen, setOpen] = useState(false); // 드롭다운 메뉴 열림 상태
-  const [itemsPerPage, setItemsPerPage] = useState(5); // 드롭다운에서 선택한 아이템 수
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const [pageGroup, setPageGroup] = useState(0); // 현재 보이는 페이지 그룹(0부터 시작)
-  // 추가: 로딩 상태
-  const [isLoading, setIsLoading] = useState(true);
+interface PaginationData {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
-  // 추가: Redux에서 사용자 ID 가져오기
+export function NoticeListPage() {
+  const location = useLocation();
+  const searchParams = location.state || {};
   const userId = useAppSelector((state) => state.auth.user?._id);
 
-  // 추가: 스크랩 목록을 저장할 상태
-  const [noticeList, setNoticeList] = useState<GetNoticeInfo[]>([]);
+  const [hasNotice, setNotice] = useState(true);
+  const [isOpen, setOpen] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageGroup, setPageGroup] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const dropMenuRef = useRef<HTMLUListElement | null>(null);
   const minusIconRef = useRef<HTMLDivElement | null>(null);
 
-  // 추가: 스크랩한 공고 목록 가져오기
-  useEffect(() => {
-    const fetchScrapedNotices = async () => {
-      if (!userId) {
-        setIsLoading(false);
-        setNotice(false);
-        return;
-      }
+  const [filteredPosts, setFilteredPosts] = useState<PostData[]>([]);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
-      setIsLoading(true);
-      try {
-        // 사용자 정보에서 스크랩 목록 가져오기
-        const userResponse = await axios.get(`/api/users`, {
-          params: { userId },
-        });
+  const navigate = useNavigate();
 
-        if (
-          userResponse.data &&
-          userResponse.data.scraps &&
-          userResponse.data.scraps.length > 0
-        ) {
-          // 스크랩 ID 목록
-          const scrapIds = userResponse.data.scraps;
-
-          // 해당 ID의 공고 정보 가져오기
-          const postsResponse = await Promise.all(
-            scrapIds.map((id: string) => axios.get(`/api/post?postId=${id}`))
-          );
-
-          // 공고 데이터를 GetNoticeInfo 형식으로 변환
-          const scrapedNotices = postsResponse.map((response, index) => {
-            const post = response.data;
-            return {
-              id: index,
-              _id: post._id,
-              companyName: post.author || "회사명", // 실제 데이터 구조에 맞게 수정 필요
-              endDate: post.deadline?.date
-                ? formatDate(post.deadline.date)
-                : "",
-              day: post.day && post.day[0] ? post.day[0] : "",
-              title: post.title || "",
-              address: post.address?.street || "",
-              pay: post.pay?.value || 0,
-              period: formatPeriod(post.period?.start, post.period?.end),
-              images: post.images || [],
-            };
-          });
-
-          setNoticeList(scrapedNotices);
-          setNotice(scrapedNotices.length > 0);
-        } else {
-          setNoticeList([]);
-          setNotice(false);
-        }
-      } catch (error) {
-        console.error("스크랩 공고 조회 오류:", error);
-        setNotice(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchScrapedNotices();
-  }, [userId]);
-
-  // 추가: 날짜 포맷팅 함수
-  const formatDate = (dateString: string) => {
+  // 날짜를 yyyy-MM-dd 형식으로 변환하는 함수
+  const formatDate = (dateString: string | Date) => {
     const date = new Date(dateString);
-    return `${date.getMonth() + 1}/${date.getDate()}`;
+    return date
+      .toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\. /g, "-")
+      .replace(".", "");
   };
 
-  // 추가: 근무기간 포맷팅 함수
-  const formatPeriod = (start?: string, end?: string) => {
-    if (!start || !end) return "기간 정보 없음";
+  // API에서 공고 데이터 가져오기
+  const fetchPosts = async (
+    params = searchParams,
+    page = 1,
+    limit = itemsPerPage
+  ) => {
+    try {
+      // 사용자 정보에서 스크랩 목록 가져오기
+      const userResponse = await axios.get(`/api/users`, {
+        params: { userId },
+      });
 
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+      // 해당 ID의 공고 정보 가져오기
+      let postsResponse = await Promise.all(
+        userResponse.data.scraps.map((id: string) =>
+          axios.get(`/api/post?postId=${id}`)
+        )
+      );
 
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      postsResponse = postsResponse.map((v) => v.data);
 
-    if (diffDays <= 7) return "1주일";
-    if (diffDays <= 30) return "1주일 ~ 1개월";
-    if (diffDays <= 90) return "1개월 ~ 3개월";
-    if (diffDays <= 180) return "3개월 ~ 6개월";
-    return "6개월 이상";
+      setTotalPages(Math.ceil(postsResponse.length / itemsPerPage));
+      setTotalItems(postsResponse.length); // 추가된 부분
+      setNotice(postsResponse.length > 0);
+
+      setFilteredPosts(
+        postsResponse.splice(
+          itemsPerPage * page - itemsPerPage,
+          itemsPerPage * page
+        )
+      );
+      // 활성화된 필터 설정
+    } catch (error) {
+      console.error("데이터 가져오기 실패:", error);
+      setNotice(false);
+    }
   };
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(noticeList.length / itemsPerPage);
-  // 현재 페이지에 해당하는 아이템들
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentNotices = noticeList.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
-  // 페이지 그룹 당 보여줄 페이지 개수
-  const pagesToShow = 5;
-  // 현재 그룹에 보여질 시작 페이지 번호와 종료 페이지 번호 계산
-  const startPage = pageGroup * pagesToShow + 1;
-  const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
-  const visiblePages = [];
-  for (let i = startPage; i <= endPage; i++) {
-    visiblePages.push(i);
-  }
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    fetchPosts(searchParams, pageNumber, itemsPerPage);
+  };
 
   // 드롭다운 메뉴 열기/닫기
   const handleOpenMenu = () => {
@@ -251,9 +276,26 @@ export function MypageScrabPage() {
   const handleSelectItem = (num: number) => {
     setItemsPerPage(num);
     setCurrentPage(1);
-    setPageGroup(0); // 페이지 그룹도 초기화
+    setPageGroup(0);
+    fetchPosts(searchParams, 1, num);
     setOpen(false);
   };
+
+  // useEffect에서 초기 데이터 로딩
+  useEffect(() => {
+    fetchPosts(searchParams, 1, itemsPerPage);
+  }, [location]);
+
+  // 페이지 그룹 당 보여줄 페이지 개수
+  const pagesToShow = 5;
+
+  // 현재 그룹에 보여질 시작 페이지 번호와 종료 페이지 번호 계산
+  const startPage = pageGroup * pagesToShow + 1;
+  const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+  const visiblePages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    visiblePages.push(i);
+  }
 
   return (
     <>
@@ -270,27 +312,21 @@ export function MypageScrabPage() {
       </Header>
       <Main hasBottomNav={true}>
         <Body>
-          {/* 추가: 로딩 중 표시 */}
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              로딩 중...
-            </div>
-          ) : hasNotice ? (
+          {hasNotice ? (
             <>
-              <ListWrapper className="bg-white">
+              <ListWrapper className="bg-main-bg">
                 <ListScrollWrapper>
-                  <div className="flex flex-row justify-between items-center w-full mb-layout">
-                    <span>
-                      총{" "}
-                      <b className="text-main-color font-bold">
-                        {noticeList.length}건
-                      </b>
-                    </span>
-                    <div className="flex flex-row items-center text-sm gap-[4px]">
-                      <span>필터</span>
+                  <div className="flex justify-between items-center pl-4 w-full h-10 my-1">
+                    <div className="flex flex-row">
+                      <span>총&nbsp;</span>
+                      <span className="text-main-color">{totalItems} 건 </span>
+                      <span>공고</span>
+                    </div>
+                    <div className="flex items-center justify-evenly text-[12px] w-[150px] h-[40px]">
+                      <div className="flex w-fit">{itemsPerPage}개씩 보기</div>
                       <div className="relative flex w-fit">
                         <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
-                          <MinusIcon />
+                          <ArrowDownIcon />
                         </DropMenu>
                         {isOpen && (
                           <Drop ref={dropMenuRef}>
@@ -302,95 +338,97 @@ export function MypageScrabPage() {
                       </div>
                     </div>
                   </div>
-                  {currentNotices.map((notice) => (
-                    <ListContainer key={notice.id}>
-                      {/* 공고 카드 전체를 클릭하면 상세 페이지로 이동 */}
-                      <div
-                        className="flex w-full cursor-pointer"
-                        onClick={() => navigate(`/notice/${notice._id}`)} // 상세 페이지로 이동
-                      >
-                        <div className="mr-2 w-[80px] h-[80px] rounded-[10px] bg-main-darkGray relative">
-                          {notice.images && notice.images.length > 0 ? (
-                            <img
-                              src={notice.images[0]}
-                              alt="공고 이미지"
-                              className="w-full h-full object-cover border border-main-gray rounded-[10px]"
-                            />
-                          ) : (
-                            <div className="w-full h-full object-cover border border-main-gray rounded-[10px]" />
-                          )}
-
-                          {/* 스크랩 아이콘 - 이제 클릭해도 상세 페이지로 이동됨 */}
-                          <div className="absolute top-0.5 right-0.5 p-0.5 bg-white rounded-full">
-                            <div>
-                              <StarIcon fill="#FFD700" color="#FFD700" />
-                            </div>
+                  {/* 현재 페이지의 공고 아이템 렌더링 */}
+                  {filteredPosts.map((notice) => (
+                    <ListContainer
+                      key={notice._id}
+                      onClick={() =>
+                        navigate(`/notice/${notice._id.toString()}`)
+                      }
+                    >
+                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray min-w-20">
+                        <img
+                          className="w-full h-full object-cover"
+                          src={
+                            notice.images?.length
+                              ? notice.images[0]
+                              : "/logo.png"
+                          }
+                          alt="공고 이미지"
+                        />
+                      </div>
+                      <ListInfo>
+                        <div className="flex flex-row justify-between w-[95%] h-[15px] text-[12px] text-main-darkGray relative">
+                          <span>{notice.jobType}</span>
+                          <div className="pr-7">
+                            <span>마감일 </span>
+                            <span>
+                              {notice.deadline && notice.deadline.date
+                                ? formatDate(notice.deadline.date)
+                                : "상시모집"}
+                            </span>
+                          </div>
+                          <div className="absolute -top-0.5 right-0.5">
+                            <StarIcon fill="#FFD700" color="#FFD700" />
                           </div>
                         </div>
-
-                        <ListInfo>
-                          <div className="flex flex-row justify-between w-full text-[12px] text-main-darkGray">
-                            <span>{notice.companyName}</span>
-                            <div>
-                              <span>
-                                ~ {notice.endDate}({notice.day})
-                              </span>
-                            </div>
+                        <div className="w-[95%] text-[16px] font-bold flex-wrap">
+                          {notice.title}
+                        </div>
+                        <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-2">
+                          <div className="text-main-darkGray truncate">
+                            {notice.address.street}
                           </div>
-                          <div className="w-[95%] text-[12px] font-bold flex-wrap">
-                            {notice.title}
+                          <div className="min-w-[100px]">
+                            <span className="text-[#1D8738] font-bold">
+                              {notice.pay.type}
+                            </span>
+                            &nbsp;
+                            <span className="text-main-darkGray">
+                              {notice.pay.value.toLocaleString() + " 원"}
+                            </span>
                           </div>
-                          <div className="w-[95%] text-[12px] flex flex-row flex-nowrap gap-3">
-                            <div>{notice.address}</div>
-                            <div>
-                              <span className="font-bold text-main-color">
-                                시급{" "}
-                              </span>
-                              <span>{notice.pay.toLocaleString()} 원</span>
-                            </div>
-                            <div>{notice.period}</div>
+                          <div className="text-main-darkGray min-w-8 truncate">
+                            {notice.hireType.join(", ")}
                           </div>
-                        </ListInfo>
-                      </div>
+                        </div>
+                      </ListInfo>
                     </ListContainer>
                   ))}
                 </ListScrollWrapper>
 
                 {/* 페이지 번호 버튼과 좌우 화살표 */}
                 <Numbernav>
-                  <div className="flex flex-row w-[50%] justify-center gap-3">
+                  <NumberBtnWrap>
                     {pageGroup > 0 && (
                       <NavBtn onClick={() => setPageGroup(pageGroup - 1)}>
                         <ArrowLeftIcon />
                       </NavBtn>
                     )}
+
                     {visiblePages.map((page) => (
                       <NavBtn
                         key={page}
-                        onClick={() => setCurrentPage(page)}
-                        style={{
-                          color:
-                            currentPage === page
-                              ? "var(--main-color)"
-                              : "var(--main-darkGray)",
-                        }}
+                        className={currentPage === page ? "active" : ""}
+                        onClick={() => handlePageChange(page)}
                       >
                         {page}
                       </NavBtn>
                     ))}
+
                     {(pageGroup + 1) * pagesToShow < totalPages && (
                       <NavBtn onClick={() => setPageGroup(pageGroup + 1)}>
                         <ArrowRightIcon />
                       </NavBtn>
                     )}
-                  </div>
+                  </NumberBtnWrap>
                 </Numbernav>
               </ListWrapper>
             </>
           ) : (
             <div className="flex flex-col justify-center items-center w-full h-full">
               <div className="font-bold text-[18px]">
-                스크랩 알바가 존재하지 않습니다.
+                스크랩한 공고가 존재하지 않습니다.
               </div>
             </div>
           )}
@@ -400,5 +438,5 @@ export function MypageScrabPage() {
     </>
   );
 }
-// 주석추가
-export default MypageScrabPage;
+
+export default NoticeListPage;
