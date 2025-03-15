@@ -1,42 +1,90 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
-import SubmitButton from "./SubmitButton";
+import axios from "axios";
+import mongoose from "mongoose";
+import React from "react";
 
-const downloadPDF = async () => {
-  try {
-    const response = await fetch("/api/contract");
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "contract.pdf";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error("PDF 다운로드 오류:", error);
-  }
-};
+const PDFButton = ({
+  children,
+  PDFUrl,
+  setPDFUrl,
+  onClick,
+  postId,
+  userId,
+}: {
+  children: React.ReactNode;
+  PDFUrl: string | null;
+  setPDFUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  onClick?: () => void;
+  postId: mongoose.Types.ObjectId;
+  userId: string | undefined;
+}) => {
+  const downloadPDF = async () => {
+    if (!postId || !userId) return;
+    try {
+      const userResponse = await axios.get(`/api/users?userId=${userId}`);
+      const user = {
+        _id: userResponse.data._id,
+        name: userResponse.data.name,
+        address: userResponse.data.address,
+        phone: userResponse.data.phone,
+        signature: userResponse.data.signature,
+      };
 
-const PDFButton: React.FC = () => {
-  const [isOpenModal, setIsOpenModal] = useState(false);
+      const postResponse = await axios.get(`/api/post?postId=${postId}`);
+      const post = {
+        title: postResponse.data.title,
+        period: postResponse.data.period,
+        address: postResponse.data.address,
+        workDetail: postResponse.data.workDetail,
+        hour: postResponse.data.hour,
+        restTime: postResponse.data.restTime,
+        pay: postResponse.data.pay,
+      };
+      const employerId = postResponse.data.author.toString();
+      const employerResponse = await axios.get(
+        `/api/users?userId=${employerId}`
+      );
+      const employer = {
+        _id: userResponse.data._id,
+        name: employerResponse.data.name,
+        address: employerResponse.data.address,
+        phone: employerResponse.data.phone,
+        signature: employerResponse.data.signature,
+      };
+
+      const contractResponse = await axios.post(
+        "/api/contract",
+        {
+          user,
+          employer,
+          post,
+        },
+        { responseType: "blob" }
+      );
+      const blob = await contractResponse.data;
+      const url = window.URL.createObjectURL(blob);
+      setPDFUrl(url);
+      // console.log(url);
+      // const a = document.createElement("a");
+      // a.href = url;
+      // a.download = "contract.pdf";
+      // document.body.appendChild(a);
+      // a.click();
+      // document.body.removeChild(a);
+    } catch (error) {
+      console.error("PDF 다운로드 오류:", error);
+    }
+  };
+
   return (
     <>
       <button
-        // onClick={downloadPDF}
-        onClick={() => setIsOpenModal(true)}
-        style={{ padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => {
+          onClick && onClick();
+          downloadPDF();
+        }}
       >
-        PDF 다운로드
+        <>{children}</>
       </button>
-      <Modal
-        isOpen={isOpenModal}
-        setIsOpen={setIsOpenModal}
-        clickOutsideClose={false}
-      >
-        <h1>hi</h1>
-        <SubmitButton onClick={() => setIsOpenModal(false)}>닫기</SubmitButton>
-      </Modal>
     </>
   );
 };

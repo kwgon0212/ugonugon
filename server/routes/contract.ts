@@ -3,12 +3,46 @@ import puppeteer from "puppeteer";
 
 const router = express.Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
-    // const { name, contact, position, salary, company, workPeriod } = req.body;
+    const { user, post, employer } = req.body;
+    const periodStart = {
+      year: new Date(post.period.start).getFullYear(),
+      month: new Date(post.period.start).getMonth() + 1,
+      day: new Date(post.period.start).getDate(),
+    };
 
-    const userId = "67cfd0e3c7cd52ffd3d7e2fc";
-    const authorId = "67cfd0e3c7cd52ffd3d7e2fc";
+    const periodEnd = {
+      year: new Date(post.period.end).getFullYear(),
+      month: new Date(post.period.end).getMonth() + 1,
+      day: new Date(post.period.end).getDate(),
+    };
+
+    const workTime = {
+      start: {
+        hour: new Date(post.hour.start).getHours(),
+        minute: new Date(post.hour.start).getMinutes(),
+      },
+      end: {
+        hour: new Date(post.hour.end).getHours(),
+        minute: new Date(post.hour.end).getMinutes(),
+      },
+    };
+
+    const restTime = {
+      start: {
+        hour: new Date(post.restTime.start).getHours(),
+        minute: new Date(post.restTime.start).getMinutes(),
+      },
+      end: {
+        hour: new Date(post.restTime.end).getHours(),
+        minute: new Date(post.restTime.end).getMinutes(),
+      },
+    };
+
+    // <p>5. 근무일/휴일 : 매주 ${"date"}일(또는 매일단위)근무, 주휴일 매주 ${"day"}요일</p>
+    // <p>- 임금지급일 : 매월(매주 또는 매일) 일(휴일의 경우는 전일 지급)</p>
+    // <p>(사업자번호 : ${"사업자번호"})</p>
 
     const now = new Date();
 
@@ -44,22 +78,38 @@ router.get("/", async (req: Request, res: Response) => {
                 <div class="wrapper">
                   <h1 style="border: 1px solid lightgray; padding: 0 100px">표준근로계약서</h1>
                   <p style="padding: 50px 0; font-size: 20px">
-                    <span style="padding: 0 20px; border-bottom: 1px solid black">${"고용주"}</span>(이하 "갑"이라 함)과(와) <span style="padding: 0 20px; border-bottom: 1px solid black">${"근로자"}</span>(이하 "을"이라 함)은 다음과
+                    <span style="padding: 0 20px; border-bottom: 1px solid black">${
+                      employer.name
+                    }</span>(이하 "갑"이라 함)과(와) <span style="padding: 0 20px; border-bottom: 1px solid black">${
+      user.name
+    }</span>(이하 "을"이라 함)은 다음과
                     같이 근로계약을 체결한다.
                   </p>
                   <div class="wrap" style="font-size: 18px">
-                    <p>1. 근로계약기간 : ${"year"}년 ${"month"}월 ${"date"}일 ~ 기간의 정함이 없음</p>
-                    <p>2. 근 무 장 소 : ${"address"}</p>
-                    <p>3. 업무의 내용 : ${"workDetail"}</p>
-                    <p>4. 근 로 시 간 : ${"hour"}시 ${"min"}분부터 ${"hour"}시 ${"min"}분까지 (휴게시간: ${"hour"}시 ${"min"}분 ~ ${"hour"}시 ${"min"}분)</p>
-                    <p>5. 근무일/휴일 : 매주 ${"date"}일(또는 매일단위)근무, 주휴일 매주 ${"day"}요일</p>
-                    <p>6. 임 금</p>
+                    <p>1. 근로계약기간 : ${periodStart.year}년 ${
+      periodStart.month
+    }월 ${periodStart.day}일 ~ ${periodEnd.year}년 ${periodEnd.month}월 ${
+      periodEnd.day
+    }일</p>
+                    <p>2. 근 무 장 소 : ${post.address.street} ${
+      post.address.detail ? post.address.detail : ""
+    }</p>
+                    <p>3. 업무의 내용 : ${post.workDetail}</p>
+                    <p>4. 근 로 시 간 : ${workTime.start.hour}시 ${
+      workTime.start.minute
+    }분부터 ${workTime.end.hour}시 ${workTime.end.minute}분까지 (휴게시간: ${
+      restTime.start.hour
+    }시 ${restTime.start.minute}분 ~ ${restTime.end.hour}시 ${
+      restTime.end.minute
+    }분)</p>
+                    <p>5. 임 금</p>
                     <div style="padding: 0 20px;display: flex;flex-direction: column;gap: 10px;">
-                      <p>- 임금지급일 : 매월(매주 또는 매일) 일(휴일의 경우는 전일 지급)</p>
-                      <p>- 시간(일, 월)급 : ${10000}원</p>
+                      <p>- ${
+                        post.pay.type
+                      } : ${post.pay.value.toLocaleString()}원</p>
                       <p>- 지급방법 : 예금통장에 입금</p>
                     </div>
-                    <p>7. 기 타</p>
+                    <p>6. 기 타</p>
                     <div style="padding: 0 20px;display: flex;flex-direction: column;gap: 10px;">
                       <p>- 이 계약에 정함이 없는 사항은 근로기준법에 의함</p>
                     </div>
@@ -70,31 +120,40 @@ router.get("/", async (req: Request, res: Response) => {
                     </p>
                     <div style="width: 100%;padding: 20px 0;display: flex;flex-direction: column;gap: 10px;">
                       <div style="display: flex; justify-content: space-between">
-                        <p>(갑) 사업체명 : ${"사업체명"}</p>
-                        <p>(사업자번호 : ${"사업자번호"})</p>
+                        <p>(갑) 사업명 : ${post.title}</p>
                       </div>
                       <div style="display: flex; justify-content: space-between">
-                        <p>주 소 : ${"사업체주소"}</p>
-                        <p>(사무실연락처 : ${"사무실연락처"})</p>
+                        <p>주 소 : ${post.address.street} ${
+      post.address.detail ? post.address.detail : ""
+    }</p>
+                        <p>(사무실연락처 : ${employer.phone.replace(
+                          /^(\d{3})(\d{4})(\d{4})$/,
+                          "$1-$2-$3"
+                        )})</p>
                       </div>
                       <div style="display: flex; justify-content: space-between">
-                        <p>대 표 자 : ${"대표자명"}</p>
+                        <p>대 표 자 : ${employer.name}</p>
                         <p style="position: relative">(서명)
-                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${authorId}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
+                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${employer._id.toString()}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
                         </p>
                       </div>
                     </div>
                     <div style="width: 100%;padding: 20px 0;display: flex;flex-direction: column;gap: 10px;">
                       <div style="display: flex; justify-content: space-between">
-                        <p>(을) 주 소 : ${"주소"}</p>
+                        <p>(을) 주 소 : ${user.address.street} ${
+      user.address.detail ? user.address.detail : ""
+    }</p>
                       </div>
                       <div style="display: flex; justify-content: space-between">
-                        <p>연 락 처 : ${"연락처"}</p>
+                        <p>연 락 처 : ${user.phone.replace(
+                          /^(\d{3})(\d{4})(\d{4})$/,
+                          "$1-$2-$3"
+                        )}</p>
                       </div>
                       <div style="display: flex; justify-content: space-between">
-                        <p>성 명 : ${"성명"}</p>
+                        <p>성 명 : ${user.name}</p>
                         <p style="position: relative">(서명)
-                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${userId}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
+                          <img src="https://storage.googleapis.com/payrunner-d2f70.firebasestorage.app/signature/${user._id.toString()}.webp" width="300px" height="100px" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.7;mix-blend-mode: multiply;object-fit: contain;"/>
                         </p>
                       </div>
                     </div>
