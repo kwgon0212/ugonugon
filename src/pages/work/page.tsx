@@ -8,7 +8,8 @@ import Notice from "@/types/Notice";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import OpenEyeIcon from "@/components/icons/OpenEye";
+import PDFButton from "@/components/PDFButton";
+import Modal from "@/components/Modal";
 
 const CenterDiv = styled.div`
   display: flex;
@@ -62,6 +63,9 @@ const WorkPage: React.FC = () => {
     useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("today");
   const navigate = useNavigate();
+
+  const [isOpenPDFModal, setIsOpenPDFModal] = useState(false);
+  const [PDFUrl, setPDFUrl] = useState<string | null>(null);
 
   // 데이터 가져오기
   useEffect(() => {
@@ -322,8 +326,15 @@ const WorkPage: React.FC = () => {
             <span>{post.pay.value.toLocaleString()}원</span>
           </div>
           <button className="flex gap-[4px] items-center">
-            <span>근로계약서</span>
-            <OpenEyeIcon width={18} height={18} />
+            <PDFButton
+              onClick={() => setIsOpenPDFModal(true)}
+              postId={post._id}
+              userId={userId}
+              PDFUrl={PDFUrl}
+              setPDFUrl={setPDFUrl}
+            >
+              <span className="underline">근로계약서</span>
+            </PDFButton>
           </button>
         </div>
         <hr className="border border-main-color/20 rounded-full" />
@@ -387,64 +398,91 @@ const WorkPage: React.FC = () => {
     <>
       <Header>
         <div className="size-full flex justify-center items-center bg-main-color text-white font-bold">
-          근로 현황
+          근무 현황
         </div>
       </Header>
 
       <Main hasBottomNav={true}>
-        <div className="size-full bg-white">
-          <div className="h-full p-layout">
-            {/* 탭 메뉴 */}
-            <TabContainer>
-              <TabButton
-                isActive={activeTab === "today"}
-                onClick={() => setActiveTab("today")}
-              >
-                오늘 근무
-              </TabButton>
-              <TabButton
-                isActive={activeTab === "past"}
-                onClick={() => setActiveTab("past")}
-              >
-                지난 근무
-              </TabButton>
-              <TabButton
-                isActive={activeTab === "upcoming"}
-                onClick={() => setActiveTab("upcoming")}
-              >
-                예정된 근무
-              </TabButton>
-              <TabButton
-                isActive={false}
-                onClick={() => navigate("/work/apply")}
-              >
-                지원한 공고
-              </TabButton>
-            </TabContainer>
+        <>
+          <div className="size-full bg-white relative">
+            <div className="h-full p-layout">
+              {/* 탭 메뉴 */}
+              <TabContainer>
+                <TabButton
+                  isActive={activeTab === "today"}
+                  onClick={() => setActiveTab("today")}
+                >
+                  오늘 근무
+                </TabButton>
+                <TabButton
+                  isActive={activeTab === "past"}
+                  onClick={() => setActiveTab("past")}
+                >
+                  지난 근무
+                </TabButton>
+                <TabButton
+                  isActive={activeTab === "upcoming"}
+                  onClick={() => setActiveTab("upcoming")}
+                >
+                  예정된 근무
+                </TabButton>
+                <TabButton
+                  isActive={false}
+                  onClick={() => navigate("/work/apply")}
+                >
+                  지원한 공고
+                </TabButton>
+              </TabContainer>
 
-            {/* 근무 목록 */}
-            {workPosts && filteredPosts.length > 0 ? (
-              <div className="overflow-y-auto">
-                {filteredPosts.map((post) => renderWorkCard(post))}
-              </div>
-            ) : (
-              <CenterDiv className="text-main-darkGray">
-                <div className="text-xl">
-                  <span>현재 </span>
-                  <span className="text-main-color font-bold">{userName}</span>
-                  <span>님의</span>
+              {/* 근무 목록 */}
+              {workPosts && filteredPosts.length > 0 ? (
+                <div className="overflow-y-auto">
+                  {filteredPosts.map((post) => renderWorkCard(post))}
                 </div>
-                <div className="text-xl mb-5">
-                  {activeTab === "today"
-                    ? "오늘 근무가 없습니다"
-                    : activeTab === "past"
-                    ? "지난 근무 기록이 없습니다"
-                    : "예정된 근무가 없습니다"}
-                </div>
-              </CenterDiv>
-            )}
+              ) : (
+                <CenterDiv className="text-main-darkGray">
+                  <div className="text-xl">
+                    <span>현재 </span>
+                    <span className="text-main-color font-bold">
+                      {userName}
+                    </span>
+                    <span>님의</span>
+                  </div>
+                  <div className="text-xl mb-5">
+                    {activeTab === "today"
+                      ? "오늘 근무가 없습니다"
+                      : activeTab === "past"
+                      ? "지난 근무 기록이 없습니다"
+                      : "예정된 근무가 없습니다"}
+                  </div>
+                </CenterDiv>
+              )}
+            </div>
           </div>
-        </div>
+          <Modal isOpen={isOpenPDFModal} setIsOpen={setIsOpenPDFModal}>
+            <div className="size-full overflow-scroll flex flex-col items-center gap-[20px]">
+              {PDFUrl ? (
+                <div className="w-full h-[500px] border overflow-hidden">
+                  <iframe
+                    src={PDFUrl}
+                    title="근로계약서"
+                    className="size-full"
+                  />
+                </div>
+              ) : (
+                <>
+                  <img
+                    src="https://em-content.zobj.net/source/microsoft-teams/363/cyclone_1f300.png"
+                    loading="lazy"
+                    alt="15.0"
+                    className="size-[120px]"
+                  />
+                  <p>잠시만 기다려주세요...</p>
+                </>
+              )}
+            </div>
+          </Modal>
+        </>
       </Main>
       <BottomNav />
     </>

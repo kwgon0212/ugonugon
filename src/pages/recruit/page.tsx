@@ -625,7 +625,7 @@ const ReCruitPage: React.FC = () => {
       {/* 메인 콘텐츠 */}
       <Main hasBottomNav={true}>
         <div className="size-full bg-white">
-          <div className="size-full bg-main-bg">
+          <div className="size-full bg-white">
             {loading ? (
               <Loading />
             ) : error ? (
