@@ -97,6 +97,8 @@ export function RegisterAddressPage() {
                 value={postcode}
                 readOnly
                 disabled
+                width="100%"
+                padding="0 10px"
                 className="flex-5"
               />
               <FindBtn
@@ -112,11 +114,15 @@ export function RegisterAddressPage() {
               placeholder="주소"
               value={address}
               readOnly
+              width="100%"
+              padding="0 10px"
               disabled
             />
             <InputComponent
               type="text"
               placeholder="상세주소"
+              width="100%"
+              padding="0 10px"
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
             />

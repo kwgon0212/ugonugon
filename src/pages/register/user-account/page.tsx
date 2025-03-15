@@ -20,13 +20,13 @@ const RegisterBankAccount = () => {
   const email = useAppSelector((state) => state.registerUserInfo.email);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (email === "") {
-      alert("잘못된 접근입니다");
-      alert("로그인 화면으로 이동합니다");
-      navigate("/login");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (email === "") {
+  //     alert("잘못된 접근입니다");
+  //     alert("로그인 화면으로 이동합니다");
+  //     navigate("/login");
+  //   }
+  // }, []);
 
   const handleClickNext = () => {
     console.log(password, rePassword);
@@ -60,6 +60,8 @@ const RegisterBankAccount = () => {
               <InputComponent
                 placeholder="이메일 계정을 불러오는 중..."
                 type="text"
+                width="100%"
+                padding="0 10px"
                 readOnly
                 value={email}
                 className="cursor-default"
@@ -70,6 +72,8 @@ const RegisterBankAccount = () => {
               <InputComponent
                 placeholder="비밀번호를 입력해주세요"
                 type="password"
+                width="100%"
+                padding="0 10px"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -81,6 +85,8 @@ const RegisterBankAccount = () => {
               <InputComponent
                 placeholder="비밀번호를 다시 입력해주세요"
                 type="password"
+                width="100%"
+                padding="0 10px"
                 value={rePassword}
                 onChange={(e) => setRePassword(e.target.value)}
               />
