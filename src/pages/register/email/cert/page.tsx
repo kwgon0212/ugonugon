@@ -93,13 +93,16 @@ function RegisterEmailCertPage() {
       return;
     }
     const result = await axios.post("/api/email/cert", { email });
-    const emailCode = result.data;
+    const emailCode = result.data.code;
     dispatch(setUserEmailCode(emailCode));
   };
 
   const handleEmailCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const userFormEmailCode = Number(nums.join(""));
+
+    console.log("📌 입력한 인증번호:", userFormEmailCode);
+    console.log("📌 현재 Redux 저장된 인증번호:", emailCode);
 
     if (userFormEmailCode !== emailCode) {
       setIsOpenNotEqualEmailCodeModal(true);

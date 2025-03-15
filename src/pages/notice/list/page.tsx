@@ -60,6 +60,7 @@ const ListWrapper = styled.div`
   justify-content: space-between; /* 📌 추가 */
   width: 100%;
   height: 100%;
+  height: calc(100% - 70px);
   background-color: #f7f7f9;
 `;
 
@@ -500,21 +501,26 @@ export function NoticeListPage() {
 
   return (
     <>
-      <Header>
+      {/* <Header>
         <Link to={"/"} className="flex p-3 w-full h-full">
           <img
             src="/logo.png"
             alt="로고 이미지"
-            className="flex bottom-0 w-[179px] h-[43px]"
+            className="flex bottom-0 w-full h-full"
           />
         </Link>
+      </Header> */}
+      <Header>
+        <div className="size-full flex justify-center items-center bg-main-color text-white font-bold">
+          검색 결과
+        </div>
       </Header>
       <Main hasBottomNav={true}>
         <Body>
           {hasNotice ? (
             <>
               <Head>
-                <div className="font-bold text-[20px] mb-2">검색 결과</div>
+                {/* <div className="font-bold text-[20px] mb-2">검색 결과</div> */}
                 {/* 활성화된 필터 카테고리 표시 */}
                 {activeFilters.length > 0 && (
                   <CetegoryContiner>
@@ -536,13 +542,13 @@ export function NoticeListPage() {
               </Head>
               <ListWrapper className="bg-main-bg">
                 <ListScrollWrapper>
-                  <div className="flex flex-row justify-between items-center pl-4 w-full h-[40px]">
+                  <div className="flex justify-between items-center pl-4 w-full h-10 my-1">
                     <div className="flex flex-row">
                       <span>총 </span>
                       <span className="text-main-color">{totalItems} 건 </span>
                       <span>공고</span>
                     </div>
-                    <div className="flex flex-row items-center justify-evenly text-[12px] w-[150px] h-[40px]">
+                    <div className="flex items-center justify-evenly text-[12px] w-[150px] h-[40px]">
                       <div className="flex w-fit">{itemsPerPage}개씩 보기</div>
                       <div className="relative flex w-fit">
                         <DropMenu onClick={handleOpenMenu} ref={minusIconRef}>
@@ -566,9 +572,14 @@ export function NoticeListPage() {
                         navigate(`/notice/${notice._id.toString()}`)
                       }
                     >
-                      <div className="mr-2 w-[80px] h-[80px] rounded-lg bg-main-darkGray">
+                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray">
                         <img
-                          src={notice.images ? notice.images[0] : "/logo.png"}
+                          className="w-full h-full object-cover"
+                          src={
+                            notice.images?.length
+                              ? notice.images[0]
+                              : "/logo.png"
+                          }
                           alt="공고 이미지"
                         />
                       </div>

@@ -309,14 +309,14 @@ const NoticeDetailPage = () => {
   return (
     <>
       <Header>
-        <div className="size-full flex items-center px-[20px] justify-between bg-main-color">
-          <div className="flex gap-[10px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon className="text-white" />
-            </button>
-            <span className="font-bold text-white">공고 상세</span>
-          </div>
-          <div className="flex gap-[10px]">
+        <div className="size-full flex items-center px-[20px] justify-center relative bg-main-color gap-[10px]">
+          {/* <div className="w-100vh flex gap-[10px]"> */}
+          <button onClick={() => navigate(-1)}>
+            <ArrowLeftIcon className="text-white absolute left-5 top-1/2 -translate-y-1/2" />
+          </button>
+          {/* </div> */}
+          <div className="font-bold text-white text-center ">공고 상세</div>
+          <div className="flex gap-[10px]  absolute right-5">
             <div
               className="flex flex-col items-center text-[10px] text-main-darkGray gap-[4px] cursor-pointer"
               onClick={handleToggleScrap}
