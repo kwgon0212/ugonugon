@@ -46,7 +46,7 @@ function Chat(props: { room: ChatRoom }) {
   const { room } = props;
   return (
     <>
-      <div className="bg-white w-[100%] p-4 rounded-[10px] mb-4">
+      <div className="bg-white w-[100%] border border-main-gray p-4 rounded-[10px] mb-4">
         <div className="flex justify-between mb-2">
           <span className="font-bold">
             {room.name} <span className="text-main-color">님</span>
@@ -344,18 +344,18 @@ function ChatPage() {
   return (
     <>
       <Header>
-        <div className="flex h-full w-full justify-between items-center px-5 relative">
+        <div className="flex bg-main-color h-full w-full justify-between items-center px-5 relative">
           <div className="w-8"></div> {/* 왼쪽 여백용 빈 div */}
           {/* left-1/2: 요소의 왼쪽 모서리를 부모 컨테이너 너비의 50% 위치에 배치합니다. 이는 CSS로 left: 50%와 같습니다.
 transform -translate-x-1/2: 요소를 자신의 너비의 50%만큼 왼쪽으로 이동시킵니다. 이는 CSS로 transform: translateX(-50%)와 같습니다. */}
-          <p className="font-bold absolute left-1/2 transform -translate-x-1/2">
+          <p className=" text-white font-bold absolute left-1/2 transform -translate-x-1/2">
             채팅
           </p>
           <div
             onClick={() => window.location.reload()}
             className="cursor-pointer"
           >
-            <RefreshIcon />
+            <RefreshIcon color="white" />
           </div>
         </div>
       </Header>
