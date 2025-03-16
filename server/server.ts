@@ -17,7 +17,6 @@ import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
-import newAtten
 dotenv.config();
 
 const app: Express = express();
