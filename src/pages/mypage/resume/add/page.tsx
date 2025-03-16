@@ -161,8 +161,9 @@ function MypageResumeAdd() {
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!userData) return;
+
     if (
-      Boolean(
+      !Boolean(
         userId &&
           profile &&
           resumeTitle &&
@@ -183,12 +184,12 @@ function MypageResumeAdd() {
       profile,
       title: resumeTitle,
       name,
-      addressDetail,
       sex,
       residentId,
       phone,
       email,
       address,
+      addressDetail,
       school,
       schoolState,
       careers,
