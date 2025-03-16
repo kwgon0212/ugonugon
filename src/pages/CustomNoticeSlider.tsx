@@ -42,7 +42,7 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                 onClick={() => navigate(`/notice/${notice._id}`)}
                 className="w-full bg-white flex gap-[20px] items-center rounded-[10px] p-[10px]"
               >
-                {notice.images.length > 0 ? (
+                {/* {notice.images.length > 0 ? (
                   <img
                     src={notice.images[0]}
                     alt="img"
@@ -52,7 +52,13 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                   <p className="size-[90px] min-w-[90px] rounded-[10px] bg-main-gray text-main-darkGray text-sm flex justify-center items-center">
                     이미지 없음
                   </p>
-                )}
+                )} */}
+
+                <img
+                  src={notice.images?.length ? notice.images[0] : "/logo.png"}
+                  alt="img"
+                  className="size-[90px] rounded-[10px] object-cover border border-main-gray"
+                />
 
                 <div className="flex-grow w-full flex flex-col gap-[4px] text-left">
                   <div className="flex flex-col">

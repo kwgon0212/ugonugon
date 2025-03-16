@@ -248,8 +248,8 @@ const WorkPage: React.FC = () => {
       : Infinity;
     const canCheckIn =
       currentTime >= new Date(workStart.getTime() - 10 * 60 * 1000) &&
-      distance <= 2;
-    const canCheckOut = currentTime >= workEnd && distance <= 2;
+      distance <= 4;
+    const canCheckOut = currentTime >= workEnd && distance <= 4;
     const attendance = attendances[post._id.toString()];
     const attendanceStatus = attendance?.checkOutTime
       ? "근무 완료"
