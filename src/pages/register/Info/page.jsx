@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import styled from "styled-components";
@@ -16,42 +16,46 @@ import {
 import StatusBar from "@/components/StatusBar";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
+
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%; /* 화면 전체를 차지하도록 설정 */
-  overflow: hidden; /* 전체 페이지가 스크롤되지 않도록 설정 */
+  height: 100%;
+  overflow: hidden;
   padding: 20px;
   background-color: white;
   gap: 20px;
 `;
-// 전체 폼 컨테이너
+
+// 전체 폼 컨테이너 - 개선된 스크롤 처리
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-bottom: 20px; /* 하단 여백 추가 (키보드에 가리지 않게) */
-  flex-grow: 1; /* 공간을 차지하게 하여 아래로 밀리지 않게 설정 */
-  overflow-y: auto; /* 세로 스크롤 가능 */
+  padding-bottom: 80px; /* 하단 여백 증가 - 버튼 높이 + 여유 공간 */
+  flex-grow: 1;
+  overflow-y: auto;
 `;
-// 개별 입력 필드 영역(라벨과 텍스트 세로정렬)
+
+// 개별 입력 필드 영역
 const FieldContainer = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
 `;
+
 // 라벨 스타일
 const Label = styled.p`
-  /* font-size: 20px; */
   font-weight: 600;
-  letter-spacing: -1px; //글자 간격
+  letter-spacing: -1px;
 `;
 
-// 성별 선택 버튼 그룹(버튼 두개를 묶고있는 박스, 가로정렬함)
+// 성별 선택 버튼 그룹
 const GenderContainer = styled.div`
   display: flex;
   gap: 20px;
 `;
+
 // 성별 선택 버튼
 const GenderButton = styled.button`
   width: 100%;
@@ -67,24 +71,50 @@ const GenderButton = styled.button`
   justify-content: center;
 `;
 
+// 버튼 컨테이너 - 포지션 개선
+const ButtonContainer = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  padding: 0 20px;
+  background-color: white;
+  z-index: 10;
+`;
+
 function RegisterInfoPage() {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [number, setNumber] = useState("");
   const [residentFront, setResidentFront] = useState("");
   const [residentBack, setResidentBack] = useState("");
+  const phoneInputRef = useRef(null);
+  const formContainerRef = useRef(null);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   // 숫자만 입력되도록 처리하는 함수
   const handleNumericInput = (setter) => (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // 숫자만 남기고 제거 \D는 숫자가 아닌 문자를 의미
-    //g는 전역 검색 플래그. 문자열 전체에서 패턴을 찾는다.
-    //replace(pattern,교체할 문자열)
-    //즉 문자가 입력되면 그걸 감지하고 ""로 대체한다.
+    const value = e.target.value.replace(/\D/g, "");
     setter(value);
-    //상태를 업데이트해준다.
+  };
+
+  // 입력 필드에 포커스가 들어올 때 스크롤 위치 조정
+  const handleFocus = (ref) => {
+    // 약간의 지연을 두고 스크롤 조정 (키보드가 완전히 올라온 후)
+    setTimeout(() => {
+      if (ref.current && formContainerRef.current) {
+        const fieldBottom = ref.current.getBoundingClientRect().bottom;
+        const containerBottom =
+          formContainerRef.current.getBoundingClientRect().bottom;
+        const scrollOffset = fieldBottom - containerBottom + 150; // 여유 공간 추가
+
+        if (scrollOffset > 0) {
+          formContainerRef.current.scrollTop += scrollOffset;
+        }
+      }
+    }, 300);
   };
 
   const handleClickNext = () => {
@@ -96,6 +126,7 @@ function RegisterInfoPage() {
 
     navigate("/register/address");
   };
+
   return (
     <>
       <Header>
@@ -114,9 +145,8 @@ function RegisterInfoPage() {
       <Main hasBottomNav={false}>
         <>
           <MainContainer>
-            <FormContainer>
+            <FormContainer ref={formContainerRef}>
               {/* 이름 입력 */}
-              {/* <div className="overflow-hidden "> */}
               <FieldContainer>
                 <Label className="text-xl">이름</Label>
                 <InputComponent
@@ -128,6 +158,7 @@ function RegisterInfoPage() {
                   onChange={(e) => setName(e.target.value)}
                 />
               </FieldContainer>
+
               {/* 성별 선택 */}
               <FieldContainer>
                 <Label className="text-xl">성별</Label>
@@ -166,6 +197,7 @@ function RegisterInfoPage() {
                   </GenderButton>
                 </GenderContainer>
               </FieldContainer>
+
               {/* 주민번호 입력 */}
               <FieldContainer>
                 <Label className="text-xl">주민번호</Label>
@@ -191,10 +223,12 @@ function RegisterInfoPage() {
                   />
                 </div>
               </FieldContainer>
+
               {/* 휴대폰 번호 입력 */}
               <FieldContainer>
                 <Label className="text-xl">휴대폰 번호</Label>
                 <InputComponent
+                  ref={phoneInputRef}
                   type="text"
                   placeholder="- 를 제외한 전화번호를 입력해주세요"
                   value={number}
@@ -202,18 +236,20 @@ function RegisterInfoPage() {
                   width="100%"
                   padding="0 10px"
                   onChange={handleNumericInput(setNumber)}
+                  onFocus={() => handleFocus(phoneInputRef)}
                 />
               </FieldContainer>
-              {/* </div> */}
             </FormContainer>
           </MainContainer>
+
           {/* 제출 버튼 */}
-          <div className="absolute bottom-[20px] left-0 w-full px-[20px]">
+          <ButtonContainer>
             <SubmitButton onClick={handleClickNext}>다음</SubmitButton>
-          </div>
+          </ButtonContainer>
         </>
       </Main>
     </>
   );
 }
+
 export default RegisterInfoPage;
