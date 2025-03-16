@@ -511,8 +511,17 @@ export function NoticeListPage() {
         </Link>
       </Header> */}
       <Header>
-        <div className="size-full flex justify-center items-center bg-main-color text-white font-bold">
-          검색 결과
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            검색 결과
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={true}>
