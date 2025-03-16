@@ -569,25 +569,23 @@ const NoticeDetailPage = () => {
                   <h3 className="font-bold text-[20px]" id="post-detail">
                     상세요강
                   </h3>
-                  {postData && postData.postDetail ? (
+                  {postData && postData.postDetail?.startsWith("http") ? (
                     <div className="w-full min-h-[500px] break-keep">
                       <iframe
                         src={postData.postDetail}
                         className="w-full h-full"
                       ></iframe>
                     </div>
-                  ) : (
-                    "-"
-                  )}
-
-                  {/* {postData && postData.postDetail && (
+                  ) : postData && postData.postDetail ? (
                     <div
                       className="w-full"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(postData.postDetail),
                       }}
                     />
-                  )} */}
+                  ) : (
+                    "-"
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-[10px]">
