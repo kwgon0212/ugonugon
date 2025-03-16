@@ -47,7 +47,7 @@ export function EditBankAccountPageBefore() {
         account,
       },
     });
-    navigate("/myapge");
+    navigate("/mypage");
   };
 
   return (

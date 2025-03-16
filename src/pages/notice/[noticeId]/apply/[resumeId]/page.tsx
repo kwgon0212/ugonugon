@@ -33,9 +33,6 @@ const NoticeApplyResumePage = () => {
       try {
         const response = await getResume(resumeId);
         setResume(response);
-        console.log(resumeId);
-        console.log(noticeId);
-        console.log(resume);
       } catch (error) {
         console.log(error);
       }

@@ -389,7 +389,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={period?.start}
                 />
-                <span className="mx-[10px]">~</span>
+                <span className="mx-[5%]">~</span>
                 <CustomDatePicker
                   selected={period?.end || null}
                   setSelectedDate={(date) =>
@@ -434,7 +434,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={hour?.start}
                 />
-                <span className="mx-[10px]">~</span>
+                <span className="mx-[5%]">~</span>
                 <CustomDatePicker
                   selected={hour?.end || null}
                   setSelectedDate={(date) =>
@@ -465,7 +465,7 @@ const NoticeAddPage = () => {
                   mode="time"
                   value={restTime?.start}
                 />
-                <span className="mx-[10px]">~</span>
+                <span className="mx-[5%]">~</span>
                 <CustomDatePicker
                   selected={restTime?.end || null}
                   setSelectedDate={(date) =>
@@ -570,7 +570,7 @@ const NoticeAddPage = () => {
                   mode="date"
                   value={deadline?.date}
                 />
-                <span className="mx-[10px]">-</span>
+                <span className="mx-[5%]">-</span>
                 <CustomDatePicker
                   selected={deadline?.time || null}
                   setSelectedDate={(date) =>
@@ -727,7 +727,7 @@ const NoticeAddPage = () => {
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">이름</span>
                   <InputComponent
-                    placeholder="채용 담당자명"
+                    placeholder="채용 담당자"
                     value={recruiter.name}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, name: e.target.value })

@@ -377,7 +377,7 @@ function MypageResumeAdd() {
                 <div className="w-full flex flex-col gap-[10px]">
                   <p className="font-bold text-xl">
                     최종 학력
-                    <span className="text-main-warn">*</span>
+                    <span className="text-warn">*</span>
                   </p>
                   <div className="flex w-full h-10 gap-[10px]">
                     <SelectBox
@@ -552,7 +552,7 @@ function MypageResumeAdd() {
               <div className="w-full flex flex-col gap-[10px]">
                 <p className="text-xl font-bold">
                   근무기간
-                  <span className="text-main-warn">*</span>
+                  <span className="text-warn">*</span>
                 </p>
                 <div className="w-full h-10 flex items-center datepicker-css">
                   <DatePicker

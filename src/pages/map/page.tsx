@@ -416,7 +416,7 @@ export default function MapPage(): ReactElement {
           )}
 
           {/* 검색 결과 숫자 표시 */}
-          <div className="absolute bottom-3 left-3 z-10 bg-white px-3 py-2 rounded-lg shadow-md">
+          <div className="absolute bottom-3 right-3 z-10 bg-white px-3 py-2 rounded-lg shadow-md">
             <p className="text-sm font-medium">
               주변 {radius}km 이내 채용공고: {nearbyPosts.length}개
             </p>

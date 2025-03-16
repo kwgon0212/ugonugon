@@ -314,7 +314,7 @@ const NoticeEditPage = () => {
           >
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                공고제목 <b className="text-main-warn">*</b>
+                공고제목 <b className="text-warn">*</b>
               </b>
               <InputComponent
                 type="text"
@@ -331,7 +331,7 @@ const NoticeEditPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                직종 <b className="text-main-warn">*</b>
+                직종 <b className="text-warn">*</b>
               </b>
               <div className="w-full relative">
                 <select
@@ -353,7 +353,7 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                급여 <b className="text-main-warn">*</b>
+                급여 <b className="text-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="relative">
@@ -402,7 +402,7 @@ const NoticeEditPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                고용형태 <b className="text-main-warn">*</b>
+                고용형태 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {hireOptions.map((hireOption, index) => (
@@ -427,7 +427,7 @@ const NoticeEditPage = () => {
             <div className="w-full flex flex-col gap-[5px]">
               <div className="w-full flex justify-between">
                 <b className="text-lg">
-                  근무기간 <b className="text-main-warn">*</b>
+                  근무기간 <b className="text-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="period-discussion">기간 협의 가능</label>
@@ -459,7 +459,7 @@ const NoticeEditPage = () => {
                       mode="date"
                       value={period.start}
                     />
-                    <span className="mx-[10px]">~</span>
+                    <span className="mx-[5%]">~</span>
                     <CustomDatePicker
                       selected={new Date(period.end) || null}
                       setSelectedDate={(date) =>
@@ -480,7 +480,7 @@ const NoticeEditPage = () => {
             <div className="w-full flex flex-col gap-[5px]">
               <div className="w-full flex justify-between">
                 <b className="text-lg">
-                  근무시간 <b className="text-main-warn">*</b>
+                  근무시간 <b className="text-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="hour-discussion">시간 협의 가능</label>
@@ -512,7 +512,7 @@ const NoticeEditPage = () => {
                       mode="time"
                       value={hour.start}
                     />
-                    <span className="mx-[10px]">~</span>
+                    <span className="mx-[5%]">~</span>
                     <CustomDatePicker
                       selected={new Date(hour.end) || null}
                       setSelectedDate={(date) =>
@@ -532,7 +532,7 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                휴게시간 <b className="text-main-warn">*</b>
+                휴게시간 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 {restTime && (
@@ -549,7 +549,7 @@ const NoticeEditPage = () => {
                       mode="time"
                       value={restTime.start}
                     />
-                    <span className="mx-[10px]">~</span>
+                    <span className="mx-[5%]">~</span>
                     <CustomDatePicker
                       selected={new Date(restTime.end) || null}
                       setSelectedDate={(date) =>
@@ -569,7 +569,7 @@ const NoticeEditPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                근무요일 <b className="text-main-warn">*</b>
+                근무요일 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {dayOptions.map((dayOption, index) => (
@@ -669,7 +669,7 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                모집마감 <b className="text-main-warn">*</b>
+                모집마감 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 {deadline && (
@@ -686,7 +686,7 @@ const NoticeEditPage = () => {
                       mode="date"
                       value={deadline.date}
                     />
-                    <span className="mx-[10px]">-</span>
+                    <span className="mx-[5%]">-</span>
                     <CustomDatePicker
                       selected={new Date(deadline.time) || null}
                       setSelectedDate={(date) =>
@@ -706,7 +706,7 @@ const NoticeEditPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                모집인원 <b className="text-main-warn">*</b>
+                모집인원 <b className="text-warn">*</b>
               </b>
               <div className="w-fit relative">
                 <InputComponent
@@ -742,7 +742,7 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                학력제한 <b className="text-main-warn">*</b>
+                학력제한 <b className="text-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="w-full relative">
@@ -792,7 +792,7 @@ const NoticeEditPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                주소지 등록 <b className="text-main-warn">*</b>
+                주소지 등록 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex flex-col gap-[10px]">
                 <div className="w-full flex gap-[10px]">
@@ -845,7 +845,7 @@ const NoticeEditPage = () => {
                 <div className="flex gap-[10px] items-center">
                   <span className="basis-[50px] text-main-darkGray">이름</span>
                   <InputComponent
-                    placeholder="채용 담당자명"
+                    placeholder="채용 담당자"
                     value={recruiter.name}
                     onChange={(e) =>
                       setRecruiter({ ...recruiter, name: e.target.value })

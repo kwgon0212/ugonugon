@@ -15,7 +15,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser } from "@/hooks/fetchUser";
 import ProfileIcon from "@/components/icons/Profile";
-import postBank from "@/hooks/fetchBank";
 import Loading from "@/loading/page";
 import FlagIcon from "@/components/icons/Flag";
 
@@ -51,21 +50,6 @@ const MyPage = () => {
       fetchData();
     }
   }, [userId]);
-  useEffect(() => {
-    const fetchBank = async () => {
-      const bankResponse = await postBank(
-        "InquireBalance",
-        {
-          FinAcno: true,
-        },
-        userData?.bankAccount.account
-      );
-      if (bankResponse.Ldbl) {
-        setBalance(bankResponse.Ldbl);
-      }
-    };
-    fetchBank();
-  }, [userData]);
 
   const handleLogout = () => {
     setIsOpenLogoutModal(true);

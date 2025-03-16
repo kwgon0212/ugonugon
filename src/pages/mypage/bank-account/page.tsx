@@ -32,7 +32,7 @@ const BankAccountPage = () => {
       ? new Date().getMonth()
       : new Date().getMonth() + 1
   );
-  const [isHiddenhistory, setIsHiddenhistory] = useState(false);
+  const [isHiddenhistory, setIsHiddenhistory] = useState(true);
   const [userBank, setUserBank] = useState<User["bankAccount"] | null>(null);
   const sliderRef = useRef<Slider | null>(null);
   const navigate = useNavigate();

@@ -95,7 +95,7 @@ router.post("/", async (req, res) => {
 
   try {
     const savedUser = await newUser.save();
-    console.log(savedUser);
+    // console.log(savedUser);
     res.status(201).json({ message: "회원가입 성공", userId: savedUser._id });
   } catch (err) {
     res.status(400).json({ error: err.message });
