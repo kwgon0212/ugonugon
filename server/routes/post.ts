@@ -1,9 +1,9 @@
-import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./users";
 import multer from "multer";
 import { bucket } from "../firebaseAdmin";
+import he from "he";
 
 const router = express.Router();
 const { Schema } = mongoose;
@@ -150,6 +150,7 @@ router.post("/notice", upload.array("images", 5), async (req, res) => {
       education: parseJSON(postData.education),
       address: parseJSON(postData.address),
       recruiter: parseJSON(postData.recruiter),
+      postDetail: he.decode(postData.postDetail),
     };
 
     if (!author) {
@@ -324,6 +325,7 @@ router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
       education: parseJSON(updatedData.education),
       address: parseJSON(updatedData.address),
       recruiter: parseJSON(updatedData.recruiter),
+      postDetail: he.decode(updatedData.postDetail),
     };
 
     // 🔥 3️⃣ DB 업데이트 (삭제된 이미지 제거 + 새 이미지 추가)

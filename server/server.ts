@@ -42,7 +42,7 @@ app.use(
 );
 // app.use(express.json());
 app.use(express.json({ limit: "10mb" })); // JSON 요청 크기 제한 (Base64 이미지 지원)
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 setupSwagger(app);
 
 app.use("/api/users", usersRoutes);

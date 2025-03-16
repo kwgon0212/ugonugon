@@ -16,6 +16,7 @@ import WorkPlaceMap from "./PlaceMap";
 import NotFound from "@/NotFound";
 // import type Resume from "@/types/Resume";
 import { type Resume } from "@/hooks/fetchResume";
+import DOMPurify from "dompurify";
 
 import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
 import { io } from "socket.io-client";
@@ -268,6 +269,7 @@ const NoticeDetailPage = () => {
       alert("채팅방 생성에 실패했습니다.");
     }
   };
+
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (section) {
@@ -305,6 +307,7 @@ const NoticeDetailPage = () => {
     return <NotFound />;
   }
 
+  console.log(postData?.postDetail);
   // 헤더는 유지하고 내용만 로딩 컴포넌트로 대체하는 방식으로 변경
   return (
     <>
@@ -566,11 +569,20 @@ const NoticeDetailPage = () => {
                   <h3 className="font-bold text-[20px]" id="post-detail">
                     상세요강
                   </h3>
-                  <div className="w-full break-keep">
+                  {/* <div className="w-full break-keep">
                     {postData && postData.postDetail
                       ? postData.postDetail
                       : "-"}
-                  </div>
+                  </div> */}
+
+                  {postData && postData.postDetail && (
+                    <div
+                      className="w-full"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(postData.postDetail),
+                      }}
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-[10px]">
