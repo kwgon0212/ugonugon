@@ -225,7 +225,8 @@ interface PaginationData {
 
 export function NoticeListPage() {
   const location = useLocation();
-  const searchParams = location.state || {};
+  const [searchParams, setSearchParams] = useState(location.state || {});
+  // const searchParams = location.state || {};
 
   const [hasNotice, setNotice] = useState(true);
   const [isOpen, setOpen] = useState(false);
@@ -478,7 +479,7 @@ export function NoticeListPage() {
         updatedParams.sigungu = "전체";
       }
     }
-
+    setSearchParams(updatedParams);
     // 새 파라미터로 API 호출
     fetchPosts(updatedParams, 1, itemsPerPage);
   };
