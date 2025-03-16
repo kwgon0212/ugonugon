@@ -68,6 +68,150 @@ const ResumesSchema = new mongoose.Schema({
 });
 const Resumes = mongoose.model("resumes", ResumesSchema);
 
+/**
+ * @swagger
+ * /api/resume:
+ *   get:
+ *     summary: 특정 이력서 조회
+ *     tags: [Resumes - 이력서 관리]
+ *     description: 특정 resumeId에 해당하는 이력서를 조회하는 API
+ *     parameters:
+ *       - in: query
+ *         name: resumeId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: 조회할 이력서 ID
+ *     responses:
+ *       200:
+ *         description: 성공적으로 이력서를 조회함
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "65cd34ef56gh78ij90kl12ab"
+ *                 title:
+ *                   type: string
+ *                   example: "프론트엔드 개발자 지원서"
+ *                 name:
+ *                   type: string
+ *                   example: "홍길동"
+ *                 email:
+ *                   type: string
+ *                   example: "test@example.com"
+ *       400:
+ *         description: 이력서 ID가 유효하지 않음
+ *       500:
+ *         description: 서버 오류 발생
+ *
+ *   post:
+ *     summary: 새로운 이력서 등록
+ *     tags: [Resumes - 이력서 관리]
+ *     description: 사용자가 새 이력서를 등록하는 API
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "65ab12cd34ef56gh78ij90kl"
+ *                   title:
+ *                     type: string
+ *                     example: "프론트엔드 개발자 지원서"
+ *                   email:
+ *                     type: string
+ *                     example: "test@example.com"
+ *     responses:
+ *       200:
+ *         description: 이력서가 성공적으로 등록됨
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resumeId:
+ *                   type: string
+ *                   example: "65cd34ef56gh78ij90kl12ab"
+ *       500:
+ *         description: 서버 오류 발생
+ *
+ *   put:
+ *     summary: 기존 이력서 수정
+ *     tags: [Resumes - 이력서 관리]
+ *     description: 특정 이력서를 업데이트하는 API
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               resumeId:
+ *                 type: string
+ *                 example: "65cd34ef56gh78ij90kl12ab"
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                     example: "백엔드 개발자 지원서"
+ *     responses:
+ *       201:
+ *         description: 이력서가 성공적으로 수정됨
+ *       500:
+ *         description: 서버 오류 발생
+ *
+ *   delete:
+ *     summary: 이력서 삭제
+ *     tags: [Resumes - 이력서 관리]
+ *     description: 특정 이력서를 삭제하는 API
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               resumeId:
+ *                 type: string
+ *                 example: "65cd34ef56gh78ij90kl12ab"
+ *     responses:
+ *       201:
+ *         description: 이력서가 성공적으로 삭제됨
+ *       500:
+ *         description: 서버 오류 발생
+ */
+
+/**
+ * @swagger
+ * /api/resume/{resumeId}:
+ *   get:
+ *     summary: 개별 이력서 조회
+ *     tags: [Resumes - 이력서 관리]
+ *     description: 특정 resumeId에 해당하는 이력서를 조회하는 API
+ *     parameters:
+ *       - in: path
+ *         name: resumeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 조회할 이력서 ID
+ *     responses:
+ *       200:
+ *         description: 성공적으로 이력서를 조회함
+ *       500:
+ *         description: 서버 오류 발생
+ */
+
 router.get("/", async (req, res) => {
   try {
     const resume = await Resumes.findById(req.query.resumeId);

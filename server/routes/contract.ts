@@ -3,6 +3,145 @@ import puppeteer from "puppeteer";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/contract:
+ *   post:
+ *     summary: 근로계약서 PDF 생성 API
+ *     tags: [Contract - 근로계약서]
+ *     description: 근로계약서를 PDF로 생성하여 다운로드할 수 있습니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user:
+ *                 type: object
+ *                 description: 근로자 정보
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     example: "김철수"
+ *                   address:
+ *                     type: object
+ *                     properties:
+ *                       street:
+ *                         type: string
+ *                         example: "서울특별시 강남구 테헤란로 123"
+ *                       detail:
+ *                         type: string
+ *                         example: "101동 202호"
+ *                   phone:
+ *                     type: string
+ *                     example: "01012345678"
+ *                   _id:
+ *                     type: string
+ *                     example: "650f8e8e8f8e8f8e8f8e8f8e"
+ *               post:
+ *                 type: object
+ *                 description: 공고 정보
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                     example: "편의점 아르바이트"
+ *                   workDetail:
+ *                     type: string
+ *                     example: "매장 관리 및 고객 응대"
+ *                   address:
+ *                     type: object
+ *                     properties:
+ *                       street:
+ *                         type: string
+ *                         example: "서울특별시 강남구 테헤란로 123"
+ *                       detail:
+ *                         type: string
+ *                         example: "101동 202호"
+ *                   pay:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: "시급"
+ *                       value:
+ *                         type: integer
+ *                         example: 10000
+ *                   period:
+ *                     type: object
+ *                     properties:
+ *                       start:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-03-16T09:00:00.000Z"
+ *                       end:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-06-16T18:00:00.000Z"
+ *                   hour:
+ *                     type: object
+ *                     properties:
+ *                       start:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-03-16T09:00:00.000Z"
+ *                       end:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-03-16T18:00:00.000Z"
+ *                   restTime:
+ *                     type: object
+ *                     properties:
+ *                       start:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-03-16T12:00:00.000Z"
+ *                       end:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-03-16T13:00:00.000Z"
+ *               employer:
+ *                 type: object
+ *                 description: 고용주 정보
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     example: "홍길동"
+ *                   phone:
+ *                     type: string
+ *                     example: "0212345678"
+ *                   _id:
+ *                     type: string
+ *                     example: "650f8e8e8f8e8f8e8f8e8f8e"
+ *     responses:
+ *       200:
+ *         description: 성공적으로 PDF 생성 완료
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: 요청이 올바르지 않은 경우
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "필수 데이터가 누락되었습니다."
+ *       500:
+ *         description: 서버 내부 오류로 PDF 생성 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "PDF 생성 실패"
+ */
 router.post("/", async (req: Request, res: Response) => {
   try {
     const { user, post, employer } = req.body;

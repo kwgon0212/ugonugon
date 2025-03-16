@@ -3,14 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import usersRoutes from "./routes/users.ts";
 import scrapRoutes from "./routes/scrap.ts";
-import testRoutes from "./routes/test.ts";
 import registerRoutes from "./routes/register.ts";
 import authRoutes from "./routes/auth.ts";
 import postRoutes from "./routes/post.ts";
 import contractRoutes from "./routes/contract.ts";
 import resumeRoutes from "./routes/resume.ts";
 import attendanceRoutes from "./routes/attendance.ts";
-import newAttendance from "./routes/newAttendance.ts";
 import bankRoutes from "./routes/bank.ts";
 import imageRoutes from "./routes/image.ts";
 import emailRoutes from "./routes/email.ts";
@@ -19,6 +17,7 @@ import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
+import newAtten
 dotenv.config();
 
 const app: Express = express();
@@ -55,11 +54,10 @@ app.use(
 );
 // app.use(express.json());
 app.use(express.json({ limit: "10mb" })); // JSON 요청 크기 제한 (Base64 이미지 지원)
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 setupSwagger(app);
 
 app.use("/api/users", usersRoutes);
-app.use("/api/test", testRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
@@ -68,7 +66,6 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/scrap", scrapRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/image", imageRoutes);
-app.use("/api/newAttendance", newAttendance);
 app.use("/api/bank", bankRoutes);
 
 app.use("/api/post", postRoutes);

@@ -110,11 +110,6 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 - MongoDB
 
-### Deployment
-
-- AWS
-- GitHub Pages
-
 ### API & Tools
 
 - Toss 전자 계약 API

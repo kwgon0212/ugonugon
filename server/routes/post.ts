@@ -1,9 +1,9 @@
-import { error, log } from "console";
 import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./users";
 import multer from "multer";
 import { bucket } from "../firebaseAdmin";
+import he from "he";
 
 const router = express.Router();
 const { Schema } = mongoose;
@@ -98,6 +98,7 @@ const User = mongoose.models.users;
  * /api/post/notice:
  *   post:
  *     summary: post 스키마 생성 API
+ *     tags: [Post - 공고]
  *     description: 사용자가 공고 등록 시 사용됨
  *     responses:
  *       200:
@@ -111,23 +112,6 @@ const User = mongoose.models.users;
  *                     type: string
  *                     example: "post success"
  */
-// router.post("/notice", async (req, res) => {
-//   try {
-//     const { author, ...postData } = req.body;
-//     const newPost = new JobPosting({
-//       ...postData,
-//       author: new mongoose.Types.ObjectId(author),
-//     });
-
-//     await newPost.save(); // 새로 생성한 객체를 DB에 저장
-
-//     res.status(200).json({ postId: newPost._id });
-//     // .json({ message: "Post created successfully", post: newPost });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
 router.post("/notice", upload.array("images", 5), async (req, res) => {
   try {
     const { author, ...postData } = req.body;
@@ -150,6 +134,7 @@ router.post("/notice", upload.array("images", 5), async (req, res) => {
       education: parseJSON(postData.education),
       address: parseJSON(postData.address),
       recruiter: parseJSON(postData.recruiter),
+      postDetail: he.decode(postData.postDetail),
     };
 
     if (!author) {
@@ -200,9 +185,10 @@ router.post("/notice", upload.array("images", 5), async (req, res) => {
 
 /**
  * @swagger
- * /api/post/update/{postId}:
- *   post:
+ * /api/post/{postId}:
+ *   put:
  *     summary: post 스키마 수정 API
+ *     tags: [Post - 공고]
  *     description: 사용자가 공고 수정 시 사용됨
  *     responses:
  *       200:
@@ -216,46 +202,6 @@ router.post("/notice", upload.array("images", 5), async (req, res) => {
  *                     type: string
  *                     example: "post update success"
  */
-// router.put("/:postId", async (req, res) => {
-//   try {
-//     const { postId } = req.params;
-//     if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-//       return res.status(400).json({ message: "Invalid Post ID" });
-//     }
-
-//     // 요청 데이터에서 `undefined`가 아닌 값만 `updateFields`에 추가
-//     const updateFields = Object.fromEntries(
-//       Object.entries(req.body).filter(([_, value]) => value !== undefined)
-//     );
-
-//     if (Object.keys(updateFields).length === 0) {
-//       return res.status(400).json({ message: "No valid fields to update" });
-//     }
-
-//     // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
-//     const updatedPost = await JobPosting.findByIdAndUpdate(
-//       postId,
-//       updateFields,
-//       {
-//         new: true, // 업데이트된 문서를 반환
-//         runValidators: true, // 유효성 검사 실행
-//       }
-//     );
-
-//     if (!updatedPost) {
-//       return res.status(404).json({ message: "Post Not Found" });
-//     }
-
-//     res
-//       .status(200)
-//       .json({ message: "Post updated successfully", post: updatedPost });
-//   } catch (err) {
-//     console.error("에러 발생:", err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-// fetch / 뭐시였더라?("/update/:postId" 로 바꾸기
-
 router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
   try {
     const { postId } = req.params;
@@ -324,6 +270,7 @@ router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
       education: parseJSON(updatedData.education),
       address: parseJSON(updatedData.address),
       recruiter: parseJSON(updatedData.recruiter),
+      postDetail: he.decode(updatedData.postDetail),
     };
 
     // 🔥 3️⃣ DB 업데이트 (삭제된 이미지 제거 + 새 이미지 추가)
@@ -347,9 +294,10 @@ router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
 
 /**
  * @swagger
- * /api/post/delete/{postId}:
+ * /api/post/{postId}:
  *   delete:
  *     summary: post 스키마 삭제 API
+ *     tags: [Post - 공고]
  *     description: 사용자가 공고 삭제 시 사용됨
  *     responses:
  *       200:
@@ -363,31 +311,6 @@ router.put("/:postId", upload.array("newImages", 5), async (req, res) => {
  *                     type: string
  *                     example: "post delete success"
  */
-// router.delete("/delete/:postId", async (req, res) => {
-// router.delete("/:postId", async (req, res) => {
-//   try {
-//     const { postId } = req.params;
-//     if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
-//       return res.status(400).json({ message: "Invalid Post ID" });
-//     }
-
-//     // MongoDB에서 해당 postId의 데이터를 찾아 업데이트
-//     const deletePost = await JobPosting.findByIdAndDelete(postId);
-
-//     if (!deletePost) {
-//       return res.status(404).json({ message: "Post Not Found" });
-//     }
-
-//     res
-//       .status(200)
-//       .json({ message: "Post deleted successfully", post: deletePost });
-//   } catch (err) {
-//     console.error("에러 발생:", err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-// delete("/:postId" 로 바꾸기
-
 router.delete("/:postId", async (req, res) => {
   try {
     const { postId } = req.params;
@@ -431,9 +354,10 @@ router.delete("/:postId", async (req, res) => {
 
 /**
  * @swagger
- * /api/post/get/notice/lists:
+ * /api/post/lists:
  *   get:
  *     summary: notice 목록 전체 가져오기 API
+ *     tags: [Post - 공고]
  *     description: 공고 목록 보기 시 사용 됨 (필요한 데이터만 불러오는거로 했음)
  *     responses:
  *       200:
@@ -447,7 +371,6 @@ router.delete("/:postId", async (req, res) => {
  *                     type: string
  *                     example: "get all notice lists"
  */
-// router.get("/get/notice/lists", async (req, res) => {
 router.get("/lists", async (req, res) => {
   try {
     // 모든 공고 데이터 가져옴
@@ -466,23 +389,91 @@ router.get("/lists", async (req, res) => {
 
 /**
  * @swagger
- * /api/post/get/notice/{postId}:
+ * /api/post:
  *   get:
- *     summary: notice 하나의 정보 가져오기 API
- *     description: 공고 상세 보기 시 사용 됨
+ *     summary: 채용 공고 조회 API
+ *     tags: [Post - 공고]
+ *     description: 특정 공고 ID 또는 조건을 기반으로 채용 공고 목록을 조회
+ *     parameters:
+ *       - name: postId
+ *         in: query
+ *         description: "조회할 공고의 ID"
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - name: latest
+ *         in: query
+ *         description: "최신 공고를 10개만 조회할지 여부 (true: 최신 10개 조회)"
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *       - name: urgent
+ *         in: query
+ *         description: "긴급 공고만 필터링할지 여부 (true: 긴급 공고만 조회)"
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *       - name: street
+ *         in: query
+ *         description: "특정 지역(street) 기준으로 공고 검색"
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
- *         description: 성공적으로 get 완료
+ *         description: "성공적으로 공고 데이터를 가져옴"
  *         content:
  *           application/json:
  *             schema:
+ *               type: array
+ *               items:
  *                 type: object
  *                 properties:
- *                   message:
+ *                   _id:
  *                     type: string
- *                     example: "get notice success"
+ *                     example: "6523abf3e8f1b2e4c8c8b7e4"
+ *                   title:
+ *                     type: string
+ *                     example: "편의점 아르바이트 구합니다"
+ *                   jobType:
+ *                     type: string
+ *                     example: "알바"
+ *                   hireType:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example: ["긴급"]
+ *                   address:
+ *                     type: object
+ *                     properties:
+ *                       street:
+ *                         type: string
+ *                         example: "서울특별시 강남구"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-03-15T12:30:45.123Z"
+ *       404:
+ *         description: "요청한 공고가 존재하지 않음"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "해당 공고를 찾을 수 없습니다."
+ *       500:
+ *         description: "서버 내부 오류"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "데이터베이스 연결 오류"
  */
-// router.get("/get/oneNotice/:postId", async (req, res) => {
 router.get("/", async (req, res) => {
   const { postId, latest, urgent, street } = req.query;
 

@@ -23,6 +23,8 @@ import useGeocode from "@/hooks/useGeocode";
 import PlusIcon from "@/components/icons/Plus";
 import CancelIcon from "@/components/icons/Cancel";
 import InputComponent from "@/components/Input";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -244,7 +246,7 @@ const NoticeAddPage = () => {
           >
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                공고제목 <b className="text-main-warn">*</b>
+                공고제목 <b className="text-warn">*</b>
               </b>
               <InputComponent
                 type="text"
@@ -261,7 +263,7 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                직종 <b className="text-main-warn">*</b>
+                직종 <b className="text-warn">*</b>
               </b>
               <div className="w-full relative">
                 <select
@@ -283,7 +285,7 @@ const NoticeAddPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                급여 <b className="text-main-warn">*</b>
+                급여 <b className="text-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="relative">
@@ -332,7 +334,7 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                고용형태 <b className="text-main-warn">*</b>
+                고용형태 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {hireOptions.map((hireOption, index) => (
@@ -357,7 +359,7 @@ const NoticeAddPage = () => {
             <div className="w-full flex flex-col gap-[5px]">
               <p className="w-full flex justify-between">
                 <b className="text-lg">
-                  근무기간 <b className="text-main-warn">*</b>
+                  근무기간 <b className="text-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="period-discussion">기간 협의 가능</label>
@@ -404,7 +406,7 @@ const NoticeAddPage = () => {
             <div className="w-full flex flex-col gap-[5px]">
               <div className="w-full flex justify-between">
                 <b className="text-lg">
-                  근무시간 <b className="text-main-warn">*</b>
+                  근무시간 <b className="text-warn">*</b>
                 </b>
                 <div className="flex gap-[10px]">
                   <label htmlFor="hour-discussion">시간 협의 가능</label>
@@ -448,7 +450,7 @@ const NoticeAddPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                휴게시간 <b className="text-main-warn">*</b>
+                휴게시간 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
@@ -481,7 +483,7 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                근무요일 <b className="text-main-warn">*</b>
+                근무요일 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex gap-[10px]">
                 {dayOptions.map((dayOption, index) => (
@@ -525,18 +527,35 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">상세요강</b>
-              <textarea
+              {/* <textarea
                 className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
                 placeholder="추가할 html 내용을 작성해주세요"
                 value={postDetail}
                 onChange={(e) => setPostDetail(e.target.value)}
                 rows={5}
+              /> */}
+              <ReactQuill
+                value={postDetail}
+                onChange={setPostDetail}
+                modules={{
+                  toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic", "underline", "strike"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link"],
+                    [{ align: [] }],
+                    [{ color: [] }, { background: [] }],
+                    ["clean"],
+                  ],
+                }}
+                placeholder="추가할 html 내용을 작성해주세요"
+                className="bg-white w-full max-h-[400px] overflow-y-scroll"
               />
             </div>
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                모집마감 <b className="text-main-warn">*</b>
+                모집마감 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex justify-between items-center">
                 <CustomDatePicker
@@ -569,7 +588,7 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">
-                모집인원 <b className="text-main-warn">*</b>
+                모집인원 <b className="text-warn">*</b>
               </b>
               <div className="w-fit relative">
                 <InputComponent
@@ -605,7 +624,7 @@ const NoticeAddPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                학력제한 <b className="text-main-warn">*</b>
+                학력제한 <b className="text-warn">*</b>
               </b>
               <div className="flex gap-[10px]">
                 <div className="w-full relative">
@@ -655,7 +674,7 @@ const NoticeAddPage = () => {
 
             <div className="w-full flex flex-col gap-[5px]">
               <b className="text-lg">
-                주소지 등록 <b className="text-main-warn">*</b>
+                주소지 등록 <b className="text-warn">*</b>
               </b>
               <div className="w-full flex flex-col gap-[10px]">
                 <div className="w-full flex gap-[10px]">
