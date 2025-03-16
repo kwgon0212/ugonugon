@@ -5,9 +5,10 @@ import Header from "@/components/Header";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import CameraIcon from "@/components/icons/Camera";
 import ProfileIcon from "@/components/icons/Profile";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
 import getUser, { putUser } from "@/hooks/fetchUser";
+import SubmitButton from "@/components/SubmitButton";
 
 // 사용자 데이터에 대한 인터페이스 정의
 interface Address {
@@ -63,7 +64,7 @@ function MyPageEditInfoPage(): JSX.Element {
   };
 
   const handleExitModal = () => setExitModalOpen(!exitModalOpen); // 저장 버튼 클릭 시 모달 열기
-
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<string | null>(null);
   const profileInputRef = useRef<HTMLInputElement>(null);
 
@@ -110,11 +111,15 @@ function MyPageEditInfoPage(): JSX.Element {
   return (
     <>
       <Header>
-        <div className="flex items-center h-full ml-2">
-          <div onClick={handleExitModal}>
-            <ArrowLeftIcon />
-          </div>
-          <span className="font-bold flex justify-center w-full mr-3">
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
             내 정보 수정
           </span>
         </div>
@@ -211,24 +216,25 @@ function MyPageEditInfoPage(): JSX.Element {
                     className="bg-white border h-[50px] p-2 border-main-gray rounded-[10px] mt-1"
                   />
                 </div>
-                <button
-                  type="button"
-                  className="w-full h-[50px] mt-28 bg-main-color rounded-[10px] font-semibold text-white"
-                  onClick={() => {
-                    putUser(userId, {
-                      phone,
-                      address: {
-                        zipcode,
-                        street: address,
-                        detail: detailAddress,
-                      },
-                      profile,
-                    });
-                    setSaveModalOpen(!saveModalOpen);
-                  }}
-                >
-                  저장하기
-                </button>
+                <div className="absolute bottom-[20px] left-0 w-full px-[20px] flex justify-center">
+                  <SubmitButton
+                    onClick={() => {
+                      putUser(userId, {
+                        phone,
+                        address: {
+                          zipcode,
+                          street: address,
+                          detail: detailAddress,
+                        },
+                        profile,
+                      });
+                      setSaveModalOpen(!saveModalOpen);
+                    }}
+                    type="button"
+                  >
+                    저장하기
+                  </SubmitButton>
+                </div>
               </div>
               {saveModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">

@@ -80,9 +80,13 @@ const BankAccountPage = () => {
         0
       );
       Ineymd = Ineymd > new Date() ? new Date() : Ineymd;
+      const Acno = userData.bankAccount.account.startsWith("3020000012")
+        ? userData.bankAccount.account
+        : "3020000012646";
+
       const tmpData = {
         Bncd: "011",
-        Acno: userData.bankAccount.account,
+        Acno,
         Insymd: selectedYear + months[selectedMonthIndex] + "01",
         Ineymd: selectedYear + months[selectedMonthIndex] + Ineymd.getDate(),
         TrnsDsnc: "A",
@@ -94,9 +98,10 @@ const BankAccountPage = () => {
       const historyInfo = await postBank(
         "InquireTransactionHistory",
         tmpData,
-        userData.bankAccount.account
+        Acno
       );
-      if (!historyInfo.Header.Rsms) return;
+
+      if (historyInfo.error) return;
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
         alert("조회기간이 잘못되었습니다.");
       } else {

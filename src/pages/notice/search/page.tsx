@@ -185,11 +185,17 @@ function NoticeSearchPage() {
   return (
     <>
       <Header>
-        <div className="p-layout h-full flex flex-wrap content-center">
-          <div onClick={() => navigate(-1)}>
-            <ArrowLeftIcon width={24} height={24} />
-          </div>
-          <Title>공고 검색</Title>
+        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeftIcon className="text-white" />
+          </button>
+          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
+            공고 검색
+          </span>
         </div>
       </Header>
       <Main hasBottomNav={true}>
