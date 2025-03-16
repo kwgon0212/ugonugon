@@ -160,23 +160,36 @@ function MypageResumeAdd() {
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("id:", userId);
+    console.log("profile:", profile);
+    console.log("title:", resumeTitle);
+    console.log("name:", name);
+    console.log("sex:", sex);
+    console.log("residentId:", residentId);
+    console.log("phone:", phone);
+    console.log("address:", address);
+    console.log("school:", school);
+    console.log("schoolState:", schoolState);
+
+    console.log(userData);
     if (!userData) return;
     if (
-      Boolean(
-        userId &&
-          profile &&
-          resumeTitle &&
-          name &&
-          sex &&
-          residentId &&
-          phone &&
-          email &&
-          address &&
-          school &&
-          schoolState
-      )
-    )
+      !userId ||
+      !profile ||
+      !resumeTitle ||
+      !name ||
+      !sex ||
+      !residentId ||
+      !phone ||
+      !email ||
+      !address ||
+      !school ||
+      !schoolState
+    ) {
       return;
+    }
+
+    console.log("zdfklja;eofijae;woifjw;oefij");
 
     const resumeId = await postResume({
       userId,
