@@ -569,20 +569,25 @@ const NoticeDetailPage = () => {
                   <h3 className="font-bold text-[20px]" id="post-detail">
                     상세요강
                   </h3>
-                  {/* <div className="w-full break-keep">
-                    {postData && postData.postDetail
-                      ? postData.postDetail
-                      : "-"}
-                  </div> */}
+                  {postData && postData.postDetail ? (
+                    <div className="w-full min-h-[500px] break-keep">
+                      <iframe
+                        src={postData.postDetail}
+                        className="w-full h-full"
+                      ></iframe>
+                    </div>
+                  ) : (
+                    "-"
+                  )}
 
-                  {postData && postData.postDetail && (
+                  {/* {postData && postData.postDetail && (
                     <div
                       className="w-full"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(postData.postDetail),
                       }}
                     />
-                  )}
+                  )} */}
                 </div>
 
                 <div className="flex flex-col gap-[10px]">
@@ -789,7 +794,7 @@ const NoticeDetailPage = () => {
                     </div>
                     <div className="w-full flex gap-[20px]">
                       <button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/recruit/manage")}
                         className="flex w-full h-[50px] justify-center items-center px-[10px] bg-main-color text-white rounded-[10px]"
                       >
                         확인

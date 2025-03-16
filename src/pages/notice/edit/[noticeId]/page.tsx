@@ -295,7 +295,8 @@ const NoticeEditPage = () => {
         <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
           <button
             onClick={() => {
-              navigate(-1);
+              // navigate(-1);
+              navigate(`/recruit/manage`);
             }}
           >
             <ArrowLeftIcon className="text-white" />
