@@ -584,9 +584,14 @@ export function NoticeListPage() {
                         navigate(`/notice/${notice._id.toString()}`)
                       }
                     >
-                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray min-w-20">
+                      <div className="mr-2 w-20 h-20 ob rounded-lg border border-main-darkGray min-w-20">
                         <img
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full ${
+                            notice.images?.length
+                              ? "object-contain"
+                              : " object-cover"
+                          }
+                          `}
                           src={
                             notice.images?.length
                               ? notice.images[0]

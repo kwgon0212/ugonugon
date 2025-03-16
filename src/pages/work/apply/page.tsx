@@ -145,7 +145,9 @@ const WorkApplyPage = () => {
                   <img
                     src={post.images.length ? post.images[0] : "/logo.png"}
                     alt="img"
-                    className="size-[90px] rounded-[10px] object-cover"
+                    className={`size-[90px] rounded-[10px] ${
+                      post.images?.length ? "object-contain" : " object-cover"
+                    }`}
                   />
                   <div className="w-full flex flex-col gap-[4px]">
                     <div className="flex gap-[10px] items-center">

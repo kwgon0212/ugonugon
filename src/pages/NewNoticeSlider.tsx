@@ -57,7 +57,9 @@ const NewNoticeSlider = ({ notices }: Props) => {
                   <img
                     src={notice.images?.length ? notice.images[0] : "/logo.png"}
                     alt="img"
-                    className="w-full h-[120px] rounded-[10px] object-cover mb-[10px] border border-main-gray"
+                    className={`w-full h-[120px] rounded-[10px] mb-[10px] border border-main-gray ${
+                      notice.images?.length ? "object-contain" : " object-cover"
+                    }`}
                   />
                   <span className="text-white text-sm absolute top-0 right-0 px-[10px] bg-black/50 rounded-[10px]">
                     ~ {new Date(notice.deadline.date).toLocaleDateString()}
