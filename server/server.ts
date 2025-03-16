@@ -1,6 +1,5 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import usersRoutes from "./routes/users.ts";
 import scrapRoutes from "./routes/scrap.ts";
 import registerRoutes from "./routes/register.ts";
@@ -17,6 +16,7 @@ import { setupSwagger } from "../swagger/swagger.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 dotenv.config();
 
 const app: Express = express();
