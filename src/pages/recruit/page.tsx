@@ -606,24 +606,24 @@ const ReCruitPage: React.FC = () => {
     console.log("AcnoAcnoAcnoAcnoAcnoAcno");
     console.log(Acno);
 
-    // const res = await postBank("ReceivedTransferAccountNumber", {
-    //   Bncd: "011",
-    //   Acno,
-    //   Tram: Tram.replace(/,/g, ""),
-    //   DractOtlt: "페이러너 임금 지불",
-    //   MractOtlt: "페이러너 임금 지급",
-    // });
-    // if (res) setPayModal(!payModal);
-    // setReload(!reload);
-    const res = await postBank("DrawingTransfer", {
+    const res = await postBank("ReceivedTransferAccountNumber", {
       Bncd: "011",
-      FinAcno: true,
+      Acno,
       Tram: Tram.replace(/,/g, ""),
       DractOtlt: "페이러너 임금 지불",
       MractOtlt: "페이러너 임금 지급",
     });
     if (res) setPayModal(!payModal);
     setReload(!reload);
+    // const res = await postBank("DrawingTransfer", {
+    //   Bncd: "011",
+    //   FinAcno: true,
+    //   Tram: Tram.replace(/,/g, ""),
+    //   DractOtlt: "페이러너 임금 지불",
+    //   MractOtlt: "페이러너 임금 지급",
+    // });
+    // if (res) setPayModal(!payModal);
+    // setReload(!reload);
   };
 
   return (
