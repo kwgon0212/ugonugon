@@ -8,6 +8,63 @@ import { Users } from "./users";
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
+/**
+ * @swagger
+ * /api/image/signature:
+ *   post:
+ *     summary: 사용자 서명 이미지 업로드 API
+ *     tags: [Image - 이미지]
+ *     description: 사용자의 서명 이미지를 Firebase Storage에 업로드하고, DB에 저장된 서명 URL을 업데이트합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: 사용자 ID (MongoDB ObjectId)
+ *                 example: "60c72b2f9b1e8a5f3c8b4567"
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Base64 인코딩된 서명 이미지 (data:image/webp;base64,....)
+ *     responses:
+ *       200:
+ *         description: 서명 이미지가 성공적으로 업로드됨
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "업로드 성공"
+ *                 url:
+ *                   type: string
+ *                   example: "https://storage.googleapis.com/bucket-name/signature/userId.webp"
+ *       400:
+ *         description: 요청 데이터가 부족하거나 잘못된 경우
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "userId와 image(Base64)가 필요합니다."
+ *       500:
+ *         description: 서버 내부 오류 또는 Firebase 업로드 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "서버 오류 발생"
+ */
 router.post("/signature", upload.single("image"), async (req, res) => {
   try {
     const { userId, image } = req.body;

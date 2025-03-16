@@ -132,39 +132,39 @@ router.get("/me", authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-/**
- * @swagger
- * /api/auth/userinfo/{userId}:
- *   get:
- *     summary: user의 근로 정보 가져오기
- *     tags: [Auth - 인증]
- *     description: user의 근로 현황 보기에 사용됨 / user정보에 저장된 근로(공고id)
- *     responses:
- *       200:
- *         description: 성공적으로 get 완료
- *         content:
- *           application/json:
- *             schema:
- *                 type: object
- *                 properties:
- *                   message:
- *                     type: string
- *                     example: "get userInfo success"
- */
-router.get("/userInfo/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
-    }
-    const info = await User.findById(userId);
-    if (!info) {
-      return res.status(404).json({ message: "근로 정보를 찾을 수 없습니다." });
-    }
-    res.json({ noticeId: info.noticeId, contract: info.contract });
-  } catch (err) {
-    res.status(500).json({ message: "서버 오류" });
-  }
-});
+// /**
+//  * @swagger
+//  * /api/auth/userinfo/{userId}:
+//  *   get:
+//  *     summary: user의 근로 정보 가져오기
+//  *     tags: [Auth - 인증]
+//  *     description: user의 근로 현황 보기에 사용됨 / user정보에 저장된 근로(공고id)
+//  *     responses:
+//  *       200:
+//  *         description: 성공적으로 get 완료
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *                 type: object
+//  *                 properties:
+//  *                   message:
+//  *                     type: string
+//  *                     example: "get userInfo success"
+//  */
+// router.get("/userInfo/:userId", async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+//       return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+//     }
+//     const info = await User.findById(userId);
+//     if (!info) {
+//       return res.status(404).json({ message: "근로 정보를 찾을 수 없습니다." });
+//     }
+//     res.json({ noticeId: info.noticeId, contract: info.contract });
+//   } catch (err) {
+//     res.status(500).json({ message: "서버 오류" });
+//   }
+// });
 
 export default router;

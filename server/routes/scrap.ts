@@ -9,6 +9,74 @@ router.get("/test", (req, res) => {
 });
 
 // 스크랩 토글 API
+/**
+ * @swagger
+ * /api/scrap/toggle:
+ *   post:
+ *     summary: 공고 스크랩 추가/삭제
+ *     tags: [Scrap - 스크랩 관리]
+ *     description: 사용자가 특정 공고를 스크랩하거나 스크랩을 취소하는 기능
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "65ab12cd34ef56gh78ij90kl"
+ *                 description: 스크랩을 수행하는 사용자 ID
+ *               postId:
+ *                 type: string
+ *                 example: "65cd34ef56gh78ij90kl12ab"
+ *                 description: 스크랩할 공고의 ID
+ *     responses:
+ *       200:
+ *         description: "스크랩 추가 또는 삭제 성공"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "스크랩이 추가되었습니다."
+ *                 isScraped:
+ *                   type: boolean
+ *                   example: true
+ *                   description: "true이면 스크랩 추가, false이면 스크랩 삭제됨"
+ *       400:
+ *         description: "잘못된 요청 (userId 또는 postId가 유효하지 않음)"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "유효하지 않은 사용자 ID입니다."
+ *       404:
+ *         description: "사용자 또는 공고를 찾을 수 없음"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "공고를 찾을 수 없습니다."
+ *       500:
+ *         description: "서버 내부 오류 발생"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "스크랩 토글 중 오류 발생"
+ */
 router.post("/toggle", async (req, res) => {
   try {
     const { userId, postId } = req.body;

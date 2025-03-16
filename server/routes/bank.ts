@@ -8,6 +8,7 @@ const router = express.Router();
  * /api/bank:
  *   post:
  *     summary: 계좌 및 거래 정보
+ *     tags: [Bank - 계좌]
  *     description: 핀 어카운트 직접발급확인, 직접발급, 잔액조회, 입금이체, 거래내역조회
  *     responses:
  *       200:

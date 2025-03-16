@@ -3,6 +3,56 @@ import nodemailer from "nodemailer";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/email/cert:
+ *   post:
+ *     summary: 이메일 인증번호 발송 API
+ *     tags: [Email - 이메일 인증]
+ *     description: 사용자의 이메일로 4자리 인증번호를 전송합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: 사용자 이메일 주소
+ *                 example: "test@example.com"
+ *     responses:
+ *       200:
+ *         description: 이메일 인증번호 전송 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: number
+ *                   example: 1234
+ *       400:
+ *         description: 이메일 주소가 제공되지 않은 경우
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "이메일 주소를 입력하세요."
+ *       500:
+ *         description: 이메일 전송 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "이메일 전송 중 오류가 발생했습니다."
+ */
 router.post("/cert", (req: Request, res: Response) => {
   const { email: userEmail } = req.body;
   const randomCode = Math.floor(1000 + Math.random() * 9000);
