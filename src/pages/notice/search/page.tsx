@@ -22,8 +22,8 @@ interface Props {
 }
 
 const BottomButton = styled.button<Props>`
-  position: absolute;
-  bottom: ${(props) => props.bottom || "60px"};
+  position: fixed;
+  bottom: 90px; /* BottomNav 높이(60px) + 여백(30px) */
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -32,6 +32,7 @@ const BottomButton = styled.button<Props>`
   font-size: 14px;
   background: #0b798b;
   color: white;
+  z-index: 100; /* 다른 요소 위에 표시 */
 `;
 
 const InsertTextInput = styled.input<Props>`
@@ -106,6 +107,16 @@ const SubTitle = styled.label`
   font-weight: 600;
   font-size: 16px;
   margin-bottom: -10px;
+`;
+
+// 폼의 하단에 여백을 주기 위한 스타일 컴포넌트
+const FormContainer = styled.form`
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 160px; /* 버튼 + BottomNav 높이 + 여백 */
 `;
 
 function NoticeSearchPage() {
@@ -199,233 +210,238 @@ function NoticeSearchPage() {
         </div>
       </Header>
       <Main hasBottomNav={true}>
-        <form
-          className="w-full p-layout flex flex-col gap-layout divide-[#0b798b]"
-          onSubmit={handleSearchSubmit}
-        >
-          <div className="relative">
-            <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
-              <SearchIcon />
-            </p>
-            <InsertTextInput
-              type="text"
-              placeholder="원하는 정보를 검색해주세요"
-              padding="0 50px"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <hr />
-          <SubTitle>지역 / 동네</SubTitle>
-          <div className="flex w-full relative">
-            <LocationSelectBox
-              className="mr-[-0.5px]"
-              value={sido}
-              onChange={(e) => {
-                setSido(e.target.value);
-                setSigungu("전체"); // 시/도 변경 시 시/군/구 초기화
-              }}
-              width="50%"
-              padding="0 0 0 45px"
-              radius="10px 0 0 10px"
-            >
-              {Object.keys(locations).map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </LocationSelectBox>
-            <SelectBox
-              className="ml-[-0.5px]"
-              value={sigungu}
-              onChange={(e) => setSigungu(e.target.value)}
-              width="50%"
-              radius="0 10px 10px 0"
-            >
-              {locations[sido].map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </SelectBox>
-          </div>
-          <SubTitle>직종</SubTitle>
-          <div>
-            <SelectBox
-              value={jobType}
-              onChange={(e) => setJobType(e.target.value)}
-            >
-              {jobTypes.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </SelectBox>
-          </div>
-          <SubTitle>급여</SubTitle>
-          <div className="flex w-full relative">
-            <SelectBox
-              id="dropdown"
-              value={payType}
-              onChange={(e) => setPayType(e.target.value)}
-              className="mr-[10px]"
-              width="30%"
-            >
-              {payTypes.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </SelectBox>
-            <span className="w-[70%] relative">
+        <div>
+          {" "}
+          {/* Main 컴포넌트의 자식을 하나의 div로 감싸기 */}
+          <FormContainer
+            className="divide-[#0b798b]"
+            onSubmit={handleSearchSubmit}
+          >
+            <div className="relative">
+              <p className="left-[15px] absolute top-1/2 -translate-y-1/2">
+                <SearchIcon />
+              </p>
               <InsertTextInput
                 type="text"
-                padding="0 69px 0 20px"
-                value={pay === 0 ? "" : pay.toLocaleString()}
-                onChange={(e) =>
-                  setPay(Number(e.target.value.replace(/[^\d]/g, "")))
-                }
-                onFocus={(e) => {
-                  e.target.value = pay === 0 ? "" : pay.toString();
-                }}
-                onBlur={(e) =>
-                  (e.target.value = pay ? pay.toLocaleString() : "")
-                }
+                placeholder="원하는 정보를 검색해주세요"
+                padding="0 50px"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              <span className="absolute right-[15px] text-main-darkGray top-1/2 -translate-y-1/2">
-                원 이상
-              </span>
-            </span>
-          </div>
-          <SubTitle>고용 형태</SubTitle>
-          <ul className="flex w-full gap-x-[5px] h-10 list-none relative">
-            {Object.entries(hireType).map(([value, isActive], index) => (
-              <li
-                key={index}
-                className={`w-1/3 text-sm flex justify-center items-center border rounded-[10px] cursor-pointer ${
-                  isActive
-                    ? "border-main-color bg-main-color text-white"
-                    : "border-main-gray bg-white text-main-darkGray"
-                }`}
-                onClick={handleClick}
+            </div>
+            <hr />
+            <SubTitle>지역 / 동네</SubTitle>
+            <div className="flex w-full relative">
+              <LocationSelectBox
+                className="mr-[-0.5px]"
+                value={sido}
+                onChange={(e) => {
+                  setSido(e.target.value);
+                  setSigungu("전체"); // 시/도 변경 시 시/군/구 초기화
+                }}
+                width="50%"
+                padding="0 0 0 45px"
+                radius="10px 0 0 10px"
               >
-                {value}
-              </li>
-            ))}
-          </ul>
-          <SubTitle>근무 기간</SubTitle>
-          <div className="w-full h-10 flex relative datepicker-css">
-            <DatePicker
-              locale={ko}
-              showIcon
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="20px"
-                  height="20px"
-                  color="#d9d9d9"
-                  fill="none"
-                  style={{
-                    padding: "10px 0 10px 15px",
-                    width: "20px",
-                    height: "20px",
+                {Object.keys(locations).map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </LocationSelectBox>
+              <SelectBox
+                className="ml-[-0.5px]"
+                value={sigungu}
+                onChange={(e) => setSigungu(e.target.value)}
+                width="50%"
+                radius="0 10px 10px 0"
+              >
+                {locations[sido].map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </SelectBox>
+            </div>
+            <SubTitle>직종</SubTitle>
+            <div>
+              <SelectBox
+                value={jobType}
+                onChange={(e) => setJobType(e.target.value)}
+              >
+                {jobTypes.map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </SelectBox>
+            </div>
+            <SubTitle>급여</SubTitle>
+            <div className="flex w-full relative">
+              <SelectBox
+                id="dropdown"
+                value={payType}
+                onChange={(e) => setPayType(e.target.value)}
+                className="mr-[10px]"
+                width="30%"
+              >
+                {payTypes.map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </SelectBox>
+              <span className="w-[70%] relative">
+                <InsertTextInput
+                  type="text"
+                  padding="0 69px 0 20px"
+                  value={pay === 0 ? "" : pay.toLocaleString()}
+                  onChange={(e) =>
+                    setPay(Number(e.target.value.replace(/[^\d]/g, "")))
+                  }
+                  onFocus={(e) => {
+                    e.target.value = pay === 0 ? "" : pay.toString();
                   }}
+                  onBlur={(e) =>
+                    (e.target.value = pay ? pay.toLocaleString() : "")
+                  }
+                />
+                <span className="absolute right-[15px] text-main-darkGray top-1/2 -translate-y-1/2">
+                  원 이상
+                </span>
+              </span>
+            </div>
+            <SubTitle>고용 형태</SubTitle>
+            <ul className="flex w-full gap-x-[5px] h-10 list-none relative">
+              {Object.entries(hireType).map(([value, isActive], index) => (
+                <li
+                  key={index}
+                  className={`w-1/3 text-sm flex justify-center items-center border rounded-[10px] cursor-pointer ${
+                    isActive
+                      ? "border-main-color bg-main-color text-white"
+                      : "border-main-gray bg-white text-main-darkGray"
+                  }`}
+                  onClick={handleClick}
                 >
-                  <path
-                    d="M18 2V4M6 2V4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {value}
+                </li>
+              ))}
+            </ul>
+            <SubTitle>근무 기간</SubTitle>
+            <div className="w-full h-10 flex relative datepicker-css">
+              <DatePicker
+                locale={ko}
+                showIcon
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="20px"
+                    height="20px"
+                    color="#d9d9d9"
+                    fill="none"
+                    style={{
+                      padding: "10px 0 10px 15px",
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  >
+                    <path
+                      d="M18 2V4M6 2V4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
 
-                  <path
-                    d="M3 8H21"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              }
-              toggleCalendarOnIconClick
-              dateFormat="yyyy-MM-dd"
-              startDate={startDate}
-              endDate={endDate}
-              popperPlacement="bottom-start"
-              fixedHeight
-              selectsStart
-              className="left-wrapper"
-              minDate={new Date()}
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-            />
-            <DatePicker
-              locale={ko}
-              showIcon
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="20px"
-                  height="20px"
-                  color="#d9d9d9"
-                  fill="none"
-                  style={{
-                    padding: "10px 0 10px 15px",
-                    width: "20px",
-                    height: "20px",
-                  }}
-                >
-                  <path
-                    d="M18 2V4M6 2V4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                    <path
+                      d="M3 8H21"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                }
+                toggleCalendarOnIconClick
+                dateFormat="yyyy-MM-dd"
+                startDate={startDate}
+                endDate={endDate}
+                popperPlacement="bottom-start"
+                fixedHeight
+                selectsStart
+                className="left-wrapper"
+                minDate={new Date()}
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+              />
+              <DatePicker
+                locale={ko}
+                showIcon
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="20px"
+                    height="20px"
+                    color="#d9d9d9"
+                    fill="none"
+                    style={{
+                      padding: "10px 0 10px 15px",
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  >
+                    <path
+                      d="M18 2V4M6 2V4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
 
-                  <path
-                    d="M3 8H21"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              }
-              toggleCalendarOnIconClick
-              dateFormat="yyyy-MM-dd"
-              startDate={startDate}
-              endDate={endDate}
-              popperPlacement="bottom-start"
-              fixedHeight
-              selectsEnd
-              className="right-wrapper"
-              minDate={startDate ?? undefined}
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-            />
-          </div>
-          <BottomButton bottom="31px" type="submit">
+                    <path
+                      d="M3 8H21"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                }
+                toggleCalendarOnIconClick
+                dateFormat="yyyy-MM-dd"
+                startDate={startDate}
+                endDate={endDate}
+                popperPlacement="bottom-start"
+                fixedHeight
+                selectsEnd
+                className="right-wrapper"
+                minDate={startDate ?? undefined}
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+              />
+            </div>
+          </FormContainer>
+          {/* 고정된 버튼 */}
+          <BottomButton type="submit" onClick={handleSearchSubmit}>
             검색 결과 보기
           </BottomButton>
-        </form>
+        </div>
       </Main>
       <BottomNav />
     </>
