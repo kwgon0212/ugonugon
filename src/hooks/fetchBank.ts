@@ -9,7 +9,7 @@ export interface Bank extends Document {
 export const postBank = async (
   ApiNm: string,
   data: object,
-  account: string = "3020000012646"
+  account: string = "3020000012627"
 ) => {
   try {
     const today = new Date();
