@@ -97,11 +97,7 @@ const BankAccountPage = () => {
         Dmcnt: "100",
       };
 
-      const historyInfo = await postBank(
-        "InquireTransactionHistory",
-        tmpData,
-        Acno
-      );
+      const historyInfo = await postBank("InquireTransactionHistory", tmpData);
 
       if (historyInfo.error) return;
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
@@ -109,11 +105,7 @@ const BankAccountPage = () => {
       } else {
         setHistory(historyInfo);
       }
-      const Ldbl = await postBank(
-        "InquireBalance",
-        { FinAcno: true },
-        userData.bankAccount.account
-      );
+      const Ldbl = await postBank("InquireBalance", { FinAcno: true }, Acno);
       setBalance(Ldbl.Ldbl);
     };
 
