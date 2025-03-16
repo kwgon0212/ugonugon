@@ -112,7 +112,9 @@ const BankAccountPage = () => {
       const Ldbl = await postBank(
         "InquireBalance",
         { FinAcno: true },
-        userData.bankAccount.account
+        userData.bankAccount.account.startsWith("3020000012")
+          ? userData.bankAccount.account
+          : "3020000012627"
       );
       setBalance(Ldbl.Ldbl);
     };
