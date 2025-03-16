@@ -91,7 +91,7 @@ const RegisterBankAccount = () => {
                 onChange={(e) => setRePassword(e.target.value)}
               />
               {password && rePassword && password !== rePassword && (
-                <span className="text-sm text-main-warn pl-[10px]">
+                <span className="text-sm text-warn pl-[10px]">
                   비밀번호가 일치하지 않습니다
                 </span>
               )}

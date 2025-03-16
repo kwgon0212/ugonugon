@@ -57,7 +57,9 @@ const CustomNoticeSlider = ({ notices }: Props) => {
                 <img
                   src={notice.images?.length ? notice.images[0] : "/logo.png"}
                   alt="img"
-                  className="size-[90px] rounded-[10px] object-cover border border-main-gray"
+                  className={`size-[90px] rounded-[10px] border border-main-gray ${
+                    notice.images?.length ? "object-contain" : " object-cover"
+                  }`}
                 />
 
                 <div className="flex-grow w-full flex flex-col gap-[4px] text-left">

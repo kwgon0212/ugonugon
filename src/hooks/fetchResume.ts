@@ -21,10 +21,10 @@ export interface Resume extends Document {
   addressDetail?: string;
   school: string;
   schoolState: string;
-  careers: Career[];
+  careers?: Career[];
   introduction: string;
   writtenDay: string;
-  applyIds: (null | undefined | string)[];
+  applyIds?: (null | undefined | string)[];
 }
 
 const getResume = async (resumeId: string | undefined) => {

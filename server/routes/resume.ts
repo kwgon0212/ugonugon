@@ -225,7 +225,6 @@ router.post("/", async (req, res) => {
   try {
     const resume = new Resumes(req.body.data);
     const newResume = await resume.save();
-    console.log(resume, "new resume임");
     res.status(200).json(newResume._id);
   } catch (err) {
     res.status(500).json({ error: err.message });

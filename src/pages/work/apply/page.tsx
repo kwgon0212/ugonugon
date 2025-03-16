@@ -30,7 +30,12 @@ const DeletedPostCard = ({
     >
       <div className="w-[90px] h-[90px] flex items-center justify-center bg-gray-200 rounded-[10px]">
         {/* 삭제된 공고 아이콘 (적절한 아이콘 경로로 교체) */}
-        <img src="/icons/deleted.svg" alt="Deleted Post" className="w-6 h-6" />
+        {/* <img src="/icons/deleted.svg" alt="Deleted Post" className="w-6 h-6" /> */}
+        <img
+          src="/logo.png"
+          alt="Deleted Post"
+          className="w-full h-full object-cover grayscale blur-sm -scale-x-100"
+        />
       </div>
       <div className="flex flex-col">
         <p className="text-lg font-bold text-gray-600">삭제된 공고</p>
@@ -145,7 +150,9 @@ const WorkApplyPage = () => {
                   <img
                     src={post.images.length ? post.images[0] : "/logo.png"}
                     alt="img"
-                    className="size-[90px] rounded-[10px] object-cover"
+                    className={`size-[90px] rounded-[10px] ${
+                      post.images?.length ? "object-contain" : " object-cover"
+                    }`}
                   />
                   <div className="w-full flex flex-col gap-[4px]">
                     <div className="flex gap-[10px] items-center">

@@ -133,7 +133,7 @@ function MypageResumeList() {
       <Header>
         <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/mypage")}
             className="absolute top-1/2 -translate-y-1/2 left-layout"
           >
             <ArrowLeftIcon className="text-white" />

@@ -11,6 +11,7 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import { useAppSelector } from "@/hooks/useRedux";
 import StarIcon from "@/components/icons/Star";
+import { putUser } from "@/hooks/fetchUser";
 
 const Body = styled.div`
   display: flex;
@@ -230,20 +231,31 @@ export function NoticeListPage() {
       });
 
       // 해당 ID의 공고 정보 가져오기
-      let postsResponse = await Promise.all(
+      let promiseResponse = await Promise.allSettled(
         userResponse.data.scraps.map((id: string) =>
           axios.get(`/api/post?postId=${id}`)
         )
       );
+      let deletedPostIdIndex: number[] = [];
+      let scrapsResponse = promiseResponse.reduce((p: PostData[], c, i) => {
+        if (c.status === "fulfilled") return [...p, c.value.data];
+        else {
+          deletedPostIdIndex.push(i);
+          return p;
+        }
+      }, []);
 
-      postsResponse = postsResponse.map((v) => v.data);
-
-      setTotalPages(Math.ceil(postsResponse.length / itemsPerPage));
-      setTotalItems(postsResponse.length); // 추가된 부분
-      setNotice(postsResponse.length > 0);
+      putUser(userId, {
+        scraps: userResponse.data.scraps.filter(
+          (v: string, i: number) => !deletedPostIdIndex.includes(i)
+        ),
+      });
+      setTotalPages(Math.ceil(scrapsResponse.length / itemsPerPage));
+      setTotalItems(scrapsResponse.length); // 추가된 부분
+      setNotice(scrapsResponse.length > 0);
 
       setFilteredPosts(
-        postsResponse.splice(
+        scrapsResponse.splice(
           itemsPerPage * page - itemsPerPage,
           itemsPerPage * page
         )
@@ -278,7 +290,7 @@ export function NoticeListPage() {
   // useEffect에서 초기 데이터 로딩
   useEffect(() => {
     fetchPosts();
-  }, [currentPage, itemsPerPage]);
+  }, [userId, currentPage, itemsPerPage]);
 
   // 페이지 그룹 당 보여줄 페이지 개수
   const pagesToShow = 5;

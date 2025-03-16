@@ -28,6 +28,7 @@ const ImageSlider = ({ imageArr }: Props) => {
     //   <div className="w-4 h-4 bg-gray-400 rounded-full shadow-inner hover:bg-gray-500 transition"></div>
     // ),
   };
+  imageArr = imageArr.filter((v) => !v.startsWith("https://file.albamon.com"));
   return (
     <div className="slider-container">
       <Slider {...settings}>

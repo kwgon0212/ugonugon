@@ -377,11 +377,12 @@ const ReCruitPage: React.FC = () => {
 
           const workTime =
             (new Date(post.hour.end).getTime() -
-              new Date(post.hour.start).getTime() +
-              new Date(post.restTime.end).getTime() -
+              new Date(post.hour.start).getTime() -
+              new Date(post.restTime.end).getTime() +
               new Date(post.restTime.start).getTime()) /
             (60 * 60 * 1000);
           let totalPay = 0;
+
           if (post.pay.type === "시급")
             totalPay += post.pay.value * workDays * workTime;
           else if (post.pay.type === "일급")
@@ -602,6 +603,9 @@ const ReCruitPage: React.FC = () => {
     } catch (error) {
       console.error("Attendance error", error);
     }
+    console.log("AcnoAcnoAcnoAcnoAcnoAcno");
+    console.log(Acno);
+
     const res = await postBank("ReceivedTransferAccountNumber", {
       Bncd: "011",
       Acno,
@@ -611,6 +615,15 @@ const ReCruitPage: React.FC = () => {
     });
     if (res) setPayModal(!payModal);
     setReload(!reload);
+    // const res = await postBank("DrawingTransfer", {
+    //   Bncd: "011",
+    //   FinAcno: true,
+    //   Tram: Tram.replace(/,/g, ""),
+    //   DractOtlt: "페이러너 임금 지불",
+    //   MractOtlt: "페이러너 임금 지급",
+    // });
+    // if (res) setPayModal(!payModal);
+    // setReload(!reload);
   };
 
   return (

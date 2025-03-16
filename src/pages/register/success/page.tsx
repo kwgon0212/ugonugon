@@ -51,10 +51,8 @@ function RegisterSuccessPage() {
   const handleClickNext = async () => {
     if (!isCompleteRegister) {
       alert("잘못된 접근입니다");
-      navigate("/login");
-
-      return;
     }
+    navigate("/login");
 
     const response = await fetch("/api/register", {
       method: "POST",

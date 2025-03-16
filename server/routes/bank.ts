@@ -51,9 +51,9 @@ router.post("/", async (req, res) => {
     req.body.Header.IsTuno = CurrentIsTuno;
     if (req.body.FinAcno) {
       req.body.FinAcno =
-        req.body.account === "3020000012625"
-          ? "00820100028990000000000026652"
-          : process.env.FinAcno;
+        req.body.account === "3020000012680"
+          ? process.env.FinAcno80
+          : process.env.FinAcno82;
     }
 
     req.body.Header.FintechApsno = FintechApsno;

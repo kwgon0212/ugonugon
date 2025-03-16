@@ -307,7 +307,6 @@ const NoticeDetailPage = () => {
     return <NotFound />;
   }
 
-  console.log(postData?.postDetail);
   // 헤더는 유지하고 내용만 로딩 컴포넌트로 대체하는 방식으로 변경
   return (
     <>

@@ -225,7 +225,8 @@ interface PaginationData {
 
 export function NoticeListPage() {
   const location = useLocation();
-  const searchParams = location.state || {};
+  const [searchParams, setSearchParams] = useState(location.state || {});
+  // const searchParams = location.state || {};
 
   const [hasNotice, setNotice] = useState(true);
   const [isOpen, setOpen] = useState(false);
@@ -478,7 +479,7 @@ export function NoticeListPage() {
         updatedParams.sigungu = "전체";
       }
     }
-
+    setSearchParams(updatedParams);
     // 새 파라미터로 API 호출
     fetchPosts(updatedParams, 1, itemsPerPage);
   };
@@ -583,9 +584,14 @@ export function NoticeListPage() {
                         navigate(`/notice/${notice._id.toString()}`)
                       }
                     >
-                      <div className="mr-2 w-20 h-20 rounded-lg border border-main-darkGray min-w-20">
+                      <div className="mr-2 w-20 h-20 ob rounded-lg border border-main-darkGray min-w-20">
                         <img
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full ${
+                            notice.images?.length
+                              ? "object-contain"
+                              : " object-cover"
+                          }
+                          `}
                           src={
                             notice.images?.length
                               ? notice.images[0]

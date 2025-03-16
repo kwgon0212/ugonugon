@@ -28,17 +28,19 @@ const BankAccountPage = () => {
     new Date().getFullYear().toString()
   );
   const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(
-    new Date().getMonth()
+    selectedYear === new Date().getFullYear().toString()
+      ? new Date().getMonth()
+      : new Date().getMonth() + 1
   );
-  const [isHiddenhistory, setIsHiddenhistory] = useState(false);
+  const [isHiddenhistory, setIsHiddenhistory] = useState(true);
   const [userBank, setUserBank] = useState<User["bankAccount"] | null>(null);
   const sliderRef = useRef<Slider | null>(null);
   const navigate = useNavigate();
 
-  const years: number[] = [];
-  for (let i = new Date().getFullYear(); i > 1999; i--) {
-    years.push(i);
-  }
+  const years: number[] = [
+    new Date().getFullYear(),
+    new Date().getFullYear() - 1,
+  ];
   const months = [
     "01",
     "02",
@@ -82,7 +84,7 @@ const BankAccountPage = () => {
       Ineymd = Ineymd > new Date() ? new Date() : Ineymd;
       const Acno = userData.bankAccount.account.startsWith("3020000012")
         ? userData.bankAccount.account
-        : "3020000012646";
+        : "3020000012682";
 
       const tmpData = {
         Bncd: "011",
@@ -95,11 +97,7 @@ const BankAccountPage = () => {
         Dmcnt: "100",
       };
 
-      const historyInfo = await postBank(
-        "InquireTransactionHistory",
-        tmpData,
-        Acno
-      );
+      const historyInfo = await postBank("InquireTransactionHistory", tmpData);
 
       if (historyInfo.error) return;
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
@@ -107,11 +105,7 @@ const BankAccountPage = () => {
       } else {
         setHistory(historyInfo);
       }
-      const Ldbl = await postBank(
-        "InquireBalance",
-        { FinAcno: true },
-        userData.bankAccount.account
-      );
+      const Ldbl = await postBank("InquireBalance", { FinAcno: true }, Acno);
       setBalance(Ldbl.Ldbl);
     };
 
@@ -121,7 +115,11 @@ const BankAccountPage = () => {
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newYear = e.target.value;
     setSelectedYear(newYear);
-    setSelectedMonthIndex(0);
+    setSelectedMonthIndex(
+      newYear === new Date().getFullYear().toString()
+        ? new Date().getMonth()
+        : new Date().getMonth() + 1
+    );
     if (sliderRef.current) sliderRef.current.slickGoTo(0);
   };
 
@@ -129,10 +127,6 @@ const BankAccountPage = () => {
     const newMonthIndex = months.indexOf(e.target.value);
     setSelectedMonthIndex(newMonthIndex);
     if (sliderRef.current) sliderRef.current.slickGoTo(newMonthIndex);
-  };
-
-  const handleAfterChange = (index: number) => {
-    setSelectedMonthIndex(index);
   };
 
   const settings = {
@@ -143,10 +137,7 @@ const BankAccountPage = () => {
     fade: true,
     slidesToShow: 1,
     slidesToScroll: 1,
-    afterChange: handleAfterChange,
   };
-  console.log(history);
-  // console.log(history?.REC);
 
   return (
     <>
@@ -238,11 +229,31 @@ const BankAccountPage = () => {
                       onChange={handleMonthChange}
                       className="appearance-none pl-[20px] pr-[40px] h-[40px] text-center rounded-[10px] border border-main-gray"
                     >
-                      {months.map((month, index) => (
-                        <option key={month} value={month}>
-                          {month}월
-                        </option>
-                      ))}
+                      {selectedYear === new Date().getFullYear().toString()
+                        ? months.map((month, index) => (
+                            <option
+                              key={month}
+                              value={month}
+                              className={`${
+                                index > new Date().getMonth() ? "hidden" : ""
+                              }`}
+                            >
+                              {month}월
+                            </option>
+                          ))
+                        : months.map((month, index) => (
+                            <option
+                              key={month}
+                              value={month}
+                              className={`${
+                                index < new Date().getMonth() + 1
+                                  ? "hidden"
+                                  : ""
+                              }`}
+                            >
+                              {month}월
+                            </option>
+                          ))}
                     </select>
                     <div className="absolute right-[10px] top-1/2 -translate-y-1/2">
                       <ArrowDownIcon color="#717171" />
