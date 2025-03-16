@@ -84,7 +84,7 @@ const BankAccountPage = () => {
       Ineymd = Ineymd > new Date() ? new Date() : Ineymd;
       const Acno = userData.bankAccount.account.startsWith("3020000012")
         ? userData.bankAccount.account
-        : "3020000012646";
+        : "3020000012627";
 
       const tmpData = {
         Bncd: "011",
