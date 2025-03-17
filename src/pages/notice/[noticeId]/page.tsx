@@ -82,7 +82,7 @@ const NoticeDetailPage = () => {
   const handleToggleScrap = async () => {
     if (isScrapLoading || !userId || !noticeId) return;
 
-    setIsScrapLoading(true);
+    // setIsScrapLoading(true);
 
     try {
       const response = await axios.post("/api/scrap/toggle", {
@@ -93,11 +93,13 @@ const NoticeDetailPage = () => {
       setIsScraped(response.data.isScraped);
 
       // 스크랩 상태에 따라 다른 메시지 표시
-      if (response.data.isScraped) {
-        alert("공고가 스크랩 되었습니다.");
-      } else {
-        alert("공고 스크랩이 취소되었습니다.");
-      }
+
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        setIsScrapLoading(true);
+        setTimeout(() => {
+          setIsScrapLoading(false);
+        }, 1500);
+      });
     } catch (error) {
       console.error("스크랩 토글 오류:", error);
       alert("스크랩 처리 중 오류가 발생했습니다.");
@@ -351,9 +353,23 @@ const NoticeDetailPage = () => {
                   initial={{ opacity: 0, x: "40px" }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: "40px" }}
-                  className="w-fit absolute top-[20px] right-[20px] px-[10px] py-[5px] rounded-[10px] bg-black/30 z-10"
+                  className="w-fit absolute top-[20px] right-[20px] px-[10px] py-[5px] rounded-[10px] bg-selected-box z-10"
                 >
                   <span className="text-black">링크가 복사되었습니다</span>
+                </motion.div>
+              )}
+              {isScrapLoading && (
+                <motion.div
+                  initial={{ opacity: 0, x: "40px" }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: "40px" }}
+                  className="w-fit absolute top-[20px] right-[20px] px-[10px] py-[5px] rounded-[10px] bg-selected-box z-10"
+                >
+                  <span className="text-black">
+                    {isScraped
+                      ? "공고가 스크랩 되었습니다."
+                      : "공고 스크랩이 취소되었습니다."}
+                  </span>
                 </motion.div>
               )}
             </AnimatePresence>
