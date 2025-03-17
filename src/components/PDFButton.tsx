@@ -44,7 +44,7 @@ const PDFButton = ({
         `/api/users?userId=${employerId}`
       );
       const employer = {
-        _id: userResponse.data._id,
+        _id: employerResponse.data._id,
         name: employerResponse.data.name,
         address: employerResponse.data.address,
         phone: employerResponse.data.phone,

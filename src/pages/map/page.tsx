@@ -248,15 +248,15 @@ export default function MapPage(): ReactElement {
   return (
     <div>
       <Header>
-        <div className="flex items-center h-full ml-2">
+        <div className="flex items-center h-full px-[20px] bg-main-color text-white">
           <button
             onClick={() => {
               navigate(-1);
             }}
           >
-            <ArrowLeftIcon />
+            <ArrowLeftIcon className="text-white" />
           </button>
-          <span className="font-bold flex justify-center w-full mr-3">
+          <span className="font-bold flex justify-center w-full">
             내 주변 채용정보
           </span>
         </div>
