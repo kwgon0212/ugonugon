@@ -91,11 +91,13 @@ function App() {
 
               <Route path="/mypage">
                 <Route index element={<MyPage />} />
-                <Route path="*" element={<NotFound />} />
-                <Route path="resume/add" element={<MypageResumeAdd />} />
-                <Route path="resume/list">
-                  <Route index element={<MypageResumeList />} />
-                  <Route path=":resumeID" element={<MypageResumeListId />} />
+                <Route path="resume">
+                  <Route index element={<NotFound />} />
+                  <Route path="add" element={<MypageResumeAdd />} />
+                  <Route path="list">
+                    <Route index element={<MypageResumeList />} />
+                    <Route path=":resumeID" element={<MypageResumeListId />} />
+                  </Route>
                 </Route>
                 <Route path="scrab" element={<MypageScrabPage />} />
                 <Route path="bank-account" element={<BankAccountPage />} />
@@ -114,8 +116,10 @@ function App() {
                 <Route path=":chatroomId" element={<ChattingPage />} />
               </Route>
 
-              <Route path="/work" element={<WorkPage />} />
-              <Route path="/work/apply" element={<WorkApplyPage />} />
+              <Route path="/work">
+                <Route index element={<WorkPage />} />
+                <Route path="/apply" element={<WorkApplyPage />} />
+              </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
