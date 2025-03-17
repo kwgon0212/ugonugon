@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import { useAppSelector } from "@/hooks/useRedux";
 import { getOtherUserId } from "@/util/chatUtils";
 import RefreshIcon from "@/components/icons/Refresh";
-import ChatLoading from "@/loading/page";
+import ChatLoading from "@/components/loading/page";
 // 채팅방 정보 인터페이스 정의
 interface ChatRoom {
   id: string;

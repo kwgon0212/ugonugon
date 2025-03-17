@@ -20,7 +20,7 @@ import DOMPurify from "dompurify";
 
 import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
 import { io } from "socket.io-client";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 const DeleteModal = Modal;
 const SelectResumeModal = Modal;
 const AcceptModal = Modal;

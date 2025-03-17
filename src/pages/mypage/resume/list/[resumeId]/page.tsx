@@ -23,7 +23,7 @@ import getResume, {
 import { useAppSelector } from "@/hooks/useRedux";
 import Modal from "@/components/Modal";
 import DaumPostcode from "react-daum-postcode";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 

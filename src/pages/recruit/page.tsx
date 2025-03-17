@@ -11,7 +11,7 @@ import ArrowUpIcon from "@/components/icons/ArrowUp";
 import ReCruitPageFail from "./ReCruitPageFail";
 import { useAppSelector } from "@/hooks/useRedux";
 import AddIcon from "@/components/icons/Plus";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 import ProfileIcon from "@/components/icons/Profile";
 import getUser, { type User } from "@/hooks/fetchUser";
 import getResume, { Resume } from "@/hooks/fetchResume";

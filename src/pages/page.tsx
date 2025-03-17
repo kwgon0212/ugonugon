@@ -13,7 +13,7 @@ import Notice from "@/types/Notice";
 import axios from "axios";
 import MapIcon from "@/components/icons/Map";
 import { AnimatePresence, motion } from "framer-motion";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 
 const RootPage = () => {
   const searchKeywords = [

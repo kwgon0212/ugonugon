@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser } from "@/hooks/fetchUser";
 import ProfileIcon from "@/components/icons/Profile";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 import FlagIcon from "@/components/icons/Flag";
 
 const LogoutModal = Modal;

@@ -9,7 +9,7 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import { Link } from "react-router-dom";
 import AddIcon from "@/components/icons/Plus";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
-import Loading from "@/loading/page";
+import Loading from "@/components/loading/page";
 // 타입 정의
 interface User {
   _id: string;
