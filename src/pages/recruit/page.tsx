@@ -603,8 +603,6 @@ const ReCruitPage: React.FC = () => {
     } catch (error) {
       console.error("Attendance error", error);
     }
-    console.log("AcnoAcnoAcnoAcnoAcnoAcno");
-    console.log(Acno);
 
     const res = await postBank("ReceivedTransferAccountNumber", {
       Bncd: "011",
