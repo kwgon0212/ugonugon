@@ -22,7 +22,7 @@ interface Props {
 }
 
 const BottomButton = styled.button<Props>`
-  position: fixed;
+  position: absolute;
   bottom: 90px; /* BottomNav 높이(60px) + 여백(30px) */
   left: 50%;
   transform: translateX(-50%);
