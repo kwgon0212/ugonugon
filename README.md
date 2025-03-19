@@ -169,3 +169,6 @@ $ git clone https://github.com/kwgon0212/PayRunner.git
 $ npm i
 $ npm run dev
 ```
+
+## [발표 자료 링크 클릭](https://docs.google.com/presentation/d/15zcYyquQTVGIw74k3QwHhwMYnJdxq3p0/)
+※ 공유 문서 문제로 동영상 재생은 로딩 시간이 필요할 수 있습니다.
