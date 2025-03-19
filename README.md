@@ -153,9 +153,9 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 | 이름 | 역할 | GitHub |
 | ---- | ---- | ------ |
 | 김우곤(팀장) | 디자인 및 개발 총괄<br/>페이지 통합 | https://github.com/kwgon0212 |
-| 박해원 | Kakao Map API 연동<br/>채팅 및 고용 관련 페이지 담당|        |
-| 이유진 | GPS 연동<br/>공고 관련 페이지 담당 |        |
-| 이종혁 | 금융 API 연동<br/>유저 관련 페이지 담당 |        |
+| 박해원 | Kakao Map API 연동<br/>채팅 및 고용 관련 페이지 담당| https://github.com/haewonee |
+| 이유진 | GPS 연동<br/>공고 관련 페이지 담당 | https://github.com/Yu-Jin9 |
+| 이종혁 | 금융 API 연동<br/>유저 관련 페이지 담당 | https://github.com/wonder1ng |
 
 ---
 
