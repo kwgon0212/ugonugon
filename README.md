@@ -49,7 +49,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 > 근로 공고 등록부터 전자 근로계약서 작성, 출퇴근 관리, 자동 임금 정산까지, 근로자의 권익 보호와 고용주의 업무 편의를 위한 올인원 근로관리 솔루션입니다.
 
-![Project Banner](프로젝트_대표이미지_URL)
+![PayRunner](https://raw.githubusercontent.com/kwgon0212/PayRunner/refs/heads/main/public/logo.png)
 
 ---
 
@@ -95,6 +95,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ---
 
 ## ⚙️ 기술 스택
+### 아키텍쳐
+![image](https://github.com/user-attachments/assets/413efbdf-c6bf-4b0a-ac88-8c16496dfc4d)
 
 ### Frontend
 
@@ -109,11 +111,13 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ### Database
 
 - MongoDB
+- firebase
 
 ### API & Tools
 
 - Toss 전자 계약 API
 - Kakao Maps API
+- NH오픈플랫폼 개발자센터 API
 
 ---
 
@@ -129,7 +133,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### ERD 다이어그램
 
-ERD 확인하기
+![erd](https://github.com/user-attachments/assets/7f6ecb2e-cad4-4111-a1fb-a4932682ffd7)
 
 ---
 
@@ -148,8 +152,10 @@ ERD 확인하기
 
 | 이름 | 역할 | GitHub |
 | ---- | ---- | ------ |
-|      |      |        |
-|      |      |        |
+| 김우곤(팀장) | 디자인 및 개발 총괄<br/>페이지 통합 | https://github.com/kwgon0212 |
+| 박해원 | Kakao Map API 연동<br/>채팅 및 고용 관련 페이지 담당|        |
+| 이유진 | GPS 연동<br/>공고 관련 페이지 담당 |        |
+| 이종혁 | 금융 API 연동<br/>유저 관련 페이지 담당 |        |
 
 ---
 
@@ -157,7 +163,7 @@ ERD 확인하기
 
 ```bash
 # 프로젝트 클론
-$ git clone [repo URL]
+$ git clone https://github.com/kwgon0212/PayRunner.git
 
 # 프론트엔드 실행 & 백엔드 실행
 $ npm i
