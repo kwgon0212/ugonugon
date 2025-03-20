@@ -1,14 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import CancelIcon from "../../../components/icons/Cancel";
+import { useEffect, useRef } from "react";
+import Main from "@/components/Main";
 import { useAppSelector } from "@/hooks/useRedux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import JSConfetti from "js-confetti";
-import StatusBar from "@/components/StatusBar";
 import axios from "axios";
 import SubmitButton from "@/components/SubmitButton";
+import RegHeader from "@/components/RegHeader";
 
 function RegisterSuccessPage() {
   const registerUserInfo = useAppSelector((state) => state.registerUserInfo);
@@ -85,16 +82,7 @@ function RegisterSuccessPage() {
   };
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-          </div>
-          <StatusBar percent={100} />
-        </div>
-      </Header>
+      <RegHeader percent={100} />
       <Main hasBottomNav={false}>
         <div
           className="size-full p-layout flex flex-col gap-layout bg-white"

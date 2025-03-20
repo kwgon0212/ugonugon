@@ -1,14 +1,11 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import CancelIcon from "@/components/icons/Cancel";
 import InputComponent from "@/components/Input";
 import Main from "@/components/Main";
-import StatusBar from "@/components/StatusBar";
+import RegHeader from "@/components/RegHeader";
 import SubmitButton from "@/components/SubmitButton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setUserPassword } from "@/util/slices/registerUserInfoSlice";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterBankAccount = () => {
   const [password, setPassword] = useState("");
@@ -20,14 +17,6 @@ const RegisterBankAccount = () => {
   const email = useAppSelector((state) => state.registerUserInfo.email);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (email === "") {
-  //     alert("잘못된 접근입니다");
-  //     alert("로그인 화면으로 이동합니다");
-  //     navigate("/login");
-  //   }
-  // }, []);
-
   const handleClickNext = () => {
     console.log(password, rePassword);
     if (!isCorrectPassword) return;
@@ -38,19 +27,7 @@ const RegisterBankAccount = () => {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={87.5} />
-        </div>
-      </Header>
+      <RegHeader percent={87.5} />
       <Main hasBottomNav={false}>
         <div className="size-full p-layout flex flex-col gap-layout relative bg-white">
           <p className="text-xl font-bold">계정 등록</p>

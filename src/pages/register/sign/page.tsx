@@ -1,18 +1,13 @@
-import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import Header from "@/components/Header";
 import Main from "@/components/Main";
-// 헤더 아이콘
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import CancelIcon from "@/components/icons/Cancel";
 // 전자 서명판
 import SignatureCanvas from "react-signature-canvas";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { setUserSignature } from "@/util/slices/registerUserInfoSlice";
-import StatusBar from "@/components/StatusBar";
 import SubmitButton from "@/components/SubmitButton";
+import RegHeader from "@/components/RegHeader";
 
 const Head = styled.span`
   font-weight: bold;
@@ -66,19 +61,7 @@ export const RegisterSignPage = () => {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={50} />
-        </div>
-      </Header>
+      <RegHeader percent={50} />
       <Main hasBottomNav={false}>
         <div className="size-full bg-white p-layout flex flex-col gap-layout items-center">
           <Head className="text-xl text-left w-full">서명 등록</Head>

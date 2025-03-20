@@ -1,11 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
+import { useState, useRef } from "react";
+import Main from "@/components/Main";
 import styled from "styled-components";
-import ArrowLeftIcon from "../../../components/icons/ArrowLeft";
-import { Link, useNavigate } from "react-router-dom";
-import CancelIcon from "../../../components/icons/Cancel";
-import CheckIcon from "../../../components/icons/Check";
+import { useNavigate } from "react-router-dom";
+import CheckIcon from "@/components/icons/Check";
 import { useAppDispatch } from "@/hooks/useRedux";
 import {
   setUserName,
@@ -13,10 +10,9 @@ import {
   setUserResidentId,
   setUserSex,
 } from "@/util/slices/registerUserInfoSlice";
-import StatusBar from "@/components/StatusBar";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
-
+import RegHeader from "@/components/RegHeader";
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -129,19 +125,7 @@ function RegisterInfoPage() {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center size-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={12.5} />
-        </div>
-      </Header>
+      <RegHeader percent={12.5} />
       <Main hasBottomNav={false}>
         <>
           <MainContainer>

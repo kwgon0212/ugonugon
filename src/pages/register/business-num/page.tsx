@@ -1,12 +1,9 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
-import StatusBar from "@/components/StatusBar";
+import RegHeader from "@/components/RegHeader";
 import { useAppDispatch } from "@/hooks/useRedux";
 // import { setUserBisnessNumber } from "@/util/slices/registerUserInfoSlice";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function RegisterBusinessPage() {
   const [businessNumbers, setBusinessNumbers] = useState([""]);
@@ -44,19 +41,7 @@ function RegisterBusinessPage() {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={75} />
-        </div>
-      </Header>
+      <RegHeader percent={75} />
       <Main hasBottomNav={false}>
         <div className="flex flex-col gap-4 p-5">
           <p className="font-semibold text-xl">사업자번호</p>

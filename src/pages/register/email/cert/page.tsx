@@ -1,9 +1,6 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import CancelIcon from "@/components/icons/Cancel";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
-import StatusBar from "@/components/StatusBar";
+import RegHeader from "@/components/RegHeader";
 import SubmitButton from "@/components/SubmitButton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
@@ -12,7 +9,7 @@ import {
 } from "@/util/slices/registerUserInfoSlice";
 import axios from "axios";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const CertificationInput = styled.input`
@@ -101,9 +98,6 @@ function RegisterEmailCertPage() {
     e.preventDefault();
     const userFormEmailCode = Number(nums.join(""));
 
-    console.log("📌 입력한 인증번호:", userFormEmailCode);
-    console.log("📌 현재 Redux 저장된 인증번호:", emailCode);
-
     if (userFormEmailCode !== emailCode) {
       setIsOpenNotEqualEmailCodeModal(true);
       return;
@@ -115,19 +109,7 @@ function RegisterEmailCertPage() {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center w-full h-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={37.5} />
-        </div>
-      </Header>
+      <RegHeader percent={37.5} />
       <Main hasBottomNav={false}>
         <div className="size-full bg-white">
           <form

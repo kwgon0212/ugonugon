@@ -1,10 +1,8 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
-import CancelIcon from "@/components/icons/Cancel";
+import React, { useState } from "react";
 import InputComponent from "@/components/Input";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
-import StatusBar from "@/components/StatusBar";
+import RegHeader from "@/components/RegHeader";
 import SubmitButton from "@/components/SubmitButton";
 import { useAppDispatch } from "@/hooks/useRedux";
 import {
@@ -12,8 +10,7 @@ import {
   setUserEmailCode,
 } from "@/util/slices/registerUserInfoSlice";
 import axios from "axios";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const DupEmailModal = Modal;
 
@@ -27,11 +24,6 @@ function RegisterEmailPage() {
     const form = e.currentTarget;
     const email = form["email"].value;
 
-    // 이메일 중복 여부 API 호출
-    // !response.ok
-    // setIsOpenDupEmailModal(true);
-    // return;
-
     dispatch(setUserEmail(email));
 
     // 서버에 해당 이메일로 인증번호 전송 요청
@@ -44,19 +36,7 @@ function RegisterEmailPage() {
 
   return (
     <>
-      <Header>
-        <div className="relative flex flex-col justify-center size-full">
-          <div className="flex flex-row justify-between px-[20px]">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeftIcon />
-            </button>
-            <Link to="/login">
-              <CancelIcon />
-            </Link>
-          </div>
-          <StatusBar percent={37.5} />
-        </div>
-      </Header>
+      <RegHeader percent={37.5} />
       <Main hasBottomNav={false}>
         <div className="size-full bg-white">
           <form
