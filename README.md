@@ -1,55 +1,8 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
 # 📌 근로관리 올인원 플랫폼
 
 > 근로 공고 등록부터 전자 근로계약서 작성, 출퇴근 관리, 자동 임금 정산까지, 근로자의 권익 보호와 고용주의 업무 편의를 위한 올인원 근로관리 솔루션입니다.
 
-![Project Banner](프로젝트_대표이미지_URL)
+![PayRunner](https://raw.githubusercontent.com/kwgon0212/PayRunner/refs/heads/main/public/logo.png)
 
 ---
 
@@ -95,6 +48,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ---
 
 ## ⚙️ 기술 스택
+### 아키텍쳐
+![image](https://github.com/user-attachments/assets/413efbdf-c6bf-4b0a-ac88-8c16496dfc4d)
 
 ### Frontend
 
@@ -109,11 +64,13 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ### Database
 
 - MongoDB
+- firebase
 
 ### API & Tools
 
 - Toss 전자 계약 API
 - Kakao Maps API
+- NH오픈플랫폼 개발자센터 API
 
 ---
 
@@ -129,7 +86,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### ERD 다이어그램
 
-ERD 확인하기
+![erd](https://github.com/user-attachments/assets/7f6ecb2e-cad4-4111-a1fb-a4932682ffd7)
 
 ---
 
@@ -140,7 +97,7 @@ ERD 확인하기
 |      | 프로젝트 기획 및 설계    | ✅ 완료 |
 |      | DB 및 API 설계           | ✅ 완료 |
 |      | 프론트엔드 & 백엔드 개발 | ✅ 완료 |
-|      | 배포 및 실제 환경 테스트 | 🔴 예정 |
+|      | 로컬 서버 구동 | ✅ 완료 |
 
 ---
 
@@ -148,8 +105,10 @@ ERD 확인하기
 
 | 이름 | 역할 | GitHub |
 | ---- | ---- | ------ |
-|      |      |        |
-|      |      |        |
+| 김우곤(팀장) | 디자인 및 개발 총괄<br/>페이지 통합 | https://github.com/kwgon0212 |
+| 박해원 | Kakao Map API 연동<br/>채팅 및 고용 관련 페이지 담당| https://github.com/haewonee |
+| 이유진 | GPS 연동<br/>공고 관련 페이지 담당 | https://github.com/Yu-Jin9 |
+| 이종혁 | 금융 API 연동<br/>유저 관련 페이지 담당 | https://github.com/wonder1ng |
 
 ---
 
@@ -157,9 +116,12 @@ ERD 확인하기
 
 ```bash
 # 프로젝트 클론
-$ git clone [repo URL]
+$ git clone https://github.com/kwgon0212/PayRunner.git
 
 # 프론트엔드 실행 & 백엔드 실행
 $ npm i
 $ npm run dev
 ```
+
+## [발표 자료 링크 클릭](https://docs.google.com/presentation/d/15zcYyquQTVGIw74k3QwHhwMYnJdxq3p0/)
+※ 공유 문서 문제로 동영상 재생은 로딩 시간이 필요할 수 있습니다.
