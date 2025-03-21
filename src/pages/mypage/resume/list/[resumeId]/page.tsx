@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Header from "@/components/Header";
 import Main from "@/components/Main";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ProfileIcon from "@/components/icons/Profile";
 import CameraIcon from "@/components/icons/Camera";
 import PlusIcon from "@/components/icons/Plus";
