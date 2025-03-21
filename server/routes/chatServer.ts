@@ -19,16 +19,6 @@ const messageSchema = new mongoose.Schema({
 
 const Message = mongoose.model("Message", messageSchema);
 
-// 유저 스키마
-// const userSchema = new mongoose.Schema({
-//   _id: { type: String, required: true }, // 사용자 ID
-//   name: { type: String, required: true }, // 사용자 이름
-//   // 추가 필드는 필요에 따라 추가
-// });
-
-// const Useree = mongoose.model("Useree", userSchema);
-// const Users = mongoose.models.users;
-
 // 공고 스키마 (JobPosting 모델 정의)
 const JobPostingSchema = new mongoose.Schema(
   {

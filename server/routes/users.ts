@@ -2,26 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 
 const router = express.Router();
-
-/**
- * @swagger
- * /api/users:
- *   get:
- *     summary: user 정보
- *     description: 그냥 테스트 API임
- *     responses:
- *       200:
- *         description: 성공적으로 message 반환
- *         content:
- *           application/json:
- *             schema:
- *                 type: object
- *                 properties:
- *                   message:
- *                     type: string
- *                     example: "users"
- */
-
 const UsersSchema = new mongoose.Schema({
   name: { type: String, required: true },
   businessNumber: { type: Array, required: false },
@@ -67,8 +47,7 @@ const UsersSchema = new mongoose.Schema({
   ],
 });
 UsersSchema.index({ name: 1, residentId: 1 }, { unique: true });
-const Users = mongoose.model("users", UsersSchema);
-export { Users };
+export const Users = mongoose.model("users", UsersSchema);
 
 /**
  * @swagger

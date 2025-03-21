@@ -3,11 +3,6 @@ import mongoose from "mongoose";
 
 const router = express.Router();
 
-// 간단한 테스트 엔드포인트
-router.get("/test", (req, res) => {
-  res.status(200).json({ message: "Scrap router is working" });
-});
-
 // 스크랩 토글 API
 /**
  * @swagger

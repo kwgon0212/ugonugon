@@ -25,6 +25,8 @@ import Loading from "@/components/loading/page";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
 import HeaderBack from "@/components/HeaderBack";
+import CalendarIcon from "@/components/icons/Calendar";
+import { schoolOptions, schoolStateOptions } from "@/pages/notice/options";
 
 interface Props {
   width?: string;
@@ -70,22 +72,18 @@ const SelectBox = styled.select<Props>`
   }
 `;
 
+const bgCalender = (
+  <div style={{ padding: "10px 0 10px 15px" }}>
+    <CalendarIcon color="#d9d9d9" />
+  </div>
+);
+
 const CareerModal = Modal;
 const DeleteModal = Modal;
 
 function MypageResumeListId() {
   const [school, setSchool] = useState("");
-  const schoolTypes = [
-    "대학원(박사)",
-    "대학원(석사)",
-    "대학교(4년)",
-    "대학교(2, 3년)",
-    "고등학교",
-    "중학교",
-    "초등학교",
-  ];
   const [schoolState, setSchoolState] = useState("");
-  const schoolStateTypes = ["졸업", "재학", "휴학", "중퇴"];
   const [introduction, setIntroduction] = useState("");
   const [careers, setcareers] = useState<Career[]>();
   const [modal, setModal] = useState(false);
@@ -369,14 +367,14 @@ function MypageResumeListId() {
                   >
                     <option
                       className="text-main-darkGray"
-                      key={schoolTypes.length + 1}
+                      key={schoolOptions.length + 1}
                       value=""
                       disabled
                       hidden
                     >
                       학교
                     </option>
-                    {schoolTypes.map((value, index) => (
+                    {schoolOptions.map((value, index) => (
                       <option key={index} value={value}>
                         {value}
                       </option>
@@ -395,14 +393,14 @@ function MypageResumeListId() {
                   >
                     <option
                       className="text-main-darkGray"
-                      key={schoolStateTypes.length + 1}
+                      key={schoolStateOptions.length + 1}
                       value=""
                       disabled
                       hidden
                     >
                       상태
                     </option>
-                    {schoolStateTypes.map((value, index) => (
+                    {schoolStateOptions.map((value, index) => (
                       <option key={index} value={value}>
                         {value}
                       </option>
@@ -540,44 +538,7 @@ function MypageResumeListId() {
                   <DatePicker
                     locale={ko}
                     showIcon
-                    icon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="20px"
-                        height="20px"
-                        color="#717171"
-                        fill="none"
-                        style={{
-                          padding: "10px 0 10px 15px",
-                          width: "20px",
-                          height: "20px",
-                        }}
-                      >
-                        <path
-                          d="M18 2V4M6 2V4"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-
-                        <path
-                          d="M3 8H21"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    }
+                    icon={bgCalender}
                     toggleCalendarOnIconClick
                     dateFormat="yyyy/MM"
                     startDate={startDate}
@@ -606,44 +567,7 @@ function MypageResumeListId() {
                   <DatePicker
                     locale={ko}
                     showIcon
-                    icon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="20px"
-                        height="20px"
-                        color="#717171"
-                        fill="none"
-                        style={{
-                          padding: "10px 0 10px 15px",
-                          width: "20px",
-                          height: "20px",
-                        }}
-                      >
-                        <path
-                          d="M18 2V4M6 2V4"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-
-                        <path
-                          d="M3 8H21"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    }
+                    icon={bgCalender}
                     toggleCalendarOnIconClick
                     dateFormat="yyyy/MM"
                     startDate={startDate}

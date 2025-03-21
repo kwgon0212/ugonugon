@@ -1,7 +1,6 @@
 import express from "express";
 import multer from "multer";
 import sharp from "sharp";
-import path from "path";
 import { bucket } from "../firebaseAdmin";
 import { Users } from "./users";
 
