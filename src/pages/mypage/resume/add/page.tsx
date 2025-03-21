@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Header from "../../../../components/Header";
-import Main from "../../../../components/Main";
-import ArrowLeftIcon from "../../../../components/icons/ArrowLeft";
+import Header from "@/components/Header";
+import Main from "@/components/Main";
+import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ProfileIcon from "@/components/icons/Profile";
 import CameraIcon from "@/components/icons/Camera";
 import PlusIcon from "@/components/icons/Plus";
@@ -21,6 +21,7 @@ import DaumPostcode from "react-daum-postcode";
 import Loading from "@/components/loading/page";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
+import HeaderBack from "@/components/HeaderBack";
 
 interface Props {
   width?: string;
@@ -224,18 +225,7 @@ function MypageResumeAdd() {
 
   return (
     <>
-      <Header>
-        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute top-1/2 -translate-y-1/2 left-layout"
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span>이력서 등록</span>
-        </div>
-      </Header>
-
+      <HeaderBack title="이력서 등록" />
       <Main hasBottomNav={false}>
         <>
           <div className="size-full bg-white">

@@ -74,6 +74,8 @@ router.post("/", async (req, res) => {
     const finalRes = await resBank.json();
     bank.request = req.body;
     bank.response = finalRes;
+    // 이유는 알 수 없으나 처음에 아래 코드가 없으면 nh에서 없는 계좌로 response.
+    console.log(finalRes);
 
     await Banks.findByIdAndUpdate(reqBank._id, bank);
     res.status(200).json(finalRes);

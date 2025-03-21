@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DaumPostcode from "react-daum-postcode";
 import InputComponent from "@/components/Input";
 import Modal from "@/components/Modal";
@@ -11,6 +11,11 @@ interface PostcodeData {
 }
 
 interface AddressInputProps {
+  initialAddress?: {
+    zipcode: string;
+    street: string;
+    detail: string;
+  };
   onAddressSelect: (address: {
     zipcode: string;
     street: string;
@@ -28,11 +33,24 @@ const FindBtn = styled.button`
   color: white;
 `;
 
-const AddressInput: React.FC<AddressInputProps> = ({ onAddressSelect }) => {
-  const [postcode, setPostcode] = useState("");
-  const [address, setAddress] = useState("");
-  const [detailAddress, setDetailAddress] = useState("");
+const AddressInput: React.FC<AddressInputProps> = ({
+  initialAddress,
+  onAddressSelect,
+}) => {
+  const [postcode, setPostcode] = useState(initialAddress?.zipcode || "");
+  const [address, setAddress] = useState(initialAddress?.street || "");
+  const [detailAddress, setDetailAddress] = useState(
+    initialAddress?.detail || ""
+  );
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
+
+  useEffect(() => {
+    if (initialAddress) {
+      setPostcode(initialAddress.zipcode);
+      setAddress(initialAddress.street);
+      setDetailAddress(initialAddress.detail);
+    }
+  }, [initialAddress]);
 
   const handleOpenPostcodePopup = () => {
     setIsPostcodeOpen(true);
@@ -42,6 +60,11 @@ const AddressInput: React.FC<AddressInputProps> = ({ onAddressSelect }) => {
     setPostcode(data.zonecode);
     setAddress(data.address);
     setIsPostcodeOpen(false);
+    onAddressSelect({
+      zipcode: data.zonecode,
+      street: data.address,
+      detail: detailAddress,
+    });
   };
 
   const handleDetailAddressChange = (

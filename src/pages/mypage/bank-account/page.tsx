@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Header from "@/components/Header";
 import Main from "@/components/Main";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -14,6 +13,7 @@ import CloseEyeIcon from "@/components/icons/CloseEye";
 import OpenEyeIcon from "@/components/icons/OpenEye";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import postBank from "@/hooks/fetchBank";
+import HeaderBack from "@/components/HeaderBack";
 
 interface History {
   Header: {};
@@ -99,8 +99,13 @@ const BankAccountPage = () => {
 
       const historyInfo = await postBank("InquireTransactionHistory", tmpData);
 
-      if (historyInfo.error) return;
+      if (historyInfo.error) {
+        console.log(historyInfo.error);
+
+        return;
+      }
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
+        console.log(historyInfo);
         alert("조회기간이 잘못되었습니다.");
       } else {
         setHistory(historyInfo);
@@ -141,20 +146,7 @@ const BankAccountPage = () => {
 
   return (
     <>
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            내 계좌 관리
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="내 계좌 관리" />
       {userBank && (
         <Main hasBottomNav={false}>
           <div className="size-full flex flex-col gap-[20px] p-[20px]">

@@ -8,12 +8,6 @@ import SubmitButton from "@/components/SubmitButton";
 import RegHeader from "@/components/RegHeader";
 import AddressInput from "@/components/AddressInput";
 
-// 우편번호 데이터 타입 정의
-interface PostcodeData {
-  zonecode: string; // 우편번호
-  address: string; // 기본 주소
-}
-
 const Head = styled.div`
   display: flex;
   align-self: start;

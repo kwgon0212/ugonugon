@@ -1,6 +1,5 @@
 import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
-import ArrowRightIcon from "@/components/icons/ArrowRight";
 import EditIcon from "@/components/icons/Edit";
 import ResumeIcon from "@/components/icons/Resume";
 import ResumeEditIcon from "@/components/icons/ResumeEdit";
@@ -11,7 +10,7 @@ import Modal from "@/components/Modal";
 import getUser, { type User } from "@/hooks/fetchUser";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { logout } from "@/util/slices/authSlice";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser } from "@/hooks/fetchUser";
 import ProfileIcon from "@/components/icons/Profile";
@@ -24,7 +23,6 @@ const WithdrawModal = Modal;
 const MyPage = () => {
   const userId = useAppSelector((state) => state.auth.user?._id);
   const [userData, setUserData] = useState<User | null>(null);
-  const [balance, setBalance] = useState<string | number>();
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);

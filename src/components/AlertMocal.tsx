@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -44,9 +43,10 @@ const ExitBtn = styled.button`
 
 interface AlertModalProps {
   handleClose: () => void; // handleClose 함수 타입 정의
+  link: string;
 }
 
-export function AlertModal({ handleClose }: AlertModalProps) {
+export function AlertModal({ handleClose, link }: AlertModalProps) {
   return (
     <>
       <MainWrap>
@@ -67,7 +67,7 @@ export function AlertModal({ handleClose }: AlertModalProps) {
                 취소
               </CancleBtn>
             </div>
-            <Link to="/mypage" className="flex w-[40%]">
+            <Link to={link} className="flex w-[40%]">
               <ExitBtn className=" bg-main-color">나가기</ExitBtn>
             </Link>
           </div>

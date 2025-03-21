@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
-
-import Header from "@/components/Header";
 import Main from "@/components/Main";
-
-import banks from "./banks";
+import banks from "@/types/banks";
 import { useAppSelector } from "@/hooks/useRedux";
 import { putUser, type User } from "@/hooks/fetchUser";
 import SubmitButton from "@/components/SubmitButton";
 import InputComponent from "@/components/Input";
 import Modal from "@/components/Modal";
 import CancelIcon from "@/components/icons/Cancel";
+import HeaderBack from "@/components/HeaderBack";
 
 const BankBottomSheet = Modal;
 const SaveModal = Modal;
@@ -52,25 +48,13 @@ export function EditBankAccountPageBefore() {
 
   return (
     <>
-      <Header>
-        {/* <HeaderWrap>
-          <div onClick={handleOpenAlertModal} className="flex w-fit h-fit ">
-            <ArrowLeftIcon color={color} />
-          </div>
-        </HeaderWrap> */}
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button onClick={() => setIsOpenSaveModal(true)}>
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            내 계좌 관리
-          </span>
-        </div>
-      </Header>
+      <HeaderBack
+        title="내 계좌 변경"
+        backPage={() => setIsOpenSaveModal(true)}
+      />
       <Main hasBottomNav={false}>
         <>
           <div className="size-full p-layout flex flex-col gap-layout relative bg-white">
-            {/* {isModalOpen && <AlertModal handleClose={handleCloseAlertModal} />} */}
             <p className="text-xl font-bold">계좌 등록</p>
             <div className="w-full relative">
               <InputComponent

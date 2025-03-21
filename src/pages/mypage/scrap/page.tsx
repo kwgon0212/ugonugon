@@ -1,9 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
-import mongoose from "mongoose";
-import Header from "../../../components/Header";
 import Main from "../../../components/Main";
 import BottomNav from "../../../components/BottomNav";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
@@ -12,6 +10,8 @@ import ArrowRightIcon from "@/components/icons/ArrowRight";
 import { useAppSelector } from "@/hooks/useRedux";
 import StarIcon from "@/components/icons/Star";
 import { putUser } from "@/hooks/fetchUser";
+import HeaderBack from "@/components/HeaderBack";
+import PostData from "@/types/postdata";
 
 const Body = styled.div`
   display: flex;
@@ -121,75 +121,6 @@ const Drop = styled.ul`
   border-radius: 5px;
   list-style: none;
 `;
-
-interface PostData {
-  _id: string;
-  title: string;
-  jobType: string;
-  pay: {
-    type: string;
-    value: number;
-  };
-  hireType: string[];
-  period: {
-    start: string | Date;
-    end: string | Date;
-    discussion: boolean;
-  };
-  hour: {
-    start: string | Date;
-    end: string | Date;
-    discussion: boolean;
-  };
-  restTime?: {
-    start: string | Date;
-    end: string | Date;
-  };
-  day: string[];
-  workDetail?: string;
-  welfare?: string;
-  postDetail?: string;
-  deadline?: {
-    date: string | Date;
-    time: string | Date;
-  };
-  person?: number;
-  preferences?: string;
-  education?: {
-    school: string;
-    state: string;
-  };
-  address: {
-    zipcode: string;
-    street: string;
-    detail?: string;
-    lat?: number;
-    lng?: number;
-  };
-  recruiter?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-  author: string;
-  images?: [string];
-  createdAt?: string | Date;
-  applies: [
-    {
-      userId: mongoose.Types.ObjectId;
-      resumeId: mongoose.Types.ObjectId;
-      status?: "pending" | "accepted" | "rejected";
-      appliedAt?: string | Date;
-    }
-  ];
-}
-
-interface PaginationData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 export function NoticeListPage() {
   const userId = useAppSelector((state) => state.auth.user?._id);
@@ -305,17 +236,7 @@ export function NoticeListPage() {
 
   return (
     <>
-      <Header>
-        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
-          <button
-            onClick={() => navigate("/mypage")}
-            className="absolute top-1/2 -translate-y-1/2 left-layout"
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span>스크랩 공고</span>
-        </div>
-      </Header>
+      <HeaderBack title="스크랩 공고" backPage={"/mypage"} />
       <Main hasBottomNav={true}>
         <Body>
           {hasNotice ? (

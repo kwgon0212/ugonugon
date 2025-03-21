@@ -26,6 +26,7 @@ import DaumPostcode from "react-daum-postcode";
 import Loading from "@/components/loading/page";
 import InputComponent from "@/components/Input";
 import SubmitButton from "@/components/SubmitButton";
+import HeaderBack from "@/components/HeaderBack";
 
 interface Props {
   width?: string;
@@ -200,17 +201,7 @@ function MypageResumeListId() {
 
   return (
     <>
-      <Header>
-        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute top-1/2 -translate-y-1/2 left-layout"
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span>이력서 수정</span>
-        </div>
-      </Header>
+      <HeaderBack title="이력서 수정" />
       <Main hasBottomNav={false}>
         <div className="size-full bg-white">
           {isPostcodeOpen && (
