@@ -18,7 +18,6 @@ const RegisterBankAccount = () => {
   const navigate = useNavigate();
 
   const handleClickNext = () => {
-    console.log(password, rePassword);
     if (!isCorrectPassword) return;
 
     dispatch(setUserPassword(password));

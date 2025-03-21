@@ -85,7 +85,6 @@ const WorkApplyPage = () => {
           }
         })
       );
-      console.log("post", data);
       setPosts(data);
     };
 
