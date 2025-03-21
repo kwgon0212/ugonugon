@@ -105,7 +105,6 @@ const BankAccountPage = () => {
         return;
       }
       if (historyInfo.Header.Rsms !== "정상처리 되었습니다.") {
-        console.log(historyInfo);
         alert("조회기간이 잘못되었습니다.");
       } else {
         setHistory(historyInfo);
