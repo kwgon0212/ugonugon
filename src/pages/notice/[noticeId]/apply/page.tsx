@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import ProfileIcon from "@/components/icons/Profile";
 import BirthIcon from "@/components/icons/Birth";
@@ -8,8 +6,9 @@ import Main from "@/components/Main";
 import getResume, { Resume } from "@/hooks/fetchResume";
 import Notice from "@/types/Notice";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import HeaderBack from "@/components/HeaderBack";
 
 // posts스키마의 apply
 interface Apply {
@@ -67,20 +66,7 @@ const NoticeApplyPage = () => {
   };
   return (
     <>
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            지원현황
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="지원현황" />
       <Main hasBottomNav={false}>
         <div className="size-full bg-white relative">
           <div className="w-full h-full flex flex-col relative">
@@ -88,7 +74,6 @@ const NoticeApplyPage = () => {
               <div className="bg-white rounded-[10px] p-[10px]">
                 <h1 className="font-bold text-[20px]">{postData?.title}</h1>
                 <div className="text-[14px] flex w-full justify-end">
-                  {/* <h3>한경 2기 풀스택반</h3> */}
                   <span className="text-main-darkGray text-xs">
                     ~{" "}
                     {postData &&

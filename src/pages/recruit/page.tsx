@@ -16,7 +16,7 @@ import ProfileIcon from "@/components/icons/Profile";
 import getUser, { type User } from "@/hooks/fetchUser";
 import getResume, { Resume } from "@/hooks/fetchResume";
 import postBank from "@/hooks/fetchBank";
-
+import PostData from "@/types/postdata";
 // 타입 정의
 interface Post {
   _id: string;
@@ -69,13 +69,13 @@ interface WorkerWithAttendance {
   resume: Resume;
   user: User;
   attendance?: Attendance | null;
-  post: Post;
+  post: PostData;
   hasAttendance: boolean; // 출근 기록이 있는지 여부
   totalPay?: number;
 }
 
 interface WorkerGroup {
-  post: Post;
+  post: PostData;
   workers: WorkerWithAttendance[];
   isExpanded: boolean;
 }
@@ -138,7 +138,7 @@ const formatTime = (dateString?: string): string => {
 };
 
 // 근무일자 포맷팅 함수 (공고 데이터 사용)
-const formatWorkDate = (post: Post): string => {
+const formatWorkDate = (post: PostData): string => {
   try {
     // 오늘 날짜 기준으로 표시 (출근 데이터가 없는 경우)
     const today = new Date();
@@ -153,7 +153,9 @@ const formatWorkDate = (post: Post): string => {
 
     // 시간 정보가 있으면 추가
     if (post.hour?.start && post.hour?.end) {
-      dateStr += ` ${formatTime(post.hour.start)}-${formatTime(post.hour.end)}`;
+      dateStr += ` ${formatTime(post.hour.start as string)}-${formatTime(
+        post.hour.end as string
+      )}`;
     }
 
     return dateStr;
@@ -410,7 +412,7 @@ const ReCruitPage: React.FC = () => {
           if (acceptedApplies.length === 0) {
             // 채택된 지원자가 없는 경우 빈 배열 추가하고 다음 공고로
             workerGroupsData.push({
-              post: post,
+              post,
               workers: [],
               isExpanded: false,
             });
@@ -496,7 +498,7 @@ const ReCruitPage: React.FC = () => {
                 resume: resumeResponse,
                 user: UserResponse,
                 attendance: attendanceData, // 출석 정보가 없으면 null
-                post: post,
+                post,
                 hasAttendance: hasAttendance,
                 totalPay: totalPay,
               });
@@ -511,21 +513,12 @@ const ReCruitPage: React.FC = () => {
                 `[ERROR] 근로자 정보 불러오기 실패: ${apply.resumeId}`,
                 err
               );
-
-              // 오류가 발생해도 기본 정보로 추가
-              // const userId = apply.userId.toString();
-              // workersData.push({
-              //   user: createDefaultUser(userId),
-              //   attendance: null, // 출석 정보 없음
-              //   post: post,
-              //   hasAttendance: false,
-              // });
             }
           }
 
           // 근로자 목록이 비어있어도 공고 그룹 추가
           workerGroupsData.push({
-            post: post,
+            post,
             workers: workersData,
             isExpanded: false,
           });
@@ -613,15 +606,6 @@ const ReCruitPage: React.FC = () => {
     });
     if (res) setPayModal(!payModal);
     setReload(!reload);
-    // const res = await postBank("DrawingTransfer", {
-    //   Bncd: "011",
-    //   FinAcno: true,
-    //   Tram: Tram.replace(/,/g, ""),
-    //   DractOtlt: "페이러너 임금 지불",
-    //   MractOtlt: "페이러너 임금 지급",
-    // });
-    // if (res) setPayModal(!payModal);
-    // setReload(!reload);
   };
 
   return (
@@ -760,9 +744,10 @@ const ReCruitPage: React.FC = () => {
                                       `${formatDate(
                                         worker.attendance.checkInTime
                                       )} ${formatTime(
-                                        worker.post.hour?.start || ""
+                                        (worker.post.hour?.start as string) ||
+                                          ""
                                       )}-${formatTime(
-                                        worker.post.hour?.end || ""
+                                        (worker.post.hour?.end as string) || ""
                                       )}`
                                     : // 출석 정보가 없으면 공고 정보에서 가져옴
                                       formatWorkDate(worker.post)}

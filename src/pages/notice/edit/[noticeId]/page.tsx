@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import Main from "@/components/Main";
 import React, { useEffect, useState } from "react";
 import {
@@ -25,7 +23,7 @@ import CancelIcon from "@/components/icons/Cancel";
 import InputComponent from "@/components/Input";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import he from "he";
+import HeaderBack from "@/components/HeaderBack";
 
 const AddressModal = Modal;
 const AddNoticeResultModal = Modal;
@@ -291,21 +289,7 @@ const NoticeEditPage = () => {
 
   return (
     <>
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              // navigate(-1);
-              navigate(`/recruit/manage`);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            공고 수정
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="공고 수정" backPage="/recruit/manage" />
       <Main hasBottomNav={false}>
         <div className="w-full flex flex-col relative bg-white">
           <form
@@ -613,14 +597,7 @@ const NoticeEditPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">상세요강</b>
-              {/* <textarea
-                className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
-                placeholder="추가할 html 내용을 작성해주세요"
-                value={postDetail}
-                onChange={(e) => setPostDetail(e.target.value)}
-                rows={5}
-              /> */}
-              {/* <ReactQuill
+              <ReactQuill
                 value={postDetail}
                 onChange={setPostDetail}
                 modules={{
@@ -636,34 +613,6 @@ const NoticeEditPage = () => {
                 }}
                 placeholder="추가할 html 내용을 작성해주세요"
                 className="bg-white w-full max-h-[400px] overflow-y-scroll"
-              /> */}
-              {/* <ReactQuill
-                value={postDetail.replace(/</g, "&lt;").replace(/>/g, "&gt;")} // 🔥 태그를 이스케이프해서 표시
-                onChange={(content) =>
-                  setPostDetail(
-                    content.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-                  )
-                }
-                modules={{
-                  toolbar: [
-                    [{ header: [1, 2, false] }],
-                    ["bold", "italic", "underline", "strike"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["link"],
-                    [{ align: [] }],
-                    [{ color: [] }, { background: [] }],
-                    ["clean"],
-                  ],
-                }}
-                placeholder="추가할 html 내용을 작성해주세요"
-                className="bg-white w-full max-h-[400px] overflow-y-scroll"
-              /> */}
-              <textarea
-                className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
-                placeholder="추가할 html 내용을 작성해주세요"
-                value={postDetail}
-                onChange={(e) => setPostDetail(e.target.value)}
-                rows={5}
               />
             </div>
 

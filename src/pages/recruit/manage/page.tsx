@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/useRedux";
 import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import { Link } from "react-router-dom";
-import AddIcon from "@/components/icons/Plus";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import Loading from "@/components/loading/page";
+import HeaderBack from "@/components/HeaderBack";
 // 타입 정의
 interface User {
   _id: string;
@@ -111,7 +108,7 @@ function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
           <div className="flex flex-col gap-0.5 text-main-darkGray text-xs">
             <p className="text-sm font-bold text-black">근무조건</p>
             <p>
-              <span className={spanStyle.text}>{post.pay.type}</span>{" "}
+              <span className={spanStyle.text}>{post.pay.type}</span>
               {post.pay.value.toLocaleString()}
             </p>
             <p>
@@ -149,7 +146,6 @@ function ReCruitManage({ post }: ReCruitManageProps): JSX.Element {
 }
 
 const ReCruitManagePage: React.FC = () => {
-  const navigate = useNavigate();
   // Redux에서 로그인한 사용자 정보 가져오기
   const user = useAppSelector((state: RootState) => state.auth.user);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
@@ -187,17 +183,7 @@ const ReCruitManagePage: React.FC = () => {
 
   return (
     <>
-      <Header>
-        <div className="size-full flex justify-center items-center font-bold bg-main-color text-white relative">
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute top-1/2 -translate-y-1/2 left-layout"
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span>고용 현황</span>
-        </div>
-      </Header>
+      <HeaderBack title="공고 관리" />
       <Main hasBottomNav={true}>
         <div className="size-full bg-white p-[20px] flex flex-col gap-[20px]">
           {/* 상단 제목 */}

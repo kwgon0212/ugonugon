@@ -527,13 +527,6 @@ const NoticeAddPage = () => {
 
             <div className="flex flex-col gap-[5px]">
               <b className="text-lg">상세요강</b>
-              {/* <textarea
-                className="w-full resize-none outline-none rounded-[10px] border border-main-gray p-[10px]"
-                placeholder="추가할 html 내용을 작성해주세요"
-                value={postDetail}
-                onChange={(e) => setPostDetail(e.target.value)}
-                rows={5}
-              /> */}
               <ReactQuill
                 value={postDetail}
                 onChange={setPostDetail}

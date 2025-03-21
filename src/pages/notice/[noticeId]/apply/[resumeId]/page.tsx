@@ -3,10 +3,10 @@ import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ProfileIcon from "@/components/icons/Profile";
 import Main from "@/components/Main";
 import Modal from "@/components/Modal";
-import getResume, { postResume, Resume } from "@/hooks/fetchResume";
+import getResume, { Resume } from "@/hooks/fetchResume";
 import { useAppSelector } from "@/hooks/useRedux";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaceMap from "../../PlaceMap";
 

@@ -1,17 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
-import mongoose from "mongoose";
-
-import Header from "../../../components/Header";
-import Main from "../../../components/Main";
-import BottomNav from "../../../components/BottomNav";
-
+import Main from "@/components/Main";
+import BottomNav from "@/components/BottomNav";
 import ArrowDownIcon from "@/components/icons/ArrowDown";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import ArrowRightIcon from "@/components/icons/ArrowRight";
 import CancelIcon from "@/components/icons/Cancel";
+import PostData from "@/types/postdata";
+import { jopOptions } from "../options";
+import HeaderBack from "@/components/HeaderBack";
 
 const Body = styled.div`
   display: flex;
@@ -154,68 +153,6 @@ const Drop = styled.ul`
   list-style: none;
 `;
 
-interface PostData {
-  _id: string;
-  title: string;
-  jobType: string;
-  pay: {
-    type: string;
-    value: number;
-  };
-  hireType: string[];
-  period: {
-    start: string | Date;
-    end: string | Date;
-    discussion: boolean;
-  };
-  hour: {
-    start: string | Date;
-    end: string | Date;
-    discussion: boolean;
-  };
-  restTime?: {
-    start: string | Date;
-    end: string | Date;
-  };
-  day: string[];
-  workDetail?: string;
-  welfare?: string;
-  postDetail?: string;
-  deadline?: {
-    date: string | Date;
-    time: string | Date;
-  };
-  person?: number;
-  preferences?: string;
-  education?: {
-    school: string;
-    state: string;
-  };
-  address: {
-    zipcode: string;
-    street: string;
-    detail?: string;
-    lat?: number;
-    lng?: number;
-  };
-  recruiter?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-  author: string;
-  images?: [string];
-  createdAt?: string | Date;
-  applies: [
-    {
-      userId: mongoose.Types.ObjectId;
-      resumeId: mongoose.Types.ObjectId;
-      status?: "pending" | "accepted" | "rejected";
-      appliedAt?: string | Date;
-    }
-  ];
-}
-
 interface PaginationData {
   total: number;
   page: number;
@@ -226,8 +163,6 @@ interface PaginationData {
 export function NoticeListPage() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useState(location.state || {});
-  // const searchParams = location.state || {};
-
   const [hasNotice, setNotice] = useState(true);
   const [isOpen, setOpen] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -243,21 +178,6 @@ export function NoticeListPage() {
   const [totalItems, setTotalItems] = useState<number>(0);
 
   const navigate = useNavigate();
-
-  // 직종 리스트 (필터 제거 로직에 사용)
-  const jobTypes = [
-    "직종 전체",
-    "관리자",
-    "전문가 및 관련 종사자",
-    "사무 종사자",
-    "서비스 종사자",
-    "판매 종사자",
-    "농림어업 숙련 종사자",
-    "기능원 및 관련 기능 종사자",
-    "장치ㆍ기계 조작 및 조립 종사자",
-    "단순 노무 종사자",
-    "군인",
-  ];
 
   // 날짜를 yyyy-MM-dd 형식으로 변환하는 함수
   const formatDate = (dateString: string | Date) => {
@@ -464,7 +384,7 @@ export function NoticeListPage() {
     } else if (removedFilter.startsWith("근무기간:")) {
       updatedParams.startDate = null;
       updatedParams.endDate = null;
-    } else if (jobTypes.includes(removedFilter)) {
+    } else if (jopOptions.includes(removedFilter)) {
       // 직종 필터 제거
       updatedParams.jobType = "직종 전체";
     } else {
@@ -502,35 +422,12 @@ export function NoticeListPage() {
 
   return (
     <>
-      {/* <Header>
-        <Link to={"/"} className="flex p-3 w-full h-full">
-          <img
-            src="/logo.png"
-            alt="로고 이미지"
-            className="flex bottom-0 w-full h-full"
-          />
-        </Link>
-      </Header> */}
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            검색 결과
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="검색 결과" />
       <Main hasBottomNav={true}>
         <Body>
           {hasNotice ? (
             <>
               <Head>
-                {/* <div className="font-bold text-[20px] mb-2">검색 결과</div> */}
                 {/* 활성화된 필터 카테고리 표시 */}
                 {activeFilters.length > 0 && (
                   <CetegoryContiner>

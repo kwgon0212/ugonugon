@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Header from "@/components/Header";
 import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
 import SearchIcon from "@/components/icons/Search";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale/ko";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/css/datePicker.css";
 import locations from "./locations";
+import { jopOptions, payOptions } from "../options";
+import HeaderBack from "@/components/HeaderBack";
 
 interface Props {
   width?: string;
@@ -95,14 +95,6 @@ const LocationSelectBox = styled.select<Props>`
   }
 `;
 
-const Title = styled.p`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-weight: bold;
-  font-size: 16px;
-`;
-
 const SubTitle = styled.label`
   font-weight: 600;
   font-size: 16px;
@@ -119,6 +111,45 @@ const FormContainer = styled.form`
   padding-bottom: 160px; /* 버튼 + BottomNav 높이 + 여백 */
 `;
 
+const bgCalender = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="20px"
+    height="20px"
+    color="#d9d9d9"
+    fill="none"
+    style={{
+      padding: "10px 0 10px 15px",
+      width: "20px",
+      height: "20px",
+    }}
+  >
+    <path
+      d="M18 2V4M6 2V4"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    <path
+      d="M3 8H21"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 function NoticeSearchPage() {
   const navigate = useNavigate();
 
@@ -132,7 +163,9 @@ function NoticeSearchPage() {
     일일: false,
     단기: false,
     장기: false,
+    긴급: false,
   });
+
   const [startDate, setStartDate] = useState<Date | null>(new Date()); // 오늘 날짜
   const [endDate, setEndDate] = useState<Date | null>(
     new Date(new Date().setMonth(new Date().getMonth() + 1))
@@ -177,41 +210,11 @@ function NoticeSearchPage() {
     });
   };
 
-  const jobTypes = [
-    "직종 전체",
-    "관리자",
-    "전문가 및 관련 종사자",
-    "사무 종사자",
-    "서비스 종사자",
-    "판매 종사자",
-    "농림어업 숙련 종사자",
-    "기능원 및 관련 기능 종사자",
-    "장치ㆍ기계 조작 및 조립 종사자",
-    "단순 노무 종사자",
-    "군인",
-  ];
-
-  const payTypes = ["시급", "일급", "주급", "월급", "총 급여"];
-
   return (
     <>
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            공고 검색
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="공고 검색" />
       <Main hasBottomNav={true}>
         <div>
-          {" "}
           {/* Main 컴포넌트의 자식을 하나의 div로 감싸기 */}
           <FormContainer
             className="divide-[#0b798b]"
@@ -269,7 +272,7 @@ function NoticeSearchPage() {
                 value={jobType}
                 onChange={(e) => setJobType(e.target.value)}
               >
-                {jobTypes.map((value, index) => (
+                {jopOptions.map((value, index) => (
                   <option key={index} value={value}>
                     {value}
                   </option>
@@ -285,7 +288,7 @@ function NoticeSearchPage() {
                 className="mr-[10px]"
                 width="30%"
               >
-                {payTypes.map((value, index) => (
+                {payOptions.map((value, index) => (
                   <option key={index} value={value}>
                     {value}
                   </option>
@@ -332,44 +335,7 @@ function NoticeSearchPage() {
               <DatePicker
                 locale={ko}
                 showIcon
-                icon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="20px"
-                    height="20px"
-                    color="#d9d9d9"
-                    fill="none"
-                    style={{
-                      padding: "10px 0 10px 15px",
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  >
-                    <path
-                      d="M18 2V4M6 2V4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    <path
-                      d="M3 8H21"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                }
+                icon={bgCalender}
                 toggleCalendarOnIconClick
                 dateFormat="yyyy-MM-dd"
                 startDate={startDate}
@@ -384,45 +350,8 @@ function NoticeSearchPage() {
               />
               <DatePicker
                 locale={ko}
+                icon={bgCalender}
                 showIcon
-                icon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="20px"
-                    height="20px"
-                    color="#d9d9d9"
-                    fill="none"
-                    style={{
-                      padding: "10px 0 10px 15px",
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  >
-                    <path
-                      d="M18 2V4M6 2V4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    <path
-                      d="M3 8H21"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                }
                 toggleCalendarOnIconClick
                 dateFormat="yyyy-MM-dd"
                 startDate={startDate}

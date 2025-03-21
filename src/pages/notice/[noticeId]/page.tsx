@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Main from "@/components/Main";
-import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageSlider from "./ImageSlider";
 import ArrowLeftIcon from "@/components/icons/ArrowLeft";
@@ -14,11 +14,8 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import WorkPlaceMap from "./PlaceMap";
 import NotFound from "@/NotFound";
-// import type Resume from "@/types/Resume";
 import { type Resume } from "@/hooks/fetchResume";
 import DOMPurify from "dompurify";
-
-import { createChatRoom } from "@/util/chatUtils"; // 이 함수는 아래에서 새로 만들겠습니다
 import { io } from "socket.io-client";
 import Loading from "@/components/loading/page";
 const DeleteModal = Modal;
