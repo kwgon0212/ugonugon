@@ -1,12 +1,11 @@
 import BottomNav from "@/components/BottomNav";
-import Header from "@/components/Header";
-import ArrowLeftIcon from "@/components/icons/ArrowLeft";
+import HeaderBack from "@/components/HeaderBack";
 import Main from "@/components/Main";
 import { useAppSelector } from "@/hooks/useRedux";
 import Notice from "@/types/Notice";
 import axios from "axios";
 import { Types } from "mongoose";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Apply {
@@ -30,7 +29,6 @@ const DeletedPostCard = ({
     >
       <div className="w-[90px] h-[90px] flex items-center justify-center bg-gray-200 rounded-[10px]">
         {/* 삭제된 공고 아이콘 (적절한 아이콘 경로로 교체) */}
-        {/* <img src="/icons/deleted.svg" alt="Deleted Post" className="w-6 h-6" /> */}
         <img
           src="/logo.png"
           alt="Deleted Post"
@@ -109,20 +107,7 @@ const WorkApplyPage = () => {
 
   return (
     <>
-      <Header>
-        <div className="p-layout h-full flex flex-wrap content-center bg-main-color">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <ArrowLeftIcon className="text-white" />
-          </button>
-          <span className="absolute left-1/2 -translate-x-1/2 font-bold text-white">
-            내가 지원한 공고
-          </span>
-        </div>
-      </Header>
+      <HeaderBack title="내가 지원한 공고" />
       <Main hasBottomNav={true}>
         <div className="size-full flex flex-col gap-[20px] p-[20px]">
           {applies &&

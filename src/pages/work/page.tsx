@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Main from "@/components/Main";
 import BottomNav from "@/components/BottomNav";
 import Notice from "@/types/Notice";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PDFButton from "@/components/PDFButton";
